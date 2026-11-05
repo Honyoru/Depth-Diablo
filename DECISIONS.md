@@ -1,0 +1,152 @@
+# DECISIONS
+
+Everything the team has decided for the game, taken from the Game Design Document and its Questions tab (state of 5 Nov 2026). Question numbers (Q..) and GDD sections point back to the shared doc.
+
+Status note (Ange, 4 Nov): the team reviewed the whole draft orally, and every "proposal" left in the GDD is accepted as the **working default**. Items listed under "Working defaults" below are proposals in that state.
+
+## 1. Delivery and scope
+
+- The 12 Nov POC is cancelled. The only delivery is the full GDD and the full playable game on **22 Nov 2026 at 23:50** (Q82, GDD 1.1.1).
+- Internal milestone: GDD finished by 5 Nov (Q82).
+- The former POC scope is the first slice to build and the "Arena" game mode: 1 arena, 1 character, 1 weapon, 1 consumable, 4 enemy types spawning in an endless loop.
+- Section owners (Q81) and the review presentation split (Q85) are **not decided yet**.
+- draw.io diagrams (Q84) are drawn once the GDD is about 95 % done.
+
+## 2. Game concept
+
+- Underground dungeon crawler, hack-and-slash combat, 2D top-down view (The Binding of Isaac as genre reference), libGDX.
+- Hook (Q9): a roguelite in a continuous, Doom-style looping labyrinth instead of Isaac's room grid, with an engine you can see working (rewind, X-ray view, event laser, hot reload).
+- Continuous labyrinth with a camera that follows the player (Q76).
+- Endless run, score = depth reached, no win screen, run ends at death (Q2, Q48). Lose condition: HP at 0 (Q3).
+- Run length target: 15 to 30 minutes (Q6).
+- No meta-progression: nothing persists between runs, no XP and no levels, progression comes from items only (Q4, Q5, Q46).
+- Difficulty scales with depth: more enemies and better stats (Q47).
+- Story (5.1): a beginner adventurer enters an unexplored dungeon, the entrance seals behind them, the only way out is deeper. Story details Q72 to Q75 stay open. No cinematics, no 3D.
+
+## 3. Game modes and flow
+
+- Title screen: Play (dungeon run), Arena, Options, Quit; Play and Arena then go to character select (Q10).
+- Screens: title, character select, pause (options, quit), inventory overlay (pauses the game), shop overlay, game over (rerun or quit). No victory screen.
+- Dungeon run: 2 to 3 hand-made floors, then procedurally generated floors forever (Q2, Q77). Each floor ends with a boss; the boss's death opens a teleport zone to the next floor and the shopkeeper appears (Q11, Q14). No way back up (Q12).
+- Some areas lock until every enemy inside is dead; some doors need a key (Q13, Q80).
+- Arena mode: waves in cycles of 5. Waves 1 to 4 are normal waves (Rat, Zombie, Skeleton Archer, Rat Nest), wave 5 is a boss. The shopkeeper appears after each boss wave. 15 s break between normal waves; after the shop, the next cycle starts when the player activates it. Score = waves defeated.
+- Bosses and biomes come in no fixed order: each floor draws one of the three kings (working default: random from the seed, so a seed gives the same run).
+
+## 4. Characters and enemies
+
+- 3 playable classes that differ by stats only: **Knight** (melee), **Mage** (magic), **Archer** (bow, fires arrows) (Q15, Q25). Stat values are tuned during balancing.
+- Stat model shared by player and enemies: HP, Attack, Defense, Speed, Attack Speed, Luck (Q44, Q45).
+- Enemies: Rat, Zombie, Orc (melee); Skeleton Archer, Dark Mage (burn), Alchemist (lingering poison zone) (ranged); Necromancer (summons Skeleton Archers), Rat Nest (static, spawns Rats) (summoners). Summoned enemies drop nothing (Q16). The Succubus is cut.
+- Bosses, one per floor: King of Rats, King of Orcs, King of Skeletons (Q17).
+- The only NPC is the Shopkeeper: does not fight, cannot be hit (Q18).
+- Player actions: move in 8 directions, attack, dash (fast, linear, can be hit), dodge roll (invincible), use consumable (3 hotbar slots), pick up (key press), interact, open inventory (Q40).
+- Aim: mouse or arrow keys, switched in Options (Q39). Keyboard and mouse plus gamepad, keys remappable (Q38, Q43).
+
+## 5. Combat and stats
+
+- Damage formula (Q26): `damage = max(1, (attack + bonus) x buff / resistance)`, then `hp -= damage`. Resistance is never 0. Enemies use the same formula with buff = 1.
+- The floor is not in the formula: the EnemyFactory multiplies an enemy's base stats by `floorMultiplier(n)` at spawn.
+- No crits, no chance-based dodge, no block (Q27).
+- Invincibility frames after a hit, 0.3 to 0.8 s placeholder (Q28). Knockback on every hit, for feedback (Q29).
+- Hurtbox and hitbox are separate: damage only happens when an attacker's hitbox overlaps a target's hurtbox (1.5).
+- Collision: free AABB hitboxes (Q41). Fixed time step of 60 logic updates per second, separate from rendering (Q42).
+- Traps: spikes with an activation delay (Q36).
+
+## 6. Items, inventory and shop
+
+- Item types: weapon, consumable, armor, passive item (modifier), plus a roulette ticket (modeled as a consumable). No crafting (Q30, Q33).
+- Passive items spawn only in chests, which open without a key. In Arena mode there are no chests: passive items drop from enemies or bosses (which ones: TBD). Keys only open locked doors (Q80).
+- Loot (Q35): enemies drop consumables, coins and roulette tickets; bosses drop a weapon or armor, consumables and coins.
+- Inventory: 20 slots, 3 of them the hotbar (consumables only), 17 take any item. 2 extra portrait slots hold the equipped weapon and armor. Items never stack, one item per slot. When full, the item stays on the ground. Two copies of a passive item combine by that item's own rule (additive or multiplicative) (Q31, Q32).
+- Shop: coins from enemies. Shopkeeper has 2 vending slots (weapon or armor; consumable) plus a roulette. A spin costs coins; a roulette ticket gives a free spin (Q14, Q34).
+- Coin drop rates, prices and roulette odds are TBD during balancing.
+
+## 7. AI
+
+- gdx-ai for everything: state machines, behavior trees (bosses) and A* pathfinding (Q49, Q50).
+- Detection by line of sight, or a signal to an area's enemies when the player enters it (Q51).
+
+## 8. Engine showcase features (GDD 1.1.2)
+
+All four ship in the full game. Each is a separate module behind one small interface (`DebugFeature`); the engine never depends on a feature, and the game and tests must pass with any feature disabled.
+
+| Key | Feature | Pattern |
+| --- | --- | --- |
+| R (hold) | Time rewind | Memento (+ Command) |
+| F1 | View switcher: sprites, X-ray (hurtboxes and hitboxes, velocity vectors), high contrast | Strategy (`Renderer`) |
+| F2 | Event laser: a visible line per event from emitter to receiver | Observer / Event Bus |
+| F5 / TAB | Hot reload and in-game editor | Factory + serialization (Prototype) |
+
+- Rewind (Q86): full state snapshot every fixed tick in a compact ring buffer of primitive arrays, 5 s x 60 ticks = 300 frames.
+- Suggested build order: F1 and F2, then R, then F5 / TAB.
+
+## 9. Architecture and code conventions
+
+- Gradle project generated by gdx-liftoff, Java 21 (Q64).
+- Modules: `core` (game logic, unit-tested at 70 %) and `desktop` (rendering, input, audio, LWJGL3 launcher) (Q98). `core` may use libGDX math, collections and gdx-ai; an ArchUnit test bans graphics, audio, input and `Gdx.*` statics in core (Q100). Core tests run on the libGDX headless backend.
+- Package layout by feature: combat, entity, item, level, ai, shop, debug... (Q99).
+- Layered class hierarchy instead of "max 2 levels": interfaces (Updatable, Collidable, Damageable, Rewindable, Pickable, Interactable) -> abstract Entity -> Character -> Player / Enemy -> families (Melee, Ranged, Summoner, Boss) -> concrete enemies. Items: Item -> Equipment (Weapon, Armor) / Consumable / PassiveItem. Stats stay in JSON. No full ECS (Q101, GDD 1.3.1).
+- Passive items are Decorators wrapping a Character's stats, attack, hurtbox/hitbox, and movement.
+- All tunable gameplay values live in JSON data; code constants only for non-gameplay values. No inline literal numbers (Q93). One JSON file per category in snake_case, for example `data/enemies.json`, `data/items.json`; a load test parses every file (Q129).
+- Style: Google Java Style, enforced by Spotless + google-java-format (`./gradlew spotlessApply`, `spotlessCheck` in CI), 100 columns, any IDE with an `.editorconfig` (Q87 to Q89, Q92).
+- Naming: no `I` prefix, no `Impl`; interfaces get role names (`Renderer`, `LevelGenerator`), implementations say what they are (`XRayRenderer`, `BspLoopGenerator`) (Q90).
+- English everywhere in code, comments, Javadoc and commits; player-facing text in French and English through `I18NBundle` with key format `area.element.detail`, files `strings.properties` (EN default) and `strings_fr.properties`; a test checks both hold the same keys (Q59, Q91, Q131).
+- `Optional` for may-find-nothing returns, `Objects.requireNonNull` in constructors, no annotation library (Q94). Unchecked exceptions for programming errors, custom exceptions only where the caller can recover, never catch and ignore (Q95).
+- SLF4J with Logback everywhere, `System.out` banned (Q96). Java records for value objects, final fields by default (Q97).
+- Constructor injection by hand, one composition root in the launcher, no singletons (the event bus is passed in) (Q103). Every Strategy, Observer and State role is an interface first (Q104).
+- Patterns shown in names where natural, a Javadoc line "Pattern: ..." on every pattern class, and a `PATTERNS.md` mapping pattern to classes to UML (Q102).
+- Javadoc on every public class and method in core and desktop: summary line plus `@param`, `@return`, `@throws`; generated by hand before delivery, not in CI (Q105 to Q107).
+- README: build, run, controls including the debug keys (Q109).
+- UML: design diagrams first in draw.io, then redone in PlantUML (text files in `docs/uml`) from the code as built (Q108).
+
+## 10. Tests and CI
+
+- JUnit 5 + jqwik (about 200 tries per property) + ArchUnit. No Mockito, no AssertJ; hand-written fakes implementing our interfaces (Q110, Q117, Q120).
+- Test names `should_X_when_Y`; Given / When / Then in three blocks, one behaviour per test (Q111, Q112).
+- `src/test/java` mirrors the main packages, one `<ClassName>Test` per class; cross-class GDD 1.4.1 rules go in a `rules/` package, one class per section (Q113).
+- Seeded `RandomSource` and a fixed time step are injected; ArchUnit bans `Math.random()`, `new Random()` and `System.currentTimeMillis()` in core (Q114).
+- Every rule in GDD 1.4.1 is tested, test-first (red, then green); every bug fix starts with a failing regression test (Q115, Q121).
+- Test data via builders in code (`anEnemy().withHp(10).build()`), a few JSON fixtures only for data-loading and hot-reload tests (Q116).
+- Rendering: one test per renderer, render a frame and check the game state is unchanged; no pixel comparison (Q118).
+- JaCoCo fails CI below 70 % on core; desktop and launcher excluded. Full suite under 30 s (Q65, Q119, Q120).
+- CI: GitHub Actions on every push to any branch: `spotlessCheck` -> build -> tests (JUnit, jqwik, ArchUnit) -> JaCoCo 70 % on core -> SpotBugs + PMD (Q66, Q125).
+- Definition of done: code + tests + Javadoc + draw.io UML updated + CI green (Q126).
+
+## 11. Git workflow
+
+- Repo: the private school (Epitech) repo; it allows GitHub Actions and branch protection (checked 4 Nov) (Q128).
+- Branch per feature, **no pull requests**, automated tests instead (Q83). Branch names `type/short-name`: `feature/shop-roulette`, `fix/dash-cooldown`, `docs/uml-entities`, `test/bsp-invariants` (Q122).
+- Commits: Conventional Commits, for example `feat(shop): add roulette slot`, `fix(combat): clamp damage to 1` (Q123).
+- `main` is protected and only takes commits whose CI is green. Flow: push to the feature branch, wait for green CI, then push the same commit to main (Q124).
+- Merge strategy: rebase the feature branch on main, wait for green CI, then fast-forward main. Linear history (Q127).
+- Binary assets: plain Git for now; switch to Git LFS (GitHub Student plan) only if music or large spritesheets arrive (Q132).
+
+## 12. Art, UI and sound
+
+- Pixel art, 32 x 32 px tiles, 960 x 540 virtual resolution scaled x2 to 1080p (30 x 17 tiles on screen) (Q60).
+- Art from AI generation and/or licensed packs; one palette and one tile size for all. Every asset and its licence goes in `CREDITS`; folders like `assets/sprites/enemies/zombie_walk.png`, snake_case (Q61, Q130).
+- No light radius (Q62). Animations per character: idle, move, attack, hit, death (Q63).
+- Biome per floor changes only the tileset; the room types are the same on every floor (Q79). A floor holds: arena rooms, arenas with closed doors, corridors, chest rooms, key rooms, a boss room.
+- HUD: minimal corner HUD, HP bar, the 3 hotbar slots, coin counter, current floor. No minimap, no floating damage numbers (Q54 to Q57). The inventory is a pause overlay (Q58). Menus and overlays are built with Scene2D.
+- Options screen: remap keys, aim mode, language (FR / EN) (Q43, Q59).
+- Sound: effects for hit, death, pickup and UI; one ambient music loop for the whole game; all from free CC0 libraries listed in `CREDITS` (Q68 to Q71).
+
+## 13. Level generation
+
+- 2 to 3 floors hand-made in Tiled for the demo and tests; after them, procedural floors forever (Q77).
+- Generator: BSP tree, then 2 or 3 extra loops between rooms, behind a `LevelGenerator` interface (Strategy) with `BspLoopGenerator` and `TiledMapLoader` (GDD 6.1).
+- Testable rules: every room reachable from the start; loop count = corridors - rooms + 1 equals the configured 2 or 3; the same seed gives the same floor.
+
+## 14. Working defaults (proposals accepted on 4 Nov)
+
+- Default controls: WASD move, Shift dash, Space dodge roll, 1 / 2 / 3 consumables, E interact, F pick up, I inventory, Esc pause; gamepad equivalents (GDD 2.4). Debug keys R, F1, F2, F5 / TAB are decided.
+- Own AABB code in core rather than Box2D; walls block a separate body box at the feet.
+- Item UML: `CharacterBuild` record rebuilt after every inventory change (base build -> weapon -> armor -> passive items in pickup order); `LootTable` shared by enemies, bosses, chests and roulette; coins and keys are counters on the Player (Ange's Claude, 5 Nov; files `uml/items.drawio` and `uml/entities.drawio`).
+- The shopkeeper as a long-trapped adventurer; sample EN / FR text lines in GDD 5.4.
+
+## 15. Still open
+
+- Class stat values, enemy attack speed tiers, boss phases and summons (Q53), which enemies apply status effects in the full game.
+- Wave size and makeup in Arena mode, rooms per floor and per type, coin drop rates, prices, roulette odds.
+- Story Q72 to Q75, pixel font, icons and pointer style, event list for the event bus (Q24).
+- Section owners (Q81) and review presentation split (Q85).
