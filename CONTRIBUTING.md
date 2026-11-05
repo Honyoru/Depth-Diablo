@@ -8,13 +8,20 @@ These rules come from the team's decisions (see `DECISIONS.md` and the GDD). `Q.
 - Any IDE. The `.editorconfig` sets indent and line endings; Spotless does the real formatting.
 - Build: `./gradlew build`. Run tests: `./gradlew test`. Format: `./gradlew spotlessApply`.
 
-## Workflow (no pull requests)
+## Workflow (pull request + review)
 
-1. Create a branch from an up-to-date `main`: `type/short-name`, where type is `feature`, `fix`, `docs` or `test` (Q122). Examples: `feature/shop-roulette`, `fix/dash-cooldown`, `docs/uml-entities`, `test/bsp-invariants`.
-2. Commit with Conventional Commits (Q123): `feat(shop): add roulette slot`, `fix(combat): clamp damage to 1`, also `test:`, `docs:`, `refactor:`.
-3. Push the branch and wait for green CI.
-4. Rebase the branch on `main`, wait for green CI again, then push the same commit to `main` (fast-forward only, linear history) (Q124, Q127).
-5. Never force-push `main`. Never push a commit to `main` whose CI is not green.
+Changed on 5 Nov 2026: every change reaches `main` through a reviewed pull request (replaces Q83, Q124, Q127). `main` is protected: no direct push, no force-push.
+
+1. Update `main` (`git checkout main && git pull --ff-only`), then create a branch: `type/short-name`, where type is `feature`, `fix`, `docs` or `test` (Q122). Examples: `feature/shop-roulette`, `fix/dash-cooldown`, `docs/uml-entities`, `test/bsp-invariants`.
+2. Commit with Conventional Commits (Q123): `feat(shop): add roulette slot`, `fix(combat): clamp damage to 1`, also `test:`, `docs:`, `refactor:`, `revert:`. Each commit lands in `main` as is, so fold "fix typo" or "wip" commits into the commit they fix before the merge.
+3. Push the branch and open a pull request into `main`. Title in Conventional Commits form; the description says what changed, why, and which GDD rules or Q numbers it touches.
+4. One of the two other teammates reviews: comments, asks for changes, then approves. Nobody approves their own pull request. A new push dismisses the approval.
+5. Merge with **Rebase and merge** only (linear history, every commit keeps its author), once the pull request is approved, CI (`build-and-test`) is green and the branch is up to date with `main`. Use "Update branch" or rebase locally if it is behind.
+6. After the merge, delete the branch on GitHub. Locally: `git checkout main && git pull --ff-only && git branch -D <branch>`. GitHub rewrites the commits when it rebases them, so never keep working on a merged branch: start a new one from `main`.
+
+Reviewer checklist: the change does what the pull request says; tests cover the GDD rules it touches; names and style follow this file; Javadoc on public types; no magic numbers; the UML still matches.
+
+Commit with the email of your GitHub account (`git config user.email`), or your commits do not count on your profile.
 
 ## Definition of done (Q126)
 
@@ -22,6 +29,7 @@ These rules come from the team's decisions (see `DECISIONS.md` and the GDD). `Q.
 - Javadoc on every public class and method in `core` and `desktop` (Q105).
 - draw.io UML updated (PlantUML is redone from the code after the build; Q108).
 - CI is green.
+- Approved by one teammate in a pull request.
 
 ## Code style
 

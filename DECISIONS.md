@@ -110,15 +110,15 @@ All four ship in the full game. Each is a separate module behind one small inter
 - Rendering: one test per renderer, render a frame and check the game state is unchanged; no pixel comparison (Q118).
 - JaCoCo fails CI below 70 % on core; desktop and launcher excluded. Full suite under 30 s (Q65, Q119, Q120).
 - CI: GitHub Actions on every push to any branch: `spotlessCheck` -> build -> tests (JUnit, jqwik, ArchUnit) -> JaCoCo 70 % on core -> SpotBugs + PMD (Q66, Q125).
-- Definition of done: code + tests + Javadoc + draw.io UML updated + CI green (Q126).
+- Definition of done: code + tests + Javadoc + draw.io UML updated + CI green + one approving review (Q126, review added 5 Nov).
 
 ## 11. Git workflow
 
 - Repo: the private school (Epitech) repo; it allows GitHub Actions and branch protection (checked 4 Nov) (Q128).
-- Branch per feature, **no pull requests**, automated tests instead (Q83). Branch names `type/short-name`: `feature/shop-roulette`, `fix/dash-cooldown`, `docs/uml-entities`, `test/bsp-invariants` (Q122).
+- Branch per feature, merged through a **pull request reviewed by one other teammate** (changed by the team on 5 Nov; replaces Q83's "no pull requests"). Branch names `type/short-name`: `feature/shop-roulette`, `fix/dash-cooldown`, `docs/uml-entities`, `test/bsp-invariants` (Q122).
 - Commits: Conventional Commits, for example `feat(shop): add roulette slot`, `fix(combat): clamp damage to 1` (Q123).
-- `main` is protected and only takes commits whose CI is green. Flow: push to the feature branch, wait for green CI, then push the same commit to main (Q124).
-- Merge strategy: rebase the feature branch on main, wait for green CI, then fast-forward main. Linear history (Q127).
+- `main` is protected: no direct push, no force-push; a pull request needs 1 approval, green CI (`build-and-test`) and an up-to-date branch (replaces Q124, 5 Nov).
+- Merge strategy: **Rebase and merge** only, linear history, every commit keeps its author (replaces Q127's local fast-forward, 5 Nov). Merged branches are deleted.
 - Binary assets: plain Git for now; switch to Git LFS (GitHub Student plan) only if music or large spritesheets arrive (Q132).
 
 ## 12. Art, UI and sound
