@@ -9,3 +9,5 @@ Planned patterns. Fill the "Where" column as each one lands in the code.
 | Observer       | Game events (damage, death, pickup)              | TBD   |
 | Factory        | Entity and item creation from JSON               | TBD   |
 | Command        | Player input mapped to actions                   | TBD   |
+| Command        | Hotbar consumables used through one call         | `item/Consumable` |
+| Template Method | Character update order: i-frames, then `think()` | `entity/Character` |
