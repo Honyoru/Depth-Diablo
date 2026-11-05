@@ -10,7 +10,5 @@
     <exclude name="AvoidLiteralsInIfCondition"/>
     <exclude name="AvoidDuplicateLiterals"/>
     <exclude name="MissingSerialVersionUID"/>
-    <!-- Accessors are named like records (hp(), seed(), hurtbox()), so a field and its getter share a name (Q97). -->
-    <exclude name="AvoidFieldNameMatchingMethodName"/>
   </rule>
 </ruleset>

@@ -9,9 +9,4 @@
   <Match>
     <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
   </Match>
-  <!-- Constructors check their inputs and throw (Q94); classes are not Serializable and have no
-       finalizer, so the finalizer attack this rule guards against does not apply. -->
-  <Match>
-    <Bug pattern="CT_CONSTRUCTOR_THROW"/>
-  </Match>
 </FindBugsFilter>
