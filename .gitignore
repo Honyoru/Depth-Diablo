@@ -1,0 +1,41 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.vscode/
+.classpath
+.project
+.settings/
+bin/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and local files
+*.log
+hs_err_pid*
+.env
+local.properties
+
+# Coverage and reports (generated)
+jacoco/
+*.exec
+
+# libGDX / game runtime
+assets/assets.txt
+
+# Local-only references and scratch (not part of the repo)
+visual-ref/
+scratch/

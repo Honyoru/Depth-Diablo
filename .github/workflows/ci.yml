@@ -1,0 +1,65 @@
+name: CI
+
+# Runs on every push to any branch (Q66), including main.
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push to the same branch cancels the older run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # This job name ("build-and-test") is the status check to require on main.
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle (with cache)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make the Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      # Order from Q125: format check -> build -> tests -> coverage -> static analysis.
+      # Javadoc is not checked in CI (Q107).
+      - name: Format check (Spotless + google-java-format)
+        run: ./gradlew spotlessCheck
+
+      - name: Build
+        run: ./gradlew build -x test
+
+      - name: Tests (JUnit 5, jqwik, ArchUnit)
+        run: ./gradlew test
+
+      - name: Coverage gate (JaCoCo, 70 % on core)
+        run: ./gradlew :core:jacocoTestCoverageVerification
+
+      - name: Static analysis (SpotBugs + PMD)
+        run: ./gradlew spotbugsMain pmdMain
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            **/build/reports/**
+            **/build/test-results/**
+          if-no-files-found: ignore
+          retention-days: 7
