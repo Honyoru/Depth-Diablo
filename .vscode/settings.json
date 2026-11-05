@@ -1,0 +1,87 @@
+// Shared editor settings for the 2D game. Personal preferences (theme, font) go in your user settings.
+{
+  // ---- Java and Gradle
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.gradle.wrapper.enabled": true,
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.test.config": { "vmArgs": ["-ea"] },
+
+  // ---- Format: google-java-format, same version as Spotless in build.gradle (keep them equal)
+  "java.format.settings.google.style": "google",
+  "java.format.settings.google.version": "2.0.0",
+  "java.format.settings.google.mode": "native-binary",
+  "[java]": {
+    "editor.defaultFormatter": "josevseb.google-java-format-for-vs-code",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.rulers": [100]
+  },
+
+  // ---- Common file hygiene (also in .editorconfig)
+  "files.eol": "\n",
+  "files.encoding": "utf8",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "[markdown]": { "files.trimTrailingWhitespace": false },
+
+  // ---- Tiled files are XML (.tsx here is a Tiled tileset, not TypeScript)
+  "files.associations": {
+    "*.tmx": "xml",
+    "*.tsx": "xml",
+    "*.tmj": "json",
+    "*.tsj": "json"
+  },
+
+  // ---- Hide build output
+  "files.exclude": {
+    "**/.gradle": true,
+    "**/build": true,
+    "**/bin": true
+  },
+  "search.exclude": {
+    "**/build": true,
+    "**/.gradle": true,
+    "**/assets/**/*.png": true
+  },
+
+  // ---- Git: rebase, never merge commits (Q124)
+  "git.rebaseWhenSync": true,
+  "git.autofetch": true,
+  "git.confirmSync": true,
+
+  // ---- Conventional Commits: scopes = feature packages (Q99) + project areas
+  "conventionalCommits.scopes": [
+    "entities",
+    "items",
+    "combat",
+    "levels",
+    "ai",
+    "engine",
+    "ui",
+    "audio",
+    "data",
+    "build",
+    "ci",
+    "docs",
+    "uml"
+  ],
+  "conventionalCommits.showEditor": true,
+  "conventionalCommits.emojiFormat": "code",
+  "conventionalCommits.gitmoji": false,
+
+  // ---- Spell check: English everywhere, French for the FR strings file
+  "cSpell.language": "en,fr",
+  "cSpell.words": [
+    "libgdx",
+    "gdx",
+    "jqwik",
+    "lwjgl",
+    "hurtbox",
+    "hurtboxes",
+    "hitbox",
+    "hitboxes",
+    "tileset",
+    "roguelite",
+    "Spotless"
+  ]
+}
