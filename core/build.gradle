@@ -1,0 +1,54 @@
+// Game logic. May use libGDX math / collections / JSON and gdx-ai, never graphics, audio, input,
+// Gdx statics, Math.random, new Random() or the system clock (ArchUnit, Q100, Q114).
+apply plugin: 'jacoco'
+
+eclipse.project.name = appName + '-core'
+
+dependencies {
+  api "com.badlogicgames.gdx:gdx:$gdxVersion"
+  api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
+  implementation "org.slf4j:slf4j-api:$slf4jVersion"
+
+  testImplementation "com.tngtech.archunit:archunit-junit5:$archunitVersion"
+  // Headless backend: libGDX classes that need Gdx.files work in tests without a window.
+  testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+  testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+  testRuntimeOnly "ch.qos.logback:logback-classic:$logbackVersion"
+}
+
+jacoco {
+  toolVersion = jacocoVersion
+}
+
+test {
+  // Tests read data/ and i18n/ from the shared assets folder.
+  systemProperty 'assets.dir', rootProject.file('assets').absolutePath
+  finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+  dependsOn test
+  reports {
+    xml.required = true
+    html.required = true
+  }
+}
+
+// Coverage gate: 70 % of core instructions (Q119). desktop has no gate by design.
+jacocoTestCoverageVerification {
+  dependsOn test
+  violationRules {
+    rule {
+      limit {
+        counter = 'INSTRUCTION'
+        value = 'COVEREDRATIO'
+        minimum = coverageMinimum as BigDecimal
+      }
+    }
+  }
+}
+check.dependsOn jacocoTestCoverageVerification
+
+jar {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

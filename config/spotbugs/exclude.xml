@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Findings we accept on purpose. Every entry says why. -->
+<FindBugsFilter>
+  <!-- Game objects hand out mutable references (vectors, boxes) on purpose. -->
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+  </Match>
+  <!-- libGDX creates resources in create(), not in the constructor. -->
+  <Match>
+    <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
+  </Match>
+</FindBugsFilter>

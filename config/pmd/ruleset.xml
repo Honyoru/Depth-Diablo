@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="depth-diablo"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+  <description>Error-prone rules only. Style is Spotless' job (Q88, Q125).</description>
+
+  <rule ref="category/java/errorprone.xml">
+    <!-- Too noisy for game code and JSON keys; revisit if the team wants them. -->
+    <exclude name="AvoidLiteralsInIfCondition"/>
+    <exclude name="AvoidDuplicateLiterals"/>
+    <exclude name="MissingSerialVersionUID"/>
+  </rule>
+</ruleset>

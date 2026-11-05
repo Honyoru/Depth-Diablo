@@ -5,18 +5,29 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-# IDEs
+# Claude Code: local agent files never go in the repo
+.claude/
+**/.claude/
+CLAUDE.local.md
+.mcp.json
+
+# VS Code: share only the team settings
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Other IDEs and build output
 .idea/
 *.iml
 *.ipr
 *.iws
 out/
-.vscode/
+bin/
 .classpath
 .project
 .settings/
-bin/
-*.code-workspace
+.kotlin/
 
 # OS
 .DS_Store
@@ -26,16 +37,21 @@ desktop.ini
 # Logs and local files
 *.log
 hs_err_pid*
+replay_pid*
 .env
 local.properties
 
-# Coverage and reports (generated)
+# Coverage, reports and test data (generated)
 jacoco/
 *.exec
+.jqwik-database
 
 # libGDX / game runtime
 assets/assets.txt
+/dist/
+**/resource-config.json
 
 # Local-only references and scratch (not part of the repo)
 visual-ref/
+research/
 scratch/
