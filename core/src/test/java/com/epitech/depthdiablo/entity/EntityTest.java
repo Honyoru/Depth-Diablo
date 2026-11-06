@@ -23,14 +23,12 @@ class EntityTest {
   void should_reject_a_missing_body_box() {
     Aabb box = null;
 
-    assertThrows(NullPointerException.class,
-        () -> new CountingEntity(box));
+    assertThrows(NullPointerException.class, () -> new CountingEntity(box));
   }
 
   @Test
   void should_call_the_hook_once_when_updated() {
     CountingEntity entity = new CountingEntity(BOX);
-
     entity.update(1);
 
     assertEquals(1, entity.updates);
@@ -74,9 +72,7 @@ class EntityTest {
     assertEquals(0, entity.updates);
   }
 
-  /**
-   * Hand-written fake (Q117): counts the call of its hook.
-   */
+  /**Hand-written fake (Q117): counts the call of its hook.*/
   private static final class CountingEntity extends Entity {
     private int updates;
     private long lastTick;
