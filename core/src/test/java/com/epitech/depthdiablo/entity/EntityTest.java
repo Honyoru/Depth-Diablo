@@ -29,6 +29,7 @@ class EntityTest {
   @Test
   void should_call_the_hook_once_when_updated() {
     CountingEntity entity = new CountingEntity(BOX);
+
     entity.update(1);
 
     assertEquals(1, entity.updates);
@@ -64,7 +65,6 @@ class EntityTest {
   @Test
   void should_skip_the_hook_when_the_entity_is_removed() {
     CountingEntity entity = new CountingEntity(BOX);
-
     entity.remove();
 
     entity.update(1);
@@ -72,7 +72,7 @@ class EntityTest {
     assertEquals(0, entity.updates);
   }
 
-  /**Hand-written fake (Q117): counts the call of its hook.*/
+  /** Hand-written fake (Q117): counts the calls to its hook. */
   private static final class CountingEntity extends Entity {
     private int updates;
     private long lastTick;
