@@ -6,12 +6,14 @@ The two UML diagrams already show seven GoF patterns. The main gap is Observer: 
 
 ## Diagrams
 
-This tab cannot hold pictures yet, so the diagrams stay in the repo (the links need repo access), on branch `feature/java-skeleton`:
+The diagrams live in [`docs/uml`](../uml). `entities.drawio` holds three pages (Entities, Events, Arena); `items.drawio` holds one.
 
 | Diagram | Editable source | Preview |
 | --- | --- | --- |
-| Entities | [docs/uml/entities.drawio](https://github.com/Honyoru/2DGame/blob/feature/java-skeleton/docs/uml/entities.drawio) | [entities-preview.png](https://github.com/Honyoru/2DGame/blob/feature/java-skeleton/docs/uml/entities-preview.png) |
-| Items | [docs/uml/items.drawio](https://github.com/Honyoru/2DGame/blob/feature/java-skeleton/docs/uml/items.drawio) | [items-preview.png](https://github.com/Honyoru/2DGame/blob/feature/java-skeleton/docs/uml/items-preview.png) |
+| Entities | [entities.drawio](../uml/entities.drawio), page 1 | [entities-preview.png](../uml/entities-preview.png) |
+| Events (Observer) | [entities.drawio](../uml/entities.drawio), page 2 | [events-preview.png](../uml/events-preview.png) |
+| Arena (ArenaCycle) | [entities.drawio](../uml/entities.drawio), page 3 | [arena-preview.png](../uml/arena-preview.png) |
+| Items | [items.drawio](../uml/items.drawio) | [items-preview.png](../uml/items-preview.png) |
 
 ## 1. Pattern correspondence
 
