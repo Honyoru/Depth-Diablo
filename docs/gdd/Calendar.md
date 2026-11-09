@@ -37,9 +37,10 @@ Loïc's day-by-day plan, for the team to validate. Two points conflict with earl
 | Thu 5 Nov | A | Gradle, CI and ArchUnit setup | Done |
 | Thu 5 Nov | B | POC rule tests, written before the code | Tests written on test/poc-rules (red until the team codes the classes) |
 | Thu 5 Nov | C | UML in draw.io | Done |
-| Fri 6 Nov | A | Fixed-step loop, World, EventBus | In progress: fixed-step loop done, World and EventBus to do |
+| Fri 6 Nov | A | Fixed-step loop, World, EventBus | In progress: fixed-step loop done; World, EventBus, EventListener, GameEvent, DamageDealt and EntityDied built and green on `feature/world-event-bus` (Romain, taken over from Ange), not merged yet |
 | Fri 6 Nov | B | Entity / Character hierarchy, damage formula | Done |
 | Fri 6 Nov | C | Sprites + tileset (placeholders) | Done |
+| Mon 9 Nov | B | Character extends Entity: body box in the constructor, `onUpdate()` replaces `update()`, 3 new tests in CharacterTest (Romain, merged on main) | Done |
 | Mon 9 Nov | A | AABB collisions + JSON DataRegistry / EntityFactory | To do |
 | Mon 9 Nov | B | Player + 1 weapon + potion | To do |
 | Mon 9 Nov | C | Arena map (Tiled) + HUD | To do |
@@ -88,6 +89,8 @@ Rules:
 - A two-day task stays with the same person until it is done.
 - Each day's task ends as a pull request ready for review, so the next person starts from `main`.
 - Swaps are fine: two people trade a day and note it here.
+- Mon 9 Nov: Romain took over World and EventBus from Ange and fixed Character, so the Mon 9 Nov task in the Romain column, A · AABB collisions + JSON DataRegistry / EntityFactory, is still to do.
+- ItemPickedUp and RoomCleared wait for Player, Enemy and Item; proposed to add them with the Mon 16 Nov tasks. \[OPEN\]
 - Thu 12 keeps the "All" day of the table above. The 12 Nov POC conflict noted at the top of this section is still open.
 
 ### Milestones
