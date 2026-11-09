@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.entity;
 
+import com.badlogic.gdx.math.Vector2;
 import java.util.Objects;
 
 /**
@@ -8,7 +9,7 @@ import java.util.Objects;
  * <p>Pattern: Template Method. {@link #update(long)} is final and calls {@link #onUpdate(long)},
  * the step each subclass fills in.
  */
-public abstract class Entity {
+public abstract class Entity implements Updatable, Collidable {
   private Aabb bodyBox;
   private boolean removed;
 
@@ -28,6 +29,7 @@ public abstract class Entity {
    *
    * @param tick the number of the current logic tick
    */
+  @Override
   public final void update(long tick) {
     if (removed) {
       return;
@@ -47,8 +49,52 @@ public abstract class Entity {
    *
    * @return the body box
    */
+  @Override
   public final Aabb bodyBox() {
     return bodyBox;
+  }
+
+  /**
+   * Tells if entity stops movement. False by default; walls, closed doors an chests return true.
+   *
+   * @return true if nothing can move throught is entity
+   */
+  @Override
+  public boolean blocks() {
+    return false;
+  }
+
+  /**
+   * Called when other entity's bodybox ovrelaps this one. Does nothing by default; trapsand pickups
+   * override it.
+   *
+   * @param other the enity that touch this one
+   * @throws NullPointerException if other is null
+   */
+  @Override
+  public void onContact(Entity other) {
+    Objects.requireNonNull(other, "other");
+  }
+
+  /**
+   * Returns the position of this entity: bottom-left corner of its bodybox.
+   *
+   * @return a new vetor, safe to change
+   */
+  public final Vector2 position() {
+    return new Vector2(bodyBox.x(), bodyBox.y());
+  }
+
+  /**
+   * Moves this entity so that the bottom-left corner its bodybox is at the given position. The size
+   * of the boxe does not change.
+   *
+   * @param position the new bottom-left corner
+   * @throws NullPointerException if positionis null
+   */
+  protected final void moveTo(Vector2 position) {
+    Objects.requireNonNull(position, "position");
+    bodyBox = new Aabb(position.x, position.y, bodyBox.width(), bodyBox.height());
   }
 
   /** Marks this entity for removal. The world drops it at the end of the tick. */

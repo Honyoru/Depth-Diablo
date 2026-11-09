@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.badlogic.gdx.math.Vector2;
 import org.junit.jupiter.api.Test;
 
 class EntityTest {
@@ -70,6 +71,52 @@ class EntityTest {
     entity.update(1);
 
     assertEquals(0, entity.updates);
+  }
+
+  @Test
+  void should_not_block_movement_when_created() {
+    CountingEntity entity = new CountingEntity(BOX);
+
+    boolean blocks = entity.blocks();
+
+    assertFalse(blocks);
+  }
+
+  @Test
+  void should_change_nothing_when_touched_by_default() {
+    CountingEntity entity = new CountingEntity(BOX);
+    CountingEntity other = new CountingEntity(BOX);
+
+    entity.onContact(other);
+
+    assertEquals(BOX, entity.bodyBox());
+    assertFalse(entity.isRemoved());
+  }
+
+  @Test
+  void should_reject_a_missing_entity_when_touched() {
+    CountingEntity entity = new CountingEntity(BOX);
+    CountingEntity other = null;
+
+    assertThrows(NullPointerException.class, () -> entity.onContact(other));
+  }
+
+  @Test
+  void should_report_the_bottom_left_corner_as_its_position() {
+    CountingEntity entity = new CountingEntity(new Aabb(3, 4, 10, 10));
+
+    Vector2 position = entity.position();
+
+    assertEquals(new Vector2(3, 4), position);
+  }
+
+  @Test
+  void should_keep_this_size_when_moved() {
+    CountingEntity entity = new CountingEntity(BOX);
+
+    entity.moveTo(new Vector2(20, 30));
+
+    assertEquals(new Aabb(20, 30, 10, 10), entity.bodyBox());
   }
 
   /** Hand-written fake (Q117): counts the calls to its hook. */
