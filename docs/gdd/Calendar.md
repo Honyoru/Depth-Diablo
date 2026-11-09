@@ -43,6 +43,7 @@ Loïc's day-by-day plan, for the team to validate. Two points conflict with earl
 | Mon 9 Nov | A | AABB collisions + JSON DataRegistry / EntityFactory | To do |
 | Mon 9 Nov | B | Player + 1 weapon + potion | To do |
 | Mon 9 Nov | C | Arena map (Tiled) + HUD | To do |
+| Mon 9 Nov | B | Entity implements Updatable + Collidable: `blocks()`, `onContact()`, `position()`, `moveTo()`, 12 tests in EntityTest (Loïc, PR #21) | Done |
 | Tue 10 Nov | A | Looping enemy waves | To do |
 | Tue 10 → Wed 11 Nov | B | 4 Arena enemies + gdx-ai FSM | To do |
 | Tue 10 Nov | C | Title screen + game over | To do |
@@ -71,7 +72,7 @@ Proposal for the team to confirm: everyone does a bit of everything, so each per
 | Day | Ange | Loïc | Romain |
 | --- | --- | --- | --- |
 | Fri 6 Nov | A · Fixed-step loop, World, EventBus | B · Entity / Character hierarchy, damage formula | C · Sprites + tileset (placeholders) |
-| Mon 9 Nov | B · Player + 1 weapon + potion | C · Arena map (Tiled) + HUD | A · AABB collisions + JSON DataRegistry / EntityFactory |
+| Mon 9 Nov | B · Player + 1 weapon + potion | C · Arena map (Tiled) + HUD (not started; did B · Updatable + Collidable on Entity instead, PR #21) | A · AABB collisions + JSON DataRegistry / EntityFactory |
 | Tue 10 Nov | C · Title screen + game over | A · Looping enemy waves | B · 4 Arena enemies + gdx-ai FSM (day 1 of 2) |
 | Wed 11 Nov | A · F1 X-ray view | C · Basic sounds + integration | B · 4 Arena enemies + gdx-ai FSM (day 2 of 2) |
 | Thu 12 Nov | All | All | All |
