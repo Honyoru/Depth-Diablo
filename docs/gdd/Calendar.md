@@ -37,7 +37,7 @@ Loïc's day-by-day plan, for the team to validate. Two points conflict with earl
 | Thu 5 Nov | A | Gradle, CI and ArchUnit setup | Done |
 | Thu 5 Nov | B | POC rule tests, written before the code | Tests written on test/poc-rules (red until the team codes the classes) |
 | Thu 5 Nov | C | UML in draw.io | Done |
-| Fri 6 Nov | A | Fixed-step loop, World, EventBus | To do |
+| Fri 6 Nov | A | Fixed-step loop, World, EventBus | In progress: fixed-step loop done, World and EventBus to do |
 | Fri 6 Nov | B | Entity / Character hierarchy, damage formula | Done |
 | Fri 6 Nov | C | Sprites + tileset (placeholders) | Done |
 | Mon 9 Nov | A | AABB collisions + JSON DataRegistry / EntityFactory | To do |
