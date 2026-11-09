@@ -6,7 +6,7 @@ import com.epitech.depthdiablo.entity.Entity;
  * Something that happened in the game. Sealed, so a switch over events is checked by the compiler.
  * The event list is still open (Q24).
  */
-public sealed interface GameEvent permits DamageDealt, EntityDied, ItemPickedUp, RoomCleared {
+public sealed interface GameEvent permits DamageDealt, EntityDied {
   /**
    * Returns the emitter, where the event laser (F2) starts its line.
    *
