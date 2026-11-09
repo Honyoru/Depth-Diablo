@@ -5,10 +5,10 @@ import java.util.Objects;
 
 /**
  * Base class for player and enemy entities, with shared health and damage handling. The final
- * {@link #update(long)} method performs common per-tick bookkeeping before delegating
+ * {@link #onUpdate(long)} method performs common per-tick bookkeeping before delegating
  * character-specific behavior to {@link #think(long)}.
  */
-public abstract class Character implements Damageable {
+public abstract class Character extends Entity implements Damageable {
   private final int maxHp;
   private int hp;
   private final Aabb hurtbox;
@@ -16,17 +16,20 @@ public abstract class Character implements Damageable {
   private int invincibilityTicksLeft;
 
   /**
-   * Creates a character with the specified health, hurtbox, and post-hit invincibility duration.
+   * Creates a character with the specified body box, health, hurtbox, and post-hit invincibility
+   * duration.
    *
+   * @param bodyBox the box the character occupies in the world; must not be {@code null}
    * @param maxHp the character's maximum health; must be at least 1
    * @param hurtbox the character's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit the number of invincibility ticks granted after taking
    *     damage; must not be negative
    * @throws IllegalArgumentException if {@code maxHp} is less than 1 or {@code
    *     invincibilityTicksAfterHit} is negative
-   * @throws NullPointerException if {@code hurtbox} is {@code null}
+   * @throws NullPointerException if {@code bodyBox} or {@code hurtbox} is {@code null}
    */
-  protected Character(int maxHp, Aabb hurtbox, int invincibilityTicksAfterHit) {
+  protected Character(Aabb bodyBox, int maxHp, Aabb hurtbox, int invincibilityTicksAfterHit) {
+    super(bodyBox);
     if (maxHp < 1) {
       throw new IllegalArgumentException("maxHp must be at least 1");
     }
@@ -40,7 +43,8 @@ public abstract class Character implements Damageable {
   }
 
   /** Updates invincibility bookkeeping and performs character-specific behavior for the tick. */
-  public final void update(long tick) {
+  @Override
+  protected final void onUpdate(long tick) {
     if (invincibilityTicksLeft > 0) {
       invincibilityTicksLeft--;
     }

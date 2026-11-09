@@ -5,6 +5,7 @@ import com.epitech.depthdiablo.entity.Character;
 
 /** Test Data Builder for characters (Q116): {@code aCharacter().withHp(10).build()}. */
 public final class CharacterBuilder {
+  private Aabb bodyBox = new Aabb(0, 0, 16, 16);
   private int maxHp = 10;
   private Aabb hurtbox = new Aabb(0, 0, 16, 16);
   private int invincibilityTicksAfterHit;
@@ -12,12 +13,24 @@ public final class CharacterBuilder {
   private CharacterBuilder() {}
 
   /**
-   * Starts a character with 10 HP, a 16 x 16 hurtbox at the origin and no i-frames after a hit.
+   * Starts a character with 10 HP, a 16 x 16 body box and hurtbox at the origin and no i-frames
+   * after a hit.
    *
    * @return a new builder
    */
   public static CharacterBuilder aCharacter() {
     return new CharacterBuilder();
+  }
+
+  /**
+   * Sets the box the character occupies in the world.
+   *
+   * @param box the body box
+   * @return this builder
+   */
+  public CharacterBuilder withBodyBox(Aabb box) {
+    this.bodyBox = box;
+    return this;
   }
 
   /**
@@ -59,13 +72,13 @@ public final class CharacterBuilder {
    * @return a character that does nothing on its own
    */
   public Character build() {
-    return new IdleCharacter(maxHp, hurtbox, invincibilityTicksAfterHit);
+    return new IdleCharacter(bodyBox, maxHp, hurtbox, invincibilityTicksAfterHit);
   }
 
   /** Hand-written fake (Q117): a character with no behaviour of its own. */
   private static final class IdleCharacter extends Character {
-    IdleCharacter(int maxHp, Aabb hurtbox, int invincibilityTicksAfterHit) {
-      super(maxHp, hurtbox, invincibilityTicksAfterHit);
+    IdleCharacter(Aabb bodyBox, int maxHp, Aabb hurtbox, int invincibilityTicksAfterHit) {
+      super(bodyBox, maxHp, hurtbox, invincibilityTicksAfterHit);
     }
 
     @Override

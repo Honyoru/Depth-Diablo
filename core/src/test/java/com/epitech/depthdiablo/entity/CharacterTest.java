@@ -155,6 +155,26 @@ class CharacterTest {
   }
 
   @Test
+  void should_not_call_think_when_the_character_was_removed() {
+    CountingCharacter character = new CountingCharacter();
+    character.remove();
+
+    character.update(1);
+
+    assertEquals(0, character.thinks);
+  }
+
+  @Test
+  void should_return_the_body_box_it_was_built_with() {
+    Aabb box = new Aabb(4, 8, 16, 16);
+    Character character = aCharacter().withBodyBox(box).build();
+
+    Aabb bodyBox = character.bodyBox();
+
+    assertSame(box, bodyBox);
+  }
+
+  @Test
   void should_return_the_hurtbox_it_was_built_with() {
     Aabb box = new Aabb(4, 8, 16, 16);
     Character character = aCharacter().withHurtbox(box).build();
@@ -195,6 +215,11 @@ class CharacterTest {
   }
 
   @Test
+  void should_reject_a_missing_body_box() {
+    assertThrows(NullPointerException.class, () -> aCharacter().withBodyBox(null).build());
+  }
+
+  @Test
   void should_reject_a_missing_hurtbox() {
     assertThrows(NullPointerException.class, () -> aCharacter().withHurtbox(null).build());
   }
@@ -205,7 +230,7 @@ class CharacterTest {
     private long lastTick;
 
     CountingCharacter() {
-      super(10, new Aabb(0, 0, 16, 16), 0);
+      super(new Aabb(0, 0, 16, 16), 10, new Aabb(0, 0, 16, 16), 0);
     }
 
     @Override
