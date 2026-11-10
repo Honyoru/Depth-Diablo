@@ -11,33 +11,52 @@ import java.util.Objects;
 public abstract class Character extends Entity implements Damageable {
   private final int maxHp;
   private int hp;
+  private final int attack;
+  private final int resistance;
   private final Aabb hurtbox;
   private final int invincibilityTicksAfterHit;
   private int invincibilityTicksLeft;
 
   /**
-   * Creates a character with the specified body box, health, hurtbox, and post-hit invincibility
-   * duration.
+   * Creates a character with the specified body box, health, combat stats, hurtbox, and post-hit
+   * invincibility duration.
    *
    * @param bodyBox the box the character occupies in the world; must not be {@code null}
    * @param maxHp the character's maximum health; must be at least 1
+   * @param attack the base damage of its hits in the damage formula (GDD 1.6); must not be negative
+   * @param resistance the divisor of the damage it takes in the damage formula (GDD 1.6); must be
+   *     at least 1
    * @param hurtbox the character's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit the number of invincibility ticks granted after taking
    *     damage; must not be negative
-   * @throws IllegalArgumentException if {@code maxHp} is less than 1 or {@code
-   *     invincibilityTicksAfterHit} is negative
+   * @throws IllegalArgumentException if {@code maxHp} is less than 1, {@code attack} is negative,
+   *     {@code resistance} is less than 1 or {@code invincibilityTicksAfterHit} is negative
    * @throws NullPointerException if {@code bodyBox} or {@code hurtbox} is {@code null}
    */
-  protected Character(Aabb bodyBox, int maxHp, Aabb hurtbox, int invincibilityTicksAfterHit) {
+  protected Character(
+      Aabb bodyBox,
+      int maxHp,
+      int attack,
+      int resistance,
+      Aabb hurtbox,
+      int invincibilityTicksAfterHit) {
     super(bodyBox);
     if (maxHp < 1) {
       throw new IllegalArgumentException("maxHp must be at least 1");
+    }
+    if (attack < 0) {
+      throw new IllegalArgumentException("attack must not be negative");
+    }
+    if (resistance < 1) {
+      throw new IllegalArgumentException("resistance must be at least 1");
     }
     if (invincibilityTicksAfterHit < 0) {
       throw new IllegalArgumentException("invincibilityTicksAfterHit must not be negative");
     }
     this.maxHp = maxHp;
     this.hp = maxHp;
+    this.attack = attack;
+    this.resistance = resistance;
     this.hurtbox = Objects.requireNonNull(hurtbox, "hurtbox");
     this.invincibilityTicksAfterHit = invincibilityTicksAfterHit;
   }
@@ -108,6 +127,25 @@ public abstract class Character extends Entity implements Damageable {
   /** Returns the character's current health. */
   public int hp() {
     return hp;
+  }
+
+  /**
+   * Returns the base damage of this character's hits, used as the attack in the damage formula.
+   *
+   * @return the attack, 0 or more
+   */
+  public int attack() {
+    return attack;
+  }
+
+  /**
+   * Returns the resistance this character opposes to hits, used as the divisor in the damage
+   * formula.
+   *
+   * @return the resistance, at least 1
+   */
+  public int resistance() {
+    return resistance;
   }
 
   /** Returns the character's maximum health. */

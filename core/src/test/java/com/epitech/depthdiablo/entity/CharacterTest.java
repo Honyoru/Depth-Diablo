@@ -261,13 +261,38 @@ class CharacterTest {
     assertThrows(IllegalArgumentException.class, () -> character.heal(0));
   }
 
+  @Test
+  void should_keep_its_attack_and_resistance_when_created() {
+    Character character = aCharacter().withAttack(7).withResistance(3).build();
+
+    assertEquals(7, character.attack());
+    assertEquals(3, character.resistance());
+  }
+
+  @Test
+  void should_accept_an_attack_of_0() {
+    Character character = aCharacter().withAttack(0).build();
+
+    assertEquals(0, character.attack());
+  }
+
+  @Test
+  void should_throw_when_the_attack_is_negative() {
+    assertThrows(IllegalArgumentException.class, () -> aCharacter().withAttack(-1).build());
+  }
+
+  @Test
+  void should_throw_when_the_resistance_is_below_1() {
+    assertThrows(IllegalArgumentException.class, () -> aCharacter().withResistance(0).build());
+  }
+
   /** Hand-written fake (Q117): counts the calls to think(). */
   private static final class CountingCharacter extends Character {
     private int thinks;
     private long lastTick;
 
     CountingCharacter() {
-      super(new Aabb(0, 0, 16, 16), 10, new Aabb(0, 0, 16, 16), 0);
+      super(new Aabb(0, 0, 16, 16), 10, 1, 1, new Aabb(0, 0, 16, 16), 0);
     }
 
     @Override
