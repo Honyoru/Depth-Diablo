@@ -322,15 +322,15 @@ Every rule below becomes a unit test, written first (Q121), in the rules/ test p
 
 ### 1.6 Statistics
 
-**Damage formula (decided, 4 Nov; Q26):** `damage = max(1, (attack + bonus) × buff / resistance)`, then `hp -= damage`. No crits, no chance-based dodge and no block (Q27); the dodge roll (Q40) is an input action, not a stat. Player stats: HP, Attack, Defense, Speed, Attack Speed, Luck (Q44); enemies use the same stat model (Q45). Testable rules (1.4.1): damage is never below 1; resistance is never 0. Enemy hits: see below.
+**Damage formula (decided, 4 Nov; Q26; defense side added by Romain, 10 Nov):** `damage = max(1, ((attack + attack bonus) × attack buff) / ((resistance + resistance bonus) × resistance buff))`, rounded down, then `hp -= damage`. The bonuses are flat (weapon on the attack side, armor on the resistance side); the buffs are multipliers. The resistance bonus is never negative and the resistance buff is always above 0, so the divisor is never 0. No crits, no chance-based dodge and no block (Q27); the dodge roll (Q40) is an input action, not a stat. Player stats: HP, Attack, Defense, Speed, Attack Speed, Luck (Q44); enemies use the same stat model (Q45). Testable rules (1.4.1): damage is never below 1; resistance is never 0. Enemy hits: see below.
 
-Decided (Ange, 4 Nov): enemies hit the player with the same formula; enemies have no buffs, so buff = 1 on their side. The floor is not in the formula: the EnemyFactory multiplies an enemy's base stats by floorMultiplier when it spawns the enemy (Factory, 1.3.1), so deeper enemies hit harder and take longer to kill.
+Decided (Ange, 4 Nov): enemies hit the player with the same formula; enemies have no buffs or bonuses, so bonus = 0 and buff = 1 on their side. The floor is not in the formula: the EnemyFactory multiplies an enemy's base stats by floorMultiplier when it spawns the enemy (Factory, 1.3.1), so deeper enemies hit harder and take longer to kill.
 
 | Stat | What it does |
 | --- | --- |
 | HP | health; 0 = death |
-| Attack | base damage, plus the weapon |
-| Defense | the "resistance" in the damage formula (proposal) |
+| Attack | base damage; the weapon adds the attack bonus |
+| Defense | the "resistance" in the damage formula; armor adds the resistance bonus |
 | Speed | movement speed |
 | Attack Speed | attacks per second, from the weapon |
 | Luck | TBD: proposal, drop chances and roulette odds |

@@ -44,7 +44,7 @@ Status note (Ange, 4 Nov): the team reviewed the whole draft orally, and every "
 
 ## 5. Combat and stats
 
-- Damage formula (Q26): `damage = max(1, (attack + bonus) x buff / resistance)`, then `hp -= damage`. Resistance is never 0. Enemies use the same formula with buff = 1.
+- Damage formula (Q26; defense side added 10 Nov): `damage = max(1, ((attack + attack bonus) x attack buff) / ((resistance + resistance bonus) x resistance buff))`, rounded down, then `hp -= damage`. Resistance is never 0: base resistance >= 1, resistance bonus >= 0, resistance buff > 0. Enemies use the same formula with bonus = 0 and buff = 1.
 - The floor is not in the formula: the EnemyFactory multiplies an enemy's base stats by `floorMultiplier(n)` at spawn.
 - No crits, no chance-based dodge, no block (Q27).
 - Invincibility frames after a hit, 0.3 to 0.8 s placeholder (Q28). Knockback on every hit, for feedback (Q29).

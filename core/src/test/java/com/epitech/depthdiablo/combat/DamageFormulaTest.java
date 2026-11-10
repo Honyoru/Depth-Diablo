@@ -10,7 +10,10 @@ import net.jqwik.api.constraints.DoubleRange;
 import net.jqwik.api.constraints.IntRange;
 import org.junit.jupiter.api.Test;
 
-/** GDD 1.6, Q26: damage = max(1, floor((attack + bonus) x buff / resistance)). */
+/**
+ * GDD 1.6, Q26: damage = max(1, floor(((attack + attackBonus) x attackBuff) / ((resistance +
+ * resistanceBonus) x resistanceBuff))).
+ */
 class DamageFormulaTest {
 
   @Test
@@ -20,7 +23,7 @@ class DamageFormulaTest {
     double buff = 1.5;
     int resistance = 3;
 
-    int damage = DamageFormula.compute(attack, bonus, buff, resistance);
+    int damage = DamageFormula.compute(attack, bonus, buff, resistance, 0, 1.0);
 
     assertEquals(6, damage);
   }
@@ -30,7 +33,7 @@ class DamageFormulaTest {
     int attack = 10;
     int resistance = 3;
 
-    int damage = DamageFormula.compute(attack, 0, 1.0, resistance);
+    int damage = DamageFormula.compute(attack, 0, 1.0, resistance, 0, 1.0);
 
     assertEquals(3, damage);
   }
@@ -40,7 +43,7 @@ class DamageFormulaTest {
     int attack = 1;
     int resistance = 100;
 
-    int damage = DamageFormula.compute(attack, 0, 1.0, resistance);
+    int damage = DamageFormula.compute(attack, 0, 1.0, resistance, 0, 1.0);
 
     assertEquals(1, damage);
   }
@@ -49,7 +52,7 @@ class DamageFormulaTest {
   void should_deal_1_damage_when_the_buff_is_0() {
     double buff = 0.0;
 
-    int damage = DamageFormula.compute(50, 10, buff, 1);
+    int damage = DamageFormula.compute(50, 10, buff, 1, 0, 1.0);
 
     assertEquals(1, damage);
   }
@@ -61,7 +64,7 @@ class DamageFormulaTest {
       @ForAll @DoubleRange(min = 0.0, max = 10.0) double buff,
       @ForAll @IntRange(min = 1, max = 1000) int resistance) {
 
-    int damage = DamageFormula.compute(attack, bonus, buff, resistance);
+    int damage = DamageFormula.compute(attack, bonus, buff, resistance, 0, 1.0);
 
     assertTrue(damage >= 1);
   }
@@ -73,8 +76,8 @@ class DamageFormulaTest {
       @ForAll @DoubleRange(min = 0.0, max = 10.0) double buff,
       @ForAll @IntRange(min = 1, max = 1000) int resistance) {
 
-    int weaker = DamageFormula.compute(attack, 0, buff, resistance);
-    int stronger = DamageFormula.compute(attack + extra, 0, buff, resistance);
+    int weaker = DamageFormula.compute(attack, 0, buff, resistance, 0, 1.0);
+    int stronger = DamageFormula.compute(attack + extra, 0, buff, resistance, 0, 1.0);
 
     assertTrue(stronger >= weaker);
   }
@@ -84,7 +87,7 @@ class DamageFormulaTest {
     int resistance = 0;
 
     assertThrows(
-        IllegalArgumentException.class, () -> DamageFormula.compute(5, 0, 1.0, resistance));
+        IllegalArgumentException.class, () -> DamageFormula.compute(5, 0, 1.0, resistance, 0, 1.0));
   }
 
   @Test
@@ -92,27 +95,80 @@ class DamageFormulaTest {
     int resistance = -1;
 
     assertThrows(
-        IllegalArgumentException.class, () -> DamageFormula.compute(5, 0, 1.0, resistance));
+        IllegalArgumentException.class, () -> DamageFormula.compute(5, 0, 1.0, resistance, 0, 1.0));
   }
 
   @Test
   void should_reject_a_negative_buff() {
     double buff = -0.5;
 
-    assertThrows(IllegalArgumentException.class, () -> DamageFormula.compute(5, 0, buff, 1));
+    assertThrows(
+        IllegalArgumentException.class, () -> DamageFormula.compute(5, 0, buff, 1, 0, 1.0));
   }
 
   @Test
   void should_reject_a_buff_that_is_not_a_number() {
     double buff = Double.NaN;
 
-    assertThrows(IllegalArgumentException.class, () -> DamageFormula.compute(5, 0, buff, 1));
+    assertThrows(
+        IllegalArgumentException.class, () -> DamageFormula.compute(5, 0, buff, 1, 0, 1.0));
   }
 
   @Test
   void should_reject_an_infinite_buff() {
     double buff = Double.POSITIVE_INFINITY;
 
-    assertThrows(IllegalArgumentException.class, () -> DamageFormula.compute(5, 0, buff, 1));
+    assertThrows(
+        IllegalArgumentException.class, () -> DamageFormula.compute(5, 0, buff, 1, 0, 1.0));
+  }
+
+  @Test
+  void should_apply_the_resistance_bonus_and_buff() {
+    int resistanceBonus = 1;
+    double resistanceBuff = 2.0;
+
+    int damage = DamageFormula.compute(10, 2, 1.5, 2, resistanceBonus, resistanceBuff);
+
+    assertEquals(3, damage);
+  }
+
+  @Property
+  void should_never_deal_more_damage_when_the_resistance_bonus_is_higher(
+      @ForAll @IntRange(min = 0, max = 1000) int attack,
+      @ForAll @IntRange(min = 1, max = 1000) int resistance,
+      @ForAll @IntRange(min = 0, max = 100) int resistanceBonus,
+      @ForAll @IntRange(min = 1, max = 100) int extra) {
+
+    int weaker = DamageFormula.compute(attack, 0, 1.0, resistance, resistanceBonus + extra, 1.0);
+    int stronger = DamageFormula.compute(attack, 0, 1.0, resistance, resistanceBonus, 1.0);
+
+    assertTrue(weaker <= stronger);
+  }
+
+  @Test
+  void should_reject_a_negative_resistance_bonus() {
+    int resistanceBonus = -1;
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> DamageFormula.compute(5, 0, 1.0, 1, resistanceBonus, 1.0));
+  }
+
+  @Test
+  void should_reject_a_resistance_buff_of_0() {
+    double resistanceBuff = 0.0;
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> DamageFormula.compute(5, 0, 1.0, 1, 0, resistanceBuff));
+  }
+
+  @Test
+  void should_reject_an_infinite_resistance_buff() {
+    double resistanceBuff = Double.POSITIVE_INFINITY;
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> DamageFormula.compute(5, 0, 1.0, 1, 0, resistanceBuff));
   }
 }
