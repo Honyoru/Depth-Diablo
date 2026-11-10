@@ -3,6 +3,9 @@ package com.epitech.depthdiablo.entity;
 /**
  * Gives a value to each {@link Stat}. A character's base stats are the innermost source; passive
  * items wrap it to change one or more stats (Decorator, GDD 1.3.1).
+ *
+ * <p>Only {@link BaseStats} checks its values: a wrapper must keep MAX_HP and DEFENSE at 1 or more,
+ * the other stats at 0 or more, and every value finite.
  */
 @FunctionalInterface
 public interface StatSource {

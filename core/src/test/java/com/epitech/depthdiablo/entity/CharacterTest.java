@@ -199,13 +199,6 @@ class CharacterTest {
   }
 
   @Test
-  void should_reject_a_max_hp_below_1() {
-    int hp = 0;
-
-    assertThrows(IllegalArgumentException.class, () -> aCharacter().withHp(hp).build());
-  }
-
-  @Test
   void should_reject_negative_i_frames() {
     int ticks = -1;
 
@@ -262,11 +255,11 @@ class CharacterTest {
   }
 
   @Test
-  void should_keep_its_attack_and_resistance_when_created() {
-    Character character = aCharacter().withAttack(7).withResistance(3).build();
+  void should_keep_its_attack_and_defense_when_created() {
+    Character character = aCharacter().withAttack(7).withDefense(3).build();
 
     assertEquals(7, character.attack());
-    assertEquals(3, character.resistance());
+    assertEquals(3, character.defense());
   }
 
   @Test
@@ -274,16 +267,6 @@ class CharacterTest {
     Character character = aCharacter().withAttack(0).build();
 
     assertEquals(0, character.attack());
-  }
-
-  @Test
-  void should_throw_when_the_attack_is_negative() {
-    assertThrows(IllegalArgumentException.class, () -> aCharacter().withAttack(-1).build());
-  }
-
-  @Test
-  void should_throw_when_the_resistance_is_below_1() {
-    assertThrows(IllegalArgumentException.class, () -> aCharacter().withResistance(0).build());
   }
 
   @Test
@@ -303,38 +286,19 @@ class CharacterTest {
   }
 
   @Test
-  void should_throw_when_the_speed_is_negative() {
-    assertThrows(IllegalArgumentException.class, () -> aCharacter().withSpeed(-1f).build());
+  void should_round_down_its_int_stats_when_the_source_gives_a_fraction() {
+    StatSource stats = stat -> 3.7f;
+
+    Character character = new CountingCharacter(stats);
+
+    assertEquals(3, character.maxHp());
+    assertEquals(3, character.attack());
+    assertEquals(3, character.defense());
   }
 
   @Test
-  void should_throw_when_the_speed_is_not_a_number() {
-    assertThrows(IllegalArgumentException.class, () -> aCharacter().withSpeed(Float.NaN).build());
-  }
-
-  @Test
-  void should_throw_when_the_speed_is_infinite() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> aCharacter().withSpeed(Float.POSITIVE_INFINITY).build());
-  }
-
-  @Test
-  void should_throw_when_the_attack_speed_is_negative() {
-    assertThrows(IllegalArgumentException.class, () -> aCharacter().withAttackSpeed(-1f).build());
-  }
-
-  @Test
-  void should_throw_when_the_attack_speed_is_not_a_number() {
-    assertThrows(
-        IllegalArgumentException.class, () -> aCharacter().withAttackSpeed(Float.NaN).build());
-  }
-
-  @Test
-  void should_throw_when_the_attack_speed_is_infinite() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> aCharacter().withAttackSpeed(Float.POSITIVE_INFINITY).build());
+  void should_throw_when_the_stat_source_is_null() {
+    assertThrows(NullPointerException.class, () -> new CountingCharacter(null));
   }
 
   /** Hand-written fake (Q117): counts the calls to think(). */
@@ -343,7 +307,11 @@ class CharacterTest {
     private long lastTick;
 
     CountingCharacter() {
-      super(new Aabb(0, 0, 16, 16), 10, 1, 1, 1f, 1f, new Aabb(0, 0, 16, 16), 0);
+      this(stat -> stat == Stat.MAX_HP ? 10f : 1f);
+    }
+
+    CountingCharacter(StatSource stats) {
+      super(new Aabb(0, 0, 16, 16), stats, new Aabb(0, 0, 16, 16), 0);
     }
 
     @Override

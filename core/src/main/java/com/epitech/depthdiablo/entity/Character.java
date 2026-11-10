@@ -9,65 +9,34 @@ import java.util.Objects;
  * character-specific behavior to {@link #think(long)}.
  */
 public abstract class Character extends Entity implements Damageable {
-  private final int maxHp;
+  private final StatSource stats;
   private int hp;
-  private final int attack;
-  private final int resistance;
-  private final float speed;
-  private final float attackSpeed;
   private final Aabb hurtbox;
   private final int invincibilityTicksAfterHit;
   private int invincibilityTicksLeft;
 
   /**
-   * Creates a character with the specified body box, health, combat stats, hurtbox, and post-hit
-   * invincibility duration.
+   * Creates a character with the specified body box, stats, hurtbox, and post-hit invincibility
+   * duration. It starts with full HP.
    *
    * @param bodyBox the box the character occupies in the world; must not be {@code null}
-   * @param maxHp the character's maximum health; must be at least 1
-   * @param attack the base damage of its hits in the damage formula (GDD 1.6); must not be negative
-   * @param resistance the divisor of the damage it takes in the damage formula (GDD 1.6); must be
-   *     at least 1
-   * @param speed the movement speed in pixels per second (GDD 1.6); 0 or more, finite
-   * @param attackSpeed the attacks per second (GDD 1.6); 0 or more, finite
+   * @param stats where its stats come from (GDD 1.6), usually {@link BaseStats}, which checks the
+   *     values; must not be {@code null}
    * @param hurtbox the character's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit the number of invincibility ticks granted after taking
    *     damage; must not be negative
-   * @throws IllegalArgumentException if {@code maxHp} is less than 1, {@code attack} is negative,
-   *     {@code resistance} is less than 1, {@code speed} or {@code attackSpeed} is negative or not
-   *     a finite number, or {@code invincibilityTicksAfterHit} is negative
-   * @throws NullPointerException if {@code bodyBox} or {@code hurtbox} is {@code null}
+   * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} is negative
+   * @throws NullPointerException if {@code bodyBox}, {@code stats} or {@code hurtbox} is {@code
+   *     null}
    */
   protected Character(
-      Aabb bodyBox,
-      int maxHp,
-      int attack,
-      int resistance,
-      float speed,
-      float attackSpeed,
-      Aabb hurtbox,
-      int invincibilityTicksAfterHit) {
+      Aabb bodyBox, StatSource stats, Aabb hurtbox, int invincibilityTicksAfterHit) {
     super(bodyBox);
-    if (maxHp < 1) {
-      throw new IllegalArgumentException("maxHp must be at least 1");
-    }
-    if (attack < 0) {
-      throw new IllegalArgumentException("attack must not be negative");
-    }
-    if (resistance < 1) {
-      throw new IllegalArgumentException("resistance must be at least 1");
-    }
-    requireFiniteAndNotNegative(speed, "speed");
-    requireFiniteAndNotNegative(attackSpeed, "attackSpeed");
     if (invincibilityTicksAfterHit < 0) {
       throw new IllegalArgumentException("invincibilityTicksAfterHit must not be negative");
     }
-    this.maxHp = maxHp;
-    this.hp = maxHp;
-    this.attack = attack;
-    this.resistance = resistance;
-    this.speed = speed;
-    this.attackSpeed = attackSpeed;
+    this.stats = Objects.requireNonNull(stats, "stats");
+    this.hp = (int) stats.get(Stat.MAX_HP);
     this.hurtbox = Objects.requireNonNull(hurtbox, "hurtbox");
     this.invincibilityTicksAfterHit = invincibilityTicksAfterHit;
   }
@@ -114,7 +83,7 @@ public abstract class Character extends Entity implements Damageable {
     if (isDead()) {
       return;
     }
-    hp = Math.min(maxHp, hp + amount);
+    hp = Math.min(maxHp(), hp + amount);
   }
 
   @Override
@@ -143,48 +112,46 @@ public abstract class Character extends Entity implements Damageable {
   /**
    * Returns the base damage of this character's hits, used as the attack in the damage formula.
    *
-   * @return the attack, 0 or more
+   * @return the attack, rounded down
    */
   public int attack() {
-    return attack;
+    return (int) stats.get(Stat.ATTACK);
   }
 
   /**
-   * Returns the resistance this character opposes to hits, used as the divisor in the damage
-   * formula.
+   * Returns the defense this character opposes to hits, used as the resistance (the divisor) in the
+   * damage formula.
    *
-   * @return the resistance, at least 1
+   * @return the defense, rounded down
    */
-  public int resistance() {
-    return resistance;
+  public int defense() {
+    return (int) stats.get(Stat.DEFENSE);
   }
 
   /**
    * Returns how fast this character moves.
    *
-   * @return the speed in pixels per second, 0 or more
+   * @return the speed in pixels per second
    */
   public float speed() {
-    return speed;
+    return stats.get(Stat.SPEED);
   }
 
   /**
    * Returns how often this character can attack. The weapon and passive items will change it later.
    *
-   * @return the attacks per second, 0 or more
+   * @return the attacks per second
    */
   public float attackSpeed() {
-    return attackSpeed;
+    return stats.get(Stat.ATTACK_SPEED);
   }
 
-  /** Returns the character's maximum health. */
+  /**
+   * Returns the character's maximum health.
+   *
+   * @return the maximum HP, rounded down
+   */
   public int maxHp() {
-    return maxHp;
-  }
-
-  private static void requireFiniteAndNotNegative(float value, String name) {
-    if (value < 0 || Float.isNaN(value) || Float.isInfinite(value)) {
-      throw new IllegalArgumentException(name + " must be a finite number of 0 or more: " + value);
-    }
+    return (int) stats.get(Stat.MAX_HP);
   }
 }

@@ -1,24 +1,32 @@
 package com.epitech.depthdiablo.testdata;
 
 import com.epitech.depthdiablo.entity.Aabb;
+import com.epitech.depthdiablo.entity.BaseStats;
 import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.Stat;
+import com.epitech.depthdiablo.entity.StatSource;
+import java.util.EnumMap;
+import java.util.Map;
 
 /** Test Data Builder for characters (Q116): {@code aCharacter().withHp(10).build()}. */
 public final class CharacterBuilder {
   private Aabb bodyBox = new Aabb(0, 0, 16, 16);
-  private int maxHp = 10;
-  private int attack = 1;
-  private int resistance = 1;
-  private float speed = 1f;
-  private float attackSpeed = 1f;
+  private final Map<Stat, Float> stats = new EnumMap<>(Stat.class);
   private Aabb hurtbox = new Aabb(0, 0, 16, 16);
   private int invincibilityTicksAfterHit;
 
-  private CharacterBuilder() {}
+  private CharacterBuilder() {
+    stats.put(Stat.MAX_HP, 10f);
+    stats.put(Stat.ATTACK, 1f);
+    stats.put(Stat.DEFENSE, 1f);
+    stats.put(Stat.SPEED, 1f);
+    stats.put(Stat.ATTACK_SPEED, 1f);
+    stats.put(Stat.LUCK, 0f);
+  }
 
   /**
-   * Starts a character with 10 HP, 1 attack, 1 resistance, a speed and attack speed of 1, a 16 x 16
-   * body box and hurtbox at the origin and no i-frames after a hit.
+   * Starts a character with 10 HP, 1 attack, 1 defense, a speed and attack speed of 1, 0 luck, a 16
+   * x 16 body box and hurtbox at the origin and no i-frames after a hit.
    *
    * @return a new builder
    */
@@ -44,7 +52,7 @@ public final class CharacterBuilder {
    * @return this builder
    */
   public CharacterBuilder withHp(int hp) {
-    this.maxHp = hp;
+    stats.put(Stat.MAX_HP, (float) hp);
     return this;
   }
 
@@ -55,18 +63,18 @@ public final class CharacterBuilder {
    * @return this builder
    */
   public CharacterBuilder withAttack(int value) {
-    this.attack = value;
+    stats.put(Stat.ATTACK, (float) value);
     return this;
   }
 
   /**
-   * Sets the resistance.
+   * Sets the defense.
    *
-   * @param value the resistance
+   * @param value the defense
    * @return this builder
    */
-  public CharacterBuilder withResistance(int value) {
-    this.resistance = value;
+  public CharacterBuilder withDefense(int value) {
+    stats.put(Stat.DEFENSE, (float) value);
     return this;
   }
 
@@ -77,7 +85,7 @@ public final class CharacterBuilder {
    * @return this builder
    */
   public CharacterBuilder withSpeed(float value) {
-    this.speed = value;
+    stats.put(Stat.SPEED, value);
     return this;
   }
 
@@ -88,7 +96,7 @@ public final class CharacterBuilder {
    * @return this builder
    */
   public CharacterBuilder withAttackSpeed(float value) {
-    this.attackSpeed = value;
+    stats.put(Stat.ATTACK_SPEED, value);
     return this;
   }
 
@@ -118,39 +126,16 @@ public final class CharacterBuilder {
    * Builds the character.
    *
    * @return a character that does nothing on its own
+   * @throws IllegalArgumentException if a stat is invalid (see {@link BaseStats})
    */
   public Character build() {
-    return new IdleCharacter(
-        bodyBox,
-        maxHp,
-        attack,
-        resistance,
-        speed,
-        attackSpeed,
-        hurtbox,
-        invincibilityTicksAfterHit);
+    return new IdleCharacter(bodyBox, new BaseStats(stats), hurtbox, invincibilityTicksAfterHit);
   }
 
   /** Hand-written fake (Q117): a character with no behaviour of its own. */
   private static final class IdleCharacter extends Character {
-    IdleCharacter(
-        Aabb bodyBox,
-        int maxHp,
-        int attack,
-        int resistance,
-        float speed,
-        float attackSpeed,
-        Aabb hurtbox,
-        int invincibilityTicksAfterHit) {
-      super(
-          bodyBox,
-          maxHp,
-          attack,
-          resistance,
-          speed,
-          attackSpeed,
-          hurtbox,
-          invincibilityTicksAfterHit);
+    IdleCharacter(Aabb bodyBox, StatSource stats, Aabb hurtbox, int invincibilityTicksAfterHit) {
+      super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit);
     }
 
     @Override
