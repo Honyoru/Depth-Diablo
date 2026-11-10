@@ -286,13 +286,64 @@ class CharacterTest {
     assertThrows(IllegalArgumentException.class, () -> aCharacter().withResistance(0).build());
   }
 
+  @Test
+  void should_keep_its_speed_and_attack_speed_when_created() {
+    Character character = aCharacter().withSpeed(120f).withAttackSpeed(1.5f).build();
+
+    assertEquals(120f, character.speed());
+    assertEquals(1.5f, character.attackSpeed());
+  }
+
+  @Test
+  void should_accept_a_speed_and_attack_speed_of_0() {
+    Character character = aCharacter().withSpeed(0f).withAttackSpeed(0f).build();
+
+    assertEquals(0f, character.speed());
+    assertEquals(0f, character.attackSpeed());
+  }
+
+  @Test
+  void should_throw_when_the_speed_is_negative() {
+    assertThrows(IllegalArgumentException.class, () -> aCharacter().withSpeed(-1f).build());
+  }
+
+  @Test
+  void should_throw_when_the_speed_is_not_a_number() {
+    assertThrows(IllegalArgumentException.class, () -> aCharacter().withSpeed(Float.NaN).build());
+  }
+
+  @Test
+  void should_throw_when_the_speed_is_infinite() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> aCharacter().withSpeed(Float.POSITIVE_INFINITY).build());
+  }
+
+  @Test
+  void should_throw_when_the_attack_speed_is_negative() {
+    assertThrows(IllegalArgumentException.class, () -> aCharacter().withAttackSpeed(-1f).build());
+  }
+
+  @Test
+  void should_throw_when_the_attack_speed_is_not_a_number() {
+    assertThrows(
+        IllegalArgumentException.class, () -> aCharacter().withAttackSpeed(Float.NaN).build());
+  }
+
+  @Test
+  void should_throw_when_the_attack_speed_is_infinite() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> aCharacter().withAttackSpeed(Float.POSITIVE_INFINITY).build());
+  }
+
   /** Hand-written fake (Q117): counts the calls to think(). */
   private static final class CountingCharacter extends Character {
     private int thinks;
     private long lastTick;
 
     CountingCharacter() {
-      super(new Aabb(0, 0, 16, 16), 10, 1, 1, new Aabb(0, 0, 16, 16), 0);
+      super(new Aabb(0, 0, 16, 16), 10, 1, 1, 1f, 1f, new Aabb(0, 0, 16, 16), 0);
     }
 
     @Override

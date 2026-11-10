@@ -9,14 +9,16 @@ public final class CharacterBuilder {
   private int maxHp = 10;
   private int attack = 1;
   private int resistance = 1;
+  private float speed = 1f;
+  private float attackSpeed = 1f;
   private Aabb hurtbox = new Aabb(0, 0, 16, 16);
   private int invincibilityTicksAfterHit;
 
   private CharacterBuilder() {}
 
   /**
-   * Starts a character with 10 HP, 1 attack, 1 resistance, a 16 x 16 body box and hurtbox at the
-   * origin and no i-frames after a hit.
+   * Starts a character with 10 HP, 1 attack, 1 resistance, a speed and attack speed of 1, a 16 x 16
+   * body box and hurtbox at the origin and no i-frames after a hit.
    *
    * @return a new builder
    */
@@ -69,6 +71,28 @@ public final class CharacterBuilder {
   }
 
   /**
+   * Sets the movement speed.
+   *
+   * @param value the speed, in pixels per second
+   * @return this builder
+   */
+  public CharacterBuilder withSpeed(float value) {
+    this.speed = value;
+    return this;
+  }
+
+  /**
+   * Sets the attack speed.
+   *
+   * @param value the attacks per second
+   * @return this builder
+   */
+  public CharacterBuilder withAttackSpeed(float value) {
+    this.attackSpeed = value;
+    return this;
+  }
+
+  /**
    * Sets the hurtbox.
    *
    * @param box the hurtbox
@@ -97,7 +121,14 @@ public final class CharacterBuilder {
    */
   public Character build() {
     return new IdleCharacter(
-        bodyBox, maxHp, attack, resistance, hurtbox, invincibilityTicksAfterHit);
+        bodyBox,
+        maxHp,
+        attack,
+        resistance,
+        speed,
+        attackSpeed,
+        hurtbox,
+        invincibilityTicksAfterHit);
   }
 
   /** Hand-written fake (Q117): a character with no behaviour of its own. */
@@ -107,9 +138,19 @@ public final class CharacterBuilder {
         int maxHp,
         int attack,
         int resistance,
+        float speed,
+        float attackSpeed,
         Aabb hurtbox,
         int invincibilityTicksAfterHit) {
-      super(bodyBox, maxHp, attack, resistance, hurtbox, invincibilityTicksAfterHit);
+      super(
+          bodyBox,
+          maxHp,
+          attack,
+          resistance,
+          speed,
+          attackSpeed,
+          hurtbox,
+          invincibilityTicksAfterHit);
     }
 
     @Override

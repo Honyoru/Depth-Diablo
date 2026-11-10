@@ -13,6 +13,8 @@ public abstract class Character extends Entity implements Damageable {
   private int hp;
   private final int attack;
   private final int resistance;
+  private final float speed;
+  private final float attackSpeed;
   private final Aabb hurtbox;
   private final int invincibilityTicksAfterHit;
   private int invincibilityTicksLeft;
@@ -26,11 +28,14 @@ public abstract class Character extends Entity implements Damageable {
    * @param attack the base damage of its hits in the damage formula (GDD 1.6); must not be negative
    * @param resistance the divisor of the damage it takes in the damage formula (GDD 1.6); must be
    *     at least 1
+   * @param speed the movement speed in pixels per second (GDD 1.6); 0 or more, finite
+   * @param attackSpeed the attacks per second (GDD 1.6); 0 or more, finite
    * @param hurtbox the character's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit the number of invincibility ticks granted after taking
    *     damage; must not be negative
    * @throws IllegalArgumentException if {@code maxHp} is less than 1, {@code attack} is negative,
-   *     {@code resistance} is less than 1 or {@code invincibilityTicksAfterHit} is negative
+   *     {@code resistance} is less than 1, {@code speed} or {@code attackSpeed} is negative or not
+   *     a finite number, or {@code invincibilityTicksAfterHit} is negative
    * @throws NullPointerException if {@code bodyBox} or {@code hurtbox} is {@code null}
    */
   protected Character(
@@ -38,6 +43,8 @@ public abstract class Character extends Entity implements Damageable {
       int maxHp,
       int attack,
       int resistance,
+      float speed,
+      float attackSpeed,
       Aabb hurtbox,
       int invincibilityTicksAfterHit) {
     super(bodyBox);
@@ -50,6 +57,8 @@ public abstract class Character extends Entity implements Damageable {
     if (resistance < 1) {
       throw new IllegalArgumentException("resistance must be at least 1");
     }
+    requireFiniteAndNotNegative(speed, "speed");
+    requireFiniteAndNotNegative(attackSpeed, "attackSpeed");
     if (invincibilityTicksAfterHit < 0) {
       throw new IllegalArgumentException("invincibilityTicksAfterHit must not be negative");
     }
@@ -57,6 +66,8 @@ public abstract class Character extends Entity implements Damageable {
     this.hp = maxHp;
     this.attack = attack;
     this.resistance = resistance;
+    this.speed = speed;
+    this.attackSpeed = attackSpeed;
     this.hurtbox = Objects.requireNonNull(hurtbox, "hurtbox");
     this.invincibilityTicksAfterHit = invincibilityTicksAfterHit;
   }
@@ -148,8 +159,32 @@ public abstract class Character extends Entity implements Damageable {
     return resistance;
   }
 
+  /**
+   * Returns how fast this character moves.
+   *
+   * @return the speed in pixels per second, 0 or more
+   */
+  public float speed() {
+    return speed;
+  }
+
+  /**
+   * Returns how often this character can attack. The weapon and passive items will change it later.
+   *
+   * @return the attacks per second, 0 or more
+   */
+  public float attackSpeed() {
+    return attackSpeed;
+  }
+
   /** Returns the character's maximum health. */
   public int maxHp() {
     return maxHp;
+  }
+
+  private static void requireFiniteAndNotNegative(float value, String name) {
+    if (value < 0 || Float.isNaN(value) || Float.isInfinite(value)) {
+      throw new IllegalArgumentException(name + " must be a finite number of 0 or more: " + value);
+    }
   }
 }
