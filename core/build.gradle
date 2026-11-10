@@ -9,6 +9,7 @@ dependencies {
   api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
   implementation "org.slf4j:slf4j-api:$slf4jVersion"
 
+
   testImplementation "com.tngtech.archunit:archunit-junit5:$archunitVersion"
   // Headless backend: libGDX classes that need Gdx.files work in tests without a window.
   testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
@@ -52,3 +53,5 @@ check.dependsOn jacocoTestCoverageVerification
 jar {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+
