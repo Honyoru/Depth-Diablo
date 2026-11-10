@@ -224,6 +224,43 @@ class CharacterTest {
     assertThrows(NullPointerException.class, () -> aCharacter().withHurtbox(null).build());
   }
 
+  @Test
+  void should_gain_hp_when_it_heals() {
+    Character character = aCharacter().withHp(10).build();
+    character.takeDamage(6);
+
+    character.heal(4);
+
+    assertEquals(8, character.hp());
+  }
+
+  @Test
+  void should_stop_at_max_hp_when_the_heal_is_higher_than_the_missing_hp() {
+    Character character = aCharacter().withHp(10).build();
+    character.takeDamage(2);
+
+    character.heal(50);
+
+    assertEquals(10, character.hp());
+  }
+
+  @Test
+  void should_stay_dead_when_a_dead_character_heals() {
+    Character character = aCharacter().withHp(5).build();
+    character.takeDamage(5);
+
+    character.heal(3);
+
+    assertTrue(character.isDead());
+  }
+
+  @Test
+  void should_throw_when_the_heal_amount_is_below_1() {
+    Character character = aCharacter().build();
+
+    assertThrows(IllegalArgumentException.class, () -> character.heal(0));
+  }
+
   /** Hand-written fake (Q117): counts the calls to think(). */
   private static final class CountingCharacter extends Character {
     private int thinks;

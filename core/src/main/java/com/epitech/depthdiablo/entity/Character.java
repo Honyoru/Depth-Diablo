@@ -71,6 +71,22 @@ public abstract class Character extends Entity implements Damageable {
     invincibilityTicksLeft = invincibilityTicksAfterHit;
   }
 
+  /**
+   * Restores HP, up to the maximum. Does nothing once the character is dead.
+   *
+   * @param amount the HP to restore; must be at least 1
+   * @throws IllegalArgumentException if {@code amount} is less than 1
+   */
+  public void heal(int amount) {
+    if (amount < 1) {
+      throw new IllegalArgumentException("Heal amount must be at least 1");
+    }
+    if (isDead()) {
+      return;
+    }
+    hp = Math.min(maxHp, hp + amount);
+  }
+
   @Override
   public boolean isDead() {
     return hp == 0;
