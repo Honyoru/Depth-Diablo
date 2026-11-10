@@ -1,0 +1,48 @@
+
+uiskin.png
+size: 1024, 1024
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+coin_icon
+  rotate: false
+  xy: 131, 107
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+floor_icon
+  rotate: false
+  xy: 515, 607
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+hotbar_slot
+  rotate: false
+  xy: 1, 65
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+hp_bar_fill
+  rotate: false
+  xy: 515, 625
+  size: 124, 12
+  orig: 124, 12
+  offset: 0, 0
+  index: -1
+hp_bar_frame
+  rotate: false
+  xy: 1, 107
+  size: 128, 16
+  orig: 128, 16
+  offset: 0, 0
+  index: -1
+newfont
+  rotate: false
+  xy: 1, 125
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1

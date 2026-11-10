@@ -1,0 +1,45 @@
+{
+"com.badlogic.gdx.graphics.g2d.BitmapFont": {
+	"newfont": {
+		"file": "newfont.fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
+		"flip": false
+	}
+},
+"com.badlogic.gdx.graphics.Color": {
+	"RGBA_224_206_89_255": {
+		"r": 0.8784314,
+		"g": 0.80784315,
+		"b": 0.34901962,
+		"a": 1
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
+	"quick_access": {
+		"imageUp": "hotbar_slot"
+	},
+	"quick_access2": {
+		"imageUp": "hotbar_slot"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle": {
+	"default": {
+		"imageUp": "coin_icon",
+		"font": "newfont",
+		"fontColor": "RGBA_224_206_89_255"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle": {
+	"default-horizontal": {
+		"background": "hp_bar_frame",
+		"knobBefore": "hp_bar_fill"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
+	"default": {
+		"titleFont": "newfont",
+		"titleFontColor": "RGBA_224_206_89_255"
+	}
+}
+}
