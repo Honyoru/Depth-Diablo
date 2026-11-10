@@ -5,7 +5,7 @@ Planned patterns. Fill the "Where" column as each one lands in the code.
 | Pattern        | Purpose                                          | Where |
 |----------------|--------------------------------------------------|-------|
 | State          | Enemy and player behavior (gdx-ai state machine) | TBD   |
-| Strategy       | Level generation, enemy attack styles            | TBD   |
+| Strategy       | Weapons (the player's attack); level generation, enemy attack styles | `combat/Attack` (`item/Weapon`) |
 | Observer       | Game events (damage, death, pickup)              | `engine/EventBus`, `engine/EventListener` |
 | Factory        | Entity and item creation from JSON               | TBD   |
 | Command        | Player input mapped to actions; TriggerBox actions (`TriggerAction`); consumables | `item/Consumable.use()` (`item/Potion`) |
