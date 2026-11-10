@@ -45,6 +45,9 @@ dependencies {
   implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
   implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
   implementation "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+  testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+  testImplementation "org.mockito:mockito-core:5.+"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:5.+"
   implementation project(':core')
   implementation "org.slf4j:slf4j-api:$slf4jVersion"
   runtimeOnly "ch.qos.logback:logback-classic:$logbackVersion"
