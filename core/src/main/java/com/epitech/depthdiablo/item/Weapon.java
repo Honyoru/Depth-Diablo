@@ -1,6 +1,9 @@
 package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.combat.Attack;
+import com.epitech.depthdiablo.combat.DamageFormula;
+import com.epitech.depthdiablo.entity.Character;
+import java.util.Objects;
 
 /**
  * The equipped weapon: the player's attack (GDD 1.3.1, 1.6). It adds its attack bonus to the attack
@@ -44,6 +47,29 @@ public abstract class Weapon extends Equipment implements Attack {
     }
     this.attackBonus = attackBonus;
     this.range = range;
+  }
+
+  /**
+   * Hits the target with the damage formula (GDD 1.6): the attacker's attack plus this weapon's
+   * bonus, against the target's defense. The attack buff stays at 1 and the defense bonus at 0
+   * until buffs and armor exist.
+   *
+   * @param attacker the character who holds this weapon
+   * @param target the character who is hit
+   * @return the damage dealt; 0 if the target is dead or invincible
+   * @throws NullPointerException if {@code attacker} or {@code target} is {@code null}
+   */
+  @Override
+  public int hit(Character attacker, Character target) {
+    Objects.requireNonNull(attacker, "attacker");
+    Objects.requireNonNull(target, "target");
+    if (target.isDead() || target.isInvincible()) {
+      return 0;
+    }
+    int damage =
+        DamageFormula.compute(attacker.attack(), attackBonus, 1.0, target.defense(), 0, 1.0);
+    target.takeDamage(damage);
+    return damage;
   }
 
   /**

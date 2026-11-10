@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.item;
 
+import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -61,12 +62,65 @@ class WeaponTest {
     assertThrows(IllegalArgumentException.class, () -> aWeapon(Rarity.CONSUMABLE, 4, 24f));
   }
 
+  @Test
+  void should_deal_the_formula_damage_with_its_bonus_when_it_hits() {
+    Character attacker = aCharacter().withAttack(10).build();
+    Character target = aCharacter().withHp(20).withDefense(3).build();
+    Weapon weapon = aWeapon(Rarity.RARE, 2, 24f);
+
+    int damage = weapon.hit(attacker, target);
+
+    assertEquals(4, damage);
+    assertEquals(16, target.hp());
+  }
+
+  @Test
+  void should_deal_no_damage_when_the_target_is_invincible() {
+    Character attacker = aCharacter().withAttack(10).build();
+    Character target = aCharacter().withHp(20).build();
+    target.grantInvincibility(30);
+    Weapon weapon = aWeapon(Rarity.RARE, 2, 24f);
+
+    int damage = weapon.hit(attacker, target);
+
+    assertEquals(0, damage);
+    assertEquals(20, target.hp());
+  }
+
+  @Test
+  void should_deal_no_damage_when_the_target_is_dead() {
+    Character attacker = aCharacter().build();
+    Character target = aCharacter().withHp(1).build();
+    target.takeDamage(1);
+    Weapon weapon = aWeapon(Rarity.RARE, 2, 24f);
+
+    int damage = weapon.hit(attacker, target);
+
+    assertEquals(0, damage);
+  }
+
+  @Test
+  void should_throw_when_the_attacker_is_null() {
+    Weapon weapon = aWeapon(Rarity.RARE, 2, 24f);
+    Character target = aCharacter().build();
+
+    assertThrows(NullPointerException.class, () -> weapon.hit(null, target));
+  }
+
+  @Test
+  void should_throw_when_the_target_is_null() {
+    Weapon weapon = aWeapon(Rarity.RARE, 2, 24f);
+    Character attacker = aCharacter().build();
+
+    assertThrows(NullPointerException.class, () -> weapon.hit(attacker, null));
+  }
+
   private static Weapon aWeapon(Rarity rarity, int attackBonus, float range) {
     return new FakeWeapon(
         "sword_iron", "item.sword_iron.name", "sword", rarity, 30, attackBonus, range);
   }
 
-  /** Hand-written fake (Q117): a weapon whose hit is not used by these tests. */
+  /** Hand-written fake (Q117): a weapon with only the shared Weapon behaviour. */
   private static final class FakeWeapon extends Weapon {
     FakeWeapon(
         String id,
@@ -77,11 +131,6 @@ class WeaponTest {
         int attackBonus,
         float range) {
       super(id, nameKey, spriteId, rarity, price, attackBonus, range);
-    }
-
-    @Override
-    public int hit(Character attacker, Character target) {
-      throw new UnsupportedOperationException("Not used by the constructor tests");
     }
   }
 }

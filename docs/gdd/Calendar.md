@@ -42,7 +42,7 @@ Loïc's day-by-day plan, for the team to validate. Two points conflict with earl
 | Fri 6 Nov | C | Sprites + tileset (placeholders) | Done |
 | Mon 9 Nov | B | Character extends Entity: body box in the constructor, `onUpdate()` replaces `update()`, 3 new tests in CharacterTest (Romain, merged on main) | Done |
 | Mon 9 Nov | A | AABB collisions + JSON DataRegistry / EntityFactory | AABB Done; JSON DataRegistry / EntityFactory To do |
-| Mon 9 Nov | B | Player + 1 weapon + potion | In progress (Romain, `feature/player-weapon-potion`, not merged yet): Item, Rarity, Consumable, Potion and Equipment done; Character gets `heal()`, attack, resistance, speed and attack speed; damage formula gets a resistance bonus and buff. Weapon and Player to do |
+| Mon 9 Nov | B | Player + 1 weapon + potion | In progress (Romain, `feature/player-weapon-potion`, not merged yet): Item, Rarity, Consumable, Potion, Equipment and Weapon (Attack strategy, `hit()`) done; Character reads its stats from `Stat` / `BaseStats` (HP, attack, defense, speed, attack speed, luck) and gets `heal()`; damage formula gets a resistance bonus and buff. Player to do |
 | Mon 9 Nov | C | Arena map (Tiled) + HUD | To do |
 | Mon 9 Nov | B | Entity implements Updatable + Collidable: `blocks()`, `onContact()`, `position()`, `moveTo()`, 12 tests in EntityTest (Loïc, PR #21) | Done |
 | Tue 10 Nov | A | Looping enemy waves | To do |
