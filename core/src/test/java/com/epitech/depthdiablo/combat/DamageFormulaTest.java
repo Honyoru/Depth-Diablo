@@ -164,6 +164,15 @@ class DamageFormulaTest {
   }
 
   @Test
+  void should_reject_a_resistance_buff_that_is_not_a_number() {
+    double resistanceBuff = Double.NaN;
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> DamageFormula.compute(5, 0, 1.0, 1, 0, resistanceBuff));
+  }
+
+  @Test
   void should_reject_an_infinite_resistance_buff() {
     double resistanceBuff = Double.POSITIVE_INFINITY;
 

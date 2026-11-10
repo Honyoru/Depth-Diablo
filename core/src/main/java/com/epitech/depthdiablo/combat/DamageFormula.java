@@ -43,7 +43,9 @@ public final class DamageFormula {
     if (attackBuff < 0 || Double.isNaN(attackBuff) || Double.isInfinite(attackBuff)) {
       throw new IllegalArgumentException("Invalid attack buff: " + attackBuff);
     }
-    if (!(resistanceBuff > 0) || Double.isInfinite(resistanceBuff)) {
+    if ((resistanceBuff <= 0)
+        || Double.isNaN(resistanceBuff)
+        || Double.isInfinite(resistanceBuff)) {
       throw new IllegalArgumentException("Invalid resistance buff: " + resistanceBuff);
     }
 
