@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.item;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.epitech.depthdiablo.entity.Character;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1 and 1.4: every consumable shares the CONSUMABLE rarity. */
@@ -32,6 +33,11 @@ class ConsumableTest {
   private static final class FakeConsumable extends Consumable {
     FakeConsumable(String id, String nameKey, String spriteId, int price) {
       super(id, nameKey, spriteId, price);
+    }
+
+    @Override
+    public boolean use(Character user) {
+      return true;
     }
   }
 }
