@@ -50,7 +50,6 @@ jacoco/
 assets/assets.txt
 /dist/
 **/resource-config.json
-/home/ange/epitech/anne2026-2027/java/2DGame/desktop/src/main/java/com/epitech/depthdiablo/desktop/HieroLauncher.java
 
 # Local-only references and scratch (not part of the repo)
 visual-ref/
