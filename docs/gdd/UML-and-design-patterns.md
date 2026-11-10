@@ -6,13 +6,13 @@ The two UML diagrams already show seven GoF patterns. The main gap is Observer: 
 
 ## Diagrams
 
-The diagrams live in [`docs/uml`](../uml). `entities.drawio` holds three pages (Entities, Events, Arena); `items.drawio` holds one.
+The diagrams live in [`docs/uml`](../uml). Each diagram has its own file: `entities.drawio`, `events.drawio`, `arena.drawio` and `items.drawio`.
 
 | Diagram | Editable source | Preview |
 | --- | --- | --- |
-| Entities | [entities.drawio](../uml/entities.drawio), page 1 | [entities-preview.png](../uml/entities-preview.png) |
-| Events (Observer) | [entities.drawio](../uml/entities.drawio), page 2 | [events-preview.png](../uml/events-preview.png) |
-| Arena (ArenaCycle) | [entities.drawio](../uml/entities.drawio), page 3 | [arena-preview.png](../uml/arena-preview.png) |
+| Entities | [entities.drawio](../uml/entities.drawio) | [entities-preview.png](../uml/entities-preview.png) |
+| Events (Observer) | [events.drawio](../uml/events.drawio) | [events-preview.png](../uml/events-preview.png) |
+| Arena (ArenaCycle) | [arena.drawio](../uml/arena.drawio) | [arena-preview.png](../uml/arena-preview.png) |
 | Items | [items.drawio](../uml/items.drawio) | [items-preview.png](../uml/items-preview.png) |
 
 ## 1. Pattern correspondence

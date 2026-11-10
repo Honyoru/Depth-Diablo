@@ -11,7 +11,7 @@ Design decisions: `DECISIONS.md` and the GDD. Workflow and code rules: `CONTRIBU
 | `core` | Pure game logic: no graphics, audio, input, `Gdx.*`, hidden randomness or clock (ArchUnit). 70 % JaCoCo gate. |
 | `desktop` | libGDX LWJGL3 launcher, rendering, input and sound. No coverage gate. |
 | `assets` | Sprites, Tiled maps, JSON data (`data/`), i18n bundles (`i18n/`). |
-| `docs/uml` | draw.io class diagrams (items, entities) with PNG previews. |
+| `docs/uml` | draw.io class diagrams (entities, events, arena, items) with PNG previews. |
 | `config` | PMD and SpotBugs rules. |
 
 ## Commands
