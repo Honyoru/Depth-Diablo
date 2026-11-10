@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.engine;
 
+import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.Entity;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,8 +35,9 @@ public final class World {
   }
 
   /**
-   * Advances the world by one tick: updates every entity, delivers the queued events, then adds the
-   * waiting entities and drops the removed ones.
+   * Advances the world by one tick: updates every entity, tells every pair of overlapping entities
+   * that they touch, delivers the queued events, then adds the waiting entities and drops the
+   * removed ones.
    */
   public void tick() {
     ticking = true;
@@ -43,11 +45,56 @@ public final class World {
     for (Entity entity : entities) {
       entity.update(tick);
     }
+    resolveContacts();
     eventBus.flush();
     entities.addAll(entitiesToAdd);
     entitiesToAdd.clear();
     entities.removeIf(Entity::isRemoved);
     ticking = false;
+  }
+
+  /**
+   * Tells wether a mover can stand in the given box: no other blocking entity overlaps it. A mover
+   * cheks the box before moving, so walls, closed doors and chest stop it (GDD 1.5).
+   *
+   * @param box the box the mover whant to occupy
+   * @param mover the entity that wants to move there; it never blocks itself
+   * @return thrue if no blocking entity other than the mover overlaps the box
+   * @throws NullPointerException if box or mover is null
+   */
+  public boolean isFree(Aabb box, Entity mover) {
+    Objects.requireNonNull(box, "box");
+    Objects.requireNonNull(mover, "mover");
+    for (Entity other : entities) {
+      if (other.equals(mover) || other.isRemoved() || !other.blocks()) {
+        continue;
+      }
+      if (other.bodyBox().overlaps(box)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Calls {@link Entity#onContact(Entity)} on both entities of every overlapping pair. An entity
+   * removed earlier in the tick touches nothing.
+   */
+  private void resolveContacts() {
+    for (int i = 0; i < entities.size(); i++) {
+      Entity first = entities.get(i);
+      for (int j = i + 1; j < entities.size(); j++) {
+        Entity second = entities.get(j);
+        if (touch(first, second)) {
+          first.onContact(second);
+          second.onContact(first);
+        }
+      }
+    }
+  }
+
+  private static boolean touch(Entity first, Entity second) {
+    return !first.isRemoved() && !second.isRemoved() && first.bodyBox().overlaps(second.bodyBox());
   }
 
   /**

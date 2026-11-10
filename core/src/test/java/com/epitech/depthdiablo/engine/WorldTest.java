@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.engine;
 
 import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -144,17 +145,134 @@ class WorldTest {
     assertThrows(NullPointerException.class, () -> world.add(null));
   }
 
+  @Test
+  void should_find_a_box_free_when_no_blocking_entity_overlaps_it() {
+    FakeEntity mover = new FakeEntity();
+    world.add(mover);
+    world.add(aWallAt(100, 0));
+
+    boolean free = world.isFree(new Aabb(10, 0, 16, 16), mover);
+
+    assertTrue(free);
+  }
+
+  @Test
+  void should_find_a_box_taken_when_a_wall_overlaps_it() {
+    FakeEntity mover = new FakeEntity();
+    world.add(mover);
+    world.add(aWallAt(20, 0));
+
+    boolean free = world.isFree(new Aabb(10, 0, 16, 16), mover);
+
+    assertFalse(free);
+  }
+
+  @Test
+  void should_never_block_a_mover_with_itself() {
+    FakeEntity mover = aWallAt(0, 0);
+    world.add(mover);
+
+    boolean free = world.isFree(new Aabb(4, 0, 16, 16), mover);
+
+    assertTrue(free);
+  }
+
+  @Test
+  void should_let_a_mover_through_an_entity_that_does_not_block() {
+    FakeEntity mover = new FakeEntity();
+    world.add(mover);
+    world.add(anEntityAt(20, 0));
+
+    boolean free = world.isFree(new Aabb(10, 0, 16, 16), mover);
+
+    assertTrue(free);
+  }
+
+  @Test
+  void should_tell_both_entities_when_their_bodies_overlap() {
+    FakeEntity first = anEntityAt(0, 0);
+    FakeEntity second = anEntityAt(8, 0);
+    world.add(first);
+    world.add(second);
+
+    world.tick();
+
+    assertEquals(List.of(second), first.contacts);
+    assertEquals(List.of(first), second.contacts);
+  }
+
+  @Test
+  void should_tell_no_one_when_bodies_only_touch_on_an_edge() {
+    FakeEntity first = anEntityAt(0, 0);
+    FakeEntity second = anEntityAt(16, 0);
+    world.add(first);
+    world.add(second);
+
+    world.tick();
+
+    assertTrue(first.contacts.isEmpty());
+    assertTrue(second.contacts.isEmpty());
+  }
+
+  @Test
+  void should_skip_the_contact_when_an_entity_was_removed_during_the_tick() {
+    FakeEntity first = anEntityAt(0, 0);
+    FakeEntity second = anEntityAt(8, 0);
+    second.onTick = second::remove;
+    world.add(first);
+    world.add(second);
+
+    world.tick();
+
+    assertTrue(first.contacts.isEmpty());
+  }
+
+  @Test
+  void should_reject_a_missing_box_when_checking_if_it_is_free() {
+    FakeEntity mover = new FakeEntity();
+
+    assertThrows(NullPointerException.class, () -> world.isFree(null, mover));
+  }
+
   private static GameEvent aDeathEvent() {
     return new EntityDied(aCharacter().build(), Optional.empty());
   }
 
-  /** Character don't exist yet. Create a fake entity to test */
+  private static FakeEntity aWallAt(float x, float y) {
+    return new FakeEntity(new Aabb(x, y, 16, 16), true);
+  }
+
+  private static FakeEntity anEntityAt(float x, float y) {
+    return new FakeEntity(new Aabb(x, y, 16, 16), false);
+  }
+
+  /**
+   * Character don't exist yet. Create a fake entity to test (Q117) > records its tick and contact,
+   * and blocks only if asked to.
+   */
   private static final class FakeEntity extends Entity {
     private final List<Long> ticks = new ArrayList<>();
+    private final List<Entity> contacts = new ArrayList<>();
+    private final boolean blocking;
     private Runnable onTick = () -> {};
 
     FakeEntity() {
-      super(new Aabb(0, 0, 16, 16));
+      this(new Aabb(0, 0, 16, 16), false);
+    }
+
+    FakeEntity(Aabb bodyBox, boolean blocking) {
+      super(bodyBox);
+      this.blocking = blocking;
+    }
+
+    @Override
+    public boolean blocks() {
+      return blocking;
+    }
+
+    @Override
+    public void onContact(Entity other) {
+      contacts.add(other);
     }
 
     @Override
