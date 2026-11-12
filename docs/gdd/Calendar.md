@@ -43,15 +43,16 @@ Loïc's day-by-day plan, for the team to validate. Two points conflict with earl
 | Mon 9 Nov | B | Character extends Entity: body box in the constructor, `onUpdate()` replaces `update()`, 3 new tests in CharacterTest (Romain, merged on main) | Done |
 | Mon 9 Nov | A | AABB collisions + JSON DataRegistry / EntityFactory | AABB Done; JSON DataRegistry / EntityFactory To do |
 | Mon 9 Nov | B | Player + 1 weapon + potion | In progress (Romain, `feature/player-weapon-potion`, not merged yet): Item, Rarity, Consumable, Potion, Equipment and Weapon (Attack strategy, `hit()`) done; Character reads its stats from `Stat` / `BaseStats` (HP, attack, defense, speed, attack speed, luck) and gets `heal()`; damage formula gets a resistance bonus and buff. Player to do |
-| Mon 9 Nov | C | Arena map (Tiled) + HUD | To do |
+| Mon 9 Nov | C | Arena map (Tiled) + HUD | Done (Ange, 10–12 Nov). Arena map: `assets/arena_mapV1.tmx`, 30 × 20 tiles on the arena tileset (PR #26, #27). HUD: Scene2D `Hud` (HP bar, coin counter, 3 quick slots, minimap frame) reading a `HudState` model, UI skin and a pixel font made with Hiero (PR #29, #33) |
 | Mon 9 Nov | B | Entity implements Updatable + Collidable: `blocks()`, `onContact()`, `position()`, `moveTo()`, 12 tests in EntityTest (Loïc, PR #21) | Done |
 | Tue 10 Nov | A | Looping enemy waves | To do |
 | Tue 10 → Wed 11 Nov | B | 4 Arena enemies + gdx-ai FSM | To do |
-| Tue 10 Nov | C | Title screen + game over | To do |
+| Tue 10 Nov | C | Title screen + game over | In progress (Ange, PR #33, merged 12 Nov): title screen (Play, Quit), mode select (Arena, Endless) and character select (Knight playable, Mage and Archer locked) done in `MenuScreen`, driven by the `MenuFlowState` state machine and its tests. Game over to do |
 | Wed 11 Nov | A | F1 X-ray view (demo bonus) | To do |
 | Wed 11 Nov | C | Basic sounds + integration | To do |
+| Thu 12 Nov | C | Menu → game wiring: picking a hero opens `GameScreen`, which loads the arena map and runs `World`, `FixedTimestep` and (in Arena mode) `ArenaCycle` at 60 ticks per second; Escape goes back to the title; `MenuFlowStateTest` moved to `desktop/src/test/java` so it runs (Ange, PR #34) | Done |
 | Thu 12 Nov | All | **Arena POC: stabilisation, green tests, demo, delivery** | To do |
-| Fri 13 Nov | A | 5-wave cycles, 1 king, shop | To do |
+| Fri 13 Nov | A | 5-wave cycles, 1 king, shop | In progress: `ArenaCycle` done (WAVE / BREAK / SHOP phases, boss every 5th wave, score = waves defeated; Ange, PR #15, 6 Nov) and ticked by the game screen since PR #34. King and shop to do |
 | Fri 13 Nov | B | 3 classes + 3 weapons | To do |
 | Fri 13 Nov | C | Floors 1–2 in Tiled | To do |
 | Mon 16 Nov | A | F2 event laser | To do |
@@ -90,6 +91,7 @@ Rules:
 - Each day's task ends as a pull request ready for review, so the next person starts from `main`.
 - Swaps are fine: two people trade a day and note it here.
 - Mon 9 Nov: Romain took over World and EventBus from Ange and fixed Character, so the Mon 9 Nov task in the Romain column, A · AABB collisions + JSON DataRegistry / EntityFactory, is still to do.
+- 10–12 Nov: Ange took C · Arena map (Tiled) + HUD (Mon 9 Nov, Loïc column, not started) and the title, mode select and character select screens of C · Title screen + game over (Tue 10 Nov), then wired the menu to the game screen (PR #26, #27, #29, #33, #34). Game over is still to do.
 - ItemPickedUp and RoomCleared wait for Player, Enemy and Item; proposed to add them with the Mon 16 Nov tasks. \[OPEN\]
 - Thu 12 keeps the "All" day of the table above. The 12 Nov POC conflict noted at the top of this section is still open.
 

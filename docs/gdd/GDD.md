@@ -351,6 +351,8 @@ Open: a cap on summoned enemies; detection range; what enemies do after losing s
 
 **HUD (decided, 4 Nov):** minimal, in the corners, like the pixel dungeon reference: HP bar, the 3 hotbar slots, coin counter, current floor (Q54, Q55). No minimap (Q56), no floating damage numbers (Q57). The inventory (20 slots: 3 hotbar + 17 storage, 1.4) opens as an overlay that pauses the game (Q58).
 
+**Built so far (Ange, 12 Nov, PR #33 and #34):** the title screen has Play and Quit; Play opens a mode select (Arena Mode, Endless Mode), then the character select (Knight playable, Mage and Archer locked), then the game screen, and Escape goes back to the title. The HUD shows the HP bar (top-left), the coin counter (top-right), the 3 hotbar slots (bottom-centre, keys 1–3) and a minimap (bottom-right). Differences with the decisions above, for the team to settle \[OPEN\]: there is a minimap although Q56 says none; the current floor is not shown yet; Arena is reached through a mode select, not a title button, and the other mode is named Endless; the Options, pause and game over screens are to do.
+
 ### 2.1 Flow Chart
 
 ```text
