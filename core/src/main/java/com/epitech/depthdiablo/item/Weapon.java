@@ -42,7 +42,7 @@ public abstract class Weapon extends Equipment implements Attack {
     if (attackBonus < 0) {
       throw new IllegalArgumentException("Attack bonus must not be negative: " + attackBonus);
     }
-    if (!(range > 0) || Float.isInfinite(range)) {
+    if ((range <= 0) || Float.isNaN(range) || Float.isInfinite(range)) {
       throw new IllegalArgumentException("Range must be a finite number above 0: " + range);
     }
     this.attackBonus = attackBonus;
