@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.epitech.depthdiablo.GameConstants;
-import com.epitech.depthdiablo.desktop.GameApplication;
 import java.util.Objects;
 
 /** Renders the Startup Menu (Play/Quit), Mode Selection (Arena/Endless), and 3-Hero Selection. */

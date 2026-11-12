@@ -28,6 +28,6 @@ public final class DesktopLauncher {
     config.setWindowedMode(
         GameConstants.VIRTUAL_WIDTH * SCALE, GameConstants.VIRTUAL_HEIGHT * SCALE);
     config.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
-    new Lwjgl3Application(new GameApplication(), config);
+    new Lwjgl3Application(new com.epitech.depthdiablo.desktop.ui.GameApplication(), config);
   }
 }

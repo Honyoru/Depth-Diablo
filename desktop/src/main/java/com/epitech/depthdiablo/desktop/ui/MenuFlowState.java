@@ -32,9 +32,9 @@ public final class MenuFlowState {
 
   /** Character archetypes displayed on the selection screen (1 playable in PoC). */
   public enum HeroType {
-    WARRIOR("Berserker", true),
-    MAGE("Arcanist (Locked)", false),
-    ROGUE("Shadow (Locked)", false);
+    WARRIOR("Knight", true),
+    MAGE("Mage (Locked)", false),
+    ROGUE("Archer (Locked)", false);
 
     private final String displayName;
     private final boolean playable;
