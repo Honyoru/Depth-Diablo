@@ -13,11 +13,15 @@ import java.util.Objects;
  * @param angleDegrees the direction its length points to, in degrees; 0 points right, 90 up
  * @param length its size along its direction (a weapon's reach); above 0
  * @param width its size across its direction; above 0
- * @throws IllegalArgumentException if a value is not a finite number, or the length or the width is
- *     0 or less
  */
 public record Obb(float centreX, float centreY, float angleDegrees, float length, float width) {
 
+  /**
+   * Creates a rectangle and checks its values.
+   *
+   * @throws IllegalArgumentException if a value is not a finite number, or the length or the width
+   *     is 0 or less
+   */
   public Obb {
     requireFinite("Centre x", centreX);
     requireFinite("Centre y", centreY);

@@ -8,10 +8,14 @@ package com.epitech.depthdiablo.entity;
  * @param y The y-coordinate of the bottom-left corner of the Aabb.
  * @param width The width of the Aabb.
  * @param height The height of the Aabb.
- * @throws IllegalArgumentException if the width or the height is negative
  */
 public record Aabb(float x, float y, float width, float height) {
 
+  /**
+   * Creates a box and checks its size.
+   *
+   * @throws IllegalArgumentException if the width or the height is negative
+   */
   public Aabb {
     if (width < 0 || height < 0) {
       throw new IllegalArgumentException(
