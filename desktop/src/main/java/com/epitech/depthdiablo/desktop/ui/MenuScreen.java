@@ -29,6 +29,8 @@ public final class MenuScreen extends ScreenAdapter {
    * @param app the parent game application; must not be {@code null}
    * @param menuFlowState the shared UI skin; must not be {@code null}
    * @param hudSkin the menu navigation state machine; must not be {@code null}
+   * @param menuFlowState the menu navigation state machine; must not be {@code null}
+   * @param hudSkin the shared UI skin; must not be {@code null}
    */
   public MenuScreen(GameApplication app, MenuFlowState menuFlowState, Skin hudSkin) {
     this.app = Objects.requireNonNull(app, "app");
@@ -55,11 +57,8 @@ public final class MenuScreen extends ScreenAdapter {
       case MODE_SELECTION -> buildModeSelection();
       case CHARACTER_SELECTION -> buildCharacterSelection();
       case IN_GAME -> {
-        // The GameApplication does not expose a dedicated game-start method with these
-        // parameters in this build, so keep the menu flow consistent by returning to the
-        // main menu rather than invoking a non-existent API.
-        flowState.backToMainMenu();
-        rebuildUi();
+        Gdx.app.postRunnable(
+            () -> app.startGameScreen(flowState.selectedMode(), flowState.selectedHero()));
       }
     }
   }

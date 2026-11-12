@@ -10,19 +10,37 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.epitech.depthdiablo.GameConstants;
+import com.epitech.depthdiablo.arena.ArenaCycle;
+import com.epitech.depthdiablo.engine.FixedTimestep;
+import com.epitech.depthdiablo.engine.World;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Main gameplay screen rendering the TiledMap arena, minimap pass, and the Scene2D {@link Hud}. */
 public final class GameScreen extends ScreenAdapter {
 
-  private static final String DEFAULT_MAP_PATH = "arena_map1.tmx";
+  private static final String DEFAULT_MAP_PATH = "arena_mapV1.tmx";
 
   private final HudState hudState;
   private final Hud hud;
   private final OrthographicCamera worldCamera;
   private final OrthographicCamera minimapCamera;
-  private TiledMap tiledMap;
-  private OrthogonalTiledMapRenderer mapRenderer;
+  private final TiledMap tiledMap;
+  private final OrthogonalTiledMapRenderer mapRenderer;
+  private final GameApplication app;
+  private static final Logger LOG = LoggerFactory.getLogger(GameScreen.class);
+
+  /** The boss comes every 5th wave. */
+  private static final int WAVES_PER_CYCLE = 5;
+
+  /** Pause between two normal waves: 5 seconds. */
+  private static final int BREAK_TICKS = 5 * GameConstants.TICKS_PER_SECOND;
+
+  private final World world = new World();
+  private final FixedTimestep timestep = new FixedTimestep();
+  private final ArenaCycle arenaCycle = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS);
+  private final boolean arenaMode;
 
   /**
    * Creates the gameplay screen with the selected mode and hero.
@@ -39,6 +57,9 @@ public final class GameScreen extends ScreenAdapter {
     Objects.requireNonNull(mode, "mode");
     Objects.requireNonNull(hero, "hero");
 
+    this.arenaMode = Objects.requireNonNull(mode, "mode") == MenuFlowState.GameMode.ARENA;
+
+    this.app = Objects.requireNonNull(app, "app");
     this.hudState = new HudState();
     this.hud = new Hud(skin, hudState, app.batch());
 
@@ -49,10 +70,8 @@ public final class GameScreen extends ScreenAdapter {
     this.minimapCamera.setToOrtho(
         false, GameConstants.VIRTUAL_WIDTH * 2f, GameConstants.VIRTUAL_HEIGHT * 2f);
 
-    if (Gdx.files.internal(DEFAULT_MAP_PATH).exists()) {
-      this.tiledMap = new TmxMapLoader().load(DEFAULT_MAP_PATH);
-      this.mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, app.batch());
-    }
+    this.tiledMap = new TmxMapLoader().load(DEFAULT_MAP_PATH);
+    this.mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, app.batch());
   }
 
   @Override
@@ -62,17 +81,20 @@ public final class GameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+      app.showMenu();
+      return; // this screen is disposed now
+    }
     handleQuickSlotHotkeys();
+    runLogic(delta);
 
     Gdx.gl.glClearColor(0.05f, 0.05f, 0.07f, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
     // 1. Render main TiledMap world
     worldCamera.update();
-    if (mapRenderer != null) {
-      mapRenderer.setView(worldCamera);
-      mapRenderer.render();
-    }
+    mapRenderer.setView(worldCamera);
+    mapRenderer.render();
 
     // 2. Render HUD overlay
     hud.render(delta);
@@ -91,10 +113,17 @@ public final class GameScreen extends ScreenAdapter {
     }
   }
 
-  private void renderMinimapPass() {
-    if (mapRenderer == null) {
-      return;
+  private void runLogic(float delta) {
+    int ticks = timestep.advance(delta);
+    for (int i = 0; i < ticks; i++) {
+      world.tick();
+      if (arenaMode) {
+        arenaCycle.update();
+      }
     }
+  }
+
+  private void renderMinimapPass() {
     int screenW = Gdx.graphics.getWidth();
     int screenH = Gdx.graphics.getHeight();
     int pad = Math.round(12f * screenW / GameConstants.VIRTUAL_WIDTH);
@@ -119,12 +148,9 @@ public final class GameScreen extends ScreenAdapter {
 
   @Override
   public void dispose() {
+    LOG.info("Game screen closed after {} ticks", world.currentTick());
     hud.dispose();
-    if (mapRenderer != null) {
-      mapRenderer.dispose();
-    }
-    if (tiledMap != null) {
-      tiledMap.dispose();
-    }
+    mapRenderer.dispose();
+    tiledMap.dispose();
   }
 }

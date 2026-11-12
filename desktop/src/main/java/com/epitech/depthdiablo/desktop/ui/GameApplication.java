@@ -10,11 +10,22 @@ public final class GameApplication extends Game {
   private SpriteBatch batch;
   private Skin hudSkin;
 
+  private MenuFlowState menuFlowState;
+
   @Override
   public void create() {
     this.batch = new SpriteBatch();
     this.hudSkin = UiSkinFactory.loadHudSkin();
-    MenuFlowState menuFlowState = new MenuFlowState();
+    this.menuFlowState = new MenuFlowState();
+    setScreen(new MenuScreen(this, menuFlowState, hudSkin));
+  }
+
+  /** Leaves the gameplay screen and shows the main menu again. */
+  public void showMenu() {
+    if (getScreen() != null) {
+      getScreen().dispose();
+    }
+    menuFlowState.backToMainMenu();
     setScreen(new MenuScreen(this, menuFlowState, hudSkin));
   }
 
