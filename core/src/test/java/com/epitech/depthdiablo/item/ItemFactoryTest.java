@@ -7,21 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.epitech.depthdiablo.data.DataRegistry;
-import com.epitech.depthdiablo.item.Item;
-import com.epitech.depthdiablo.item.ItemFactory;
-import com.epitech.depthdiablo.item.Potion;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
-/**
- * Building items from data/items.json (Q23, Q129).
- * ItemFactoryTest
- */
+/** Building items from data/items.json (Q23, Q129). ItemFactoryTest */
 class ItemFactoryTest {
-  private static final String ONE_POTION = """
+  private static final String ONE_POTION =
+      """
       { "items": [ {
           "id": "potion_small", "class": "Potion", "nameKey": "item.potion_small.name",
           "spriteId": "items/potion", "price": 10, "healAmount": 3 } ] }
