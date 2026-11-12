@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.item.Item;
+import com.epitech.depthdiablo.item.ItemFactory;
 import com.epitech.depthdiablo.item.Potion;
 
 import java.io.IOException;
@@ -20,8 +21,7 @@ import org.junit.jupiter.api.Test;
  * ItemFactoryTest
  */
 class ItemFactoryTest {
-  private static final String ONE_POTION =
-  """
+  private static final String ONE_POTION = """
       { "items": [ {
           "id": "potion_small", "class": "Potion", "nameKey": "item.potion_small.name",
           "spriteId": "items/potion", "price": 10, "healAmount": 3 } ] }
@@ -29,7 +29,7 @@ class ItemFactoryTest {
 
   @Test
   void should_build_a_potion_with_its_values_when_the_entry_is_a_potion() {
-    ItemFactory factory = new ItemFactory(new DataRegistry("items",()->ONE_POTION));
+    ItemFactory factory = new ItemFactory(new DataRegistry("items", () -> ONE_POTION));
 
     Item item = factory.create("potion_small");
 
@@ -40,14 +40,15 @@ class ItemFactoryTest {
     assertEquals(10, potion.price());
     assertEquals(3, potion.healAmount());
   }
+
   @Test
   void should_build_a_new_item_on_every_call() {
-    ItemFactory factory = new ItemFactory(new DataRestry("items",()-> ONE_POTION));
+    ItemFactory factory = new ItemFactory(new DataRegistry("items", () -> ONE_POTION));
 
-    Items firts = factory.create("potion_small");
-    Items second = factory.create("potion_small");
+    Item first = factory.create("potion_small");
+    Item second = factory.create("potion_small");
 
-    assertNotSame(first,second);
+    assertNotSame(first, second);
   }
 
   @Test
