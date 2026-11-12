@@ -23,7 +23,7 @@ class DataRegistryTest {
 
   @Test
   void should_find_an_entry_by_its_id_when_loaded() {
-    DataRegistry = new DataRegistry("enemies", () -> file);
+    DataRegistry registry = new DataRegistry("enemies", () -> file);
 
     int maxHp = registry.definition("giant_rat").getInt("maxHp");
 
