@@ -10,15 +10,15 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
- * The entries of one json data file by id (Q129). The file holds one array named after this
- * category, ex {@code { "items": [ { "id": "potion_small", ... } ] }}.
+ * The entries of one JSON data file, by id (Q129). The file holds one array named after its
+ * category, e.g. {@code { "items": [ { "id": "potion_small", ... } ] }}.
  *
- * <p>The factory read their values here and gameplay nubers are not writen in the code (Q93).
+ * <p>The factories read their values here, so no gameplay number is written in the code (Q93).
  *
- * <p>The text comes from a supplier and core never be touches {@code Gdx.files}(Q100) -> module
- * read the file, tests give a string. F5 {@link #reload()} (GDD 1.1.2).
+ * <p>The text comes from a supplier, so core never touches {@code Gdx.files} (Q100): the desktop
+ * module reads the file, the tests give a string. F5 calls {@link #reload()} (GDD 1.1.2).
  *
- * <p>Pattern: Resistry read by EnemyFactory and ItemFactory.
+ * <p>Pattern: Registry, read by the EnemyFactory and the ItemFactory (Simple Factory).
  */
 public final class DataRegistry {
   private final String category;
@@ -26,28 +26,28 @@ public final class DataRegistry {
   private Map<String, JsonValue> definitions = Map.of();
 
   /**
-   * Create the regitry and read the file once.
+   * Creates the registry and reads the file once.
    *
-   * @param category the name oh=f the array that holds the entries,ex {@code "items"}
-   * @param source give the json text each time the file is read
+   * @param category the name of the array that holds the entries, e.g. {@code "items"}
+   * @param source gives the JSON text each time the file is read
    * @throws NullPointerException if an argument is null
-   * @throws IllegalArgumentException if the text has no such array or an entry has no id or the
+   * @throws IllegalArgumentException if the text has no such array, or an entry has no id or the
    *     same id as another
-   * @throws com.badlogic.gdx.utils.SerializationException if the text is not valid json
+   * @throws com.badlogic.gdx.utils.SerializationException if the text is not valid JSON
    */
   public DataRegistry(String category, Supplier<String> source) {
-    this.category = Objects.requireNonNull(category, "category");
-    this.source = Objects.requireNonNull(source, "source");
+    this.category = Objects.requireNonNull(category, "category is null");
+    this.source = Objects.requireNonNull(source, "source is null");
     reload();
   }
 
   /**
-   * Reads the file again. if the new text is invalid the call throws and the registry keeps the
-   * entries it had and a typo during a hot reload never empties the game.
+   * Reads the file again. If the new text is invalid, the call throws and the registry keeps the
+   * entries it had, so a typo during a hot reload never empties the game.
    *
-   * @throws IllegalArgumentException if the text has no such or an entry has no id or the same id
-   *     has another
-   * @throws com.badlogic.gdx.utils.SerializationException if the text is not valid json
+   * @throws IllegalArgumentException if the text has no such array, or an entry has no id or the
+   *     same id as another
+   * @throws com.badlogic.gdx.utils.SerializationException if the text is not valid JSON
    */
   public void reload() {
     JsonValue entries = new JsonReader().parse(source.get()).get(category);
