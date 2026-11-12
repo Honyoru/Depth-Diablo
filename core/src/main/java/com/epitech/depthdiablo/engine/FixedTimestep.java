@@ -33,4 +33,14 @@ public final class FixedTimestep {
     }
     return ticks;
   }
+
+  /**
+   * Returns how far the current frame is between the last tick and the next one. The renderer uses
+   * it to draw moving things between their previous and current positions.
+   *
+   * @return from 0 (a tick just ran) to just below 1 (the next tick is about to run)
+   */
+  public float alpha() {
+    return (float) (accumulator / TICK_SECONDS);
+  }
 }

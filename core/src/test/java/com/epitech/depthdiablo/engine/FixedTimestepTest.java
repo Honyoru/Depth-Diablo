@@ -75,6 +75,31 @@ class FixedTimestepTest {
     assertThrows(IllegalArgumentException.class, () -> timestep.advance(Double.NaN));
   }
 
+  @Test
+  void should_have_an_alpha_of_0_when_nothing_was_advanced() {
+    FixedTimestep timestep = new FixedTimestep();
+
+    assertEquals(0f, timestep.alpha(), 0.001f);
+  }
+
+  @Test
+  void should_have_an_alpha_of_one_half_when_half_a_tick_is_left_over() {
+    FixedTimestep timestep = new FixedTimestep();
+
+    timestep.advance(ONE_TICK * 1.5);
+
+    assertEquals(0.5f, timestep.alpha(), 0.001f);
+  }
+
+  @Test
+  void should_have_an_alpha_of_0_when_the_cap_dropped_the_backlog() {
+    FixedTimestep timestep = new FixedTimestep();
+
+    timestep.advance(60.0);
+
+    assertEquals(0f, timestep.alpha(), 0.001f);
+  }
+
   @Property
   void should_stay_within_the_frame_cap_when_any_delta_is_given(
       @ForAll @DoubleRange(min = 0.0, max = 100.0) double delta) {

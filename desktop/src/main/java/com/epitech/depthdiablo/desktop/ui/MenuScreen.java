@@ -27,8 +27,6 @@ public final class MenuScreen extends ScreenAdapter {
    * Creates the menu screen.
    *
    * @param app the parent game application; must not be {@code null}
-   * @param menuFlowState the shared UI skin; must not be {@code null}
-   * @param hudSkin the menu navigation state machine; must not be {@code null}
    * @param menuFlowState the menu navigation state machine; must not be {@code null}
    * @param hudSkin the shared UI skin; must not be {@code null}
    */
@@ -56,10 +54,9 @@ public final class MenuScreen extends ScreenAdapter {
       case MAIN_MENU -> buildMainMenu();
       case MODE_SELECTION -> buildModeSelection();
       case CHARACTER_SELECTION -> buildCharacterSelection();
-      case IN_GAME -> {
-        Gdx.app.postRunnable(
-            () -> app.startGameScreen(flowState.selectedMode(), flowState.selectedHero()));
-      }
+      case IN_GAME ->
+          Gdx.app.postRunnable(
+              () -> app.startGameScreen(flowState.selectedMode(), flowState.selectedHero()));
     }
   }
 
