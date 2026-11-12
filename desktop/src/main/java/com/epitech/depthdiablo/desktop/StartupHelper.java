@@ -46,6 +46,8 @@ public final class StartupHelper {
 
   private static final Logger LOG = LoggerFactory.getLogger(StartupHelper.class);
   private static final String JVM_RESTARTED_ARG = "jvmIsRestarted";
+  private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
+  private static final String USER_NAME = "user.name";
 
   private StartupHelper() {}
 
@@ -64,15 +66,15 @@ public final class StartupHelper {
       if (programData == null) {
         programData = "C:\\Temp";
       }
-      String previousTmpDir = System.getProperty("java.io.tmpdir", programData);
-      String previousUser = System.getProperty("user.name", "libGDX_User");
-      System.setProperty("java.io.tmpdir", programData + "\\libGDX-temp");
+      String previousTmpDir = System.getProperty(JAVA_IO_TMPDIR, programData);
+      String previousUser = System.getProperty(USER_NAME, "libGDX_User");
+      System.setProperty(JAVA_IO_TMPDIR, programData + "\\libGDX-temp");
       System.setProperty(
-          "user.name",
+          USER_NAME,
           ("User_" + previousUser.hashCode() + "_GDX" + Version.VERSION).replace('.', '_'));
       Lwjgl3NativesLoader.load();
-      System.setProperty("java.io.tmpdir", previousTmpDir);
-      System.setProperty("user.name", previousUser);
+      System.setProperty(JAVA_IO_TMPDIR, previousTmpDir);
+      System.setProperty(USER_NAME, previousUser);
       return false;
     }
     return startNewJvm(false);
