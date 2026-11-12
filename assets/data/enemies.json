@@ -1,1 +1,24 @@
-{ "enemies": [] }
+{
+  "enemies": [
+    {
+      "id": "rat",
+      "spriteId": "enemies/rat",
+      "maxHp": 3,
+      "attack": 1,
+      "resistance": 1,
+      "speed": 90,
+      "width": 16,
+      "height": 16
+    },
+    {
+      "id": "zombie",
+      "spriteId": "enemies/zombie",
+      "maxHp": 8,
+      "attack": 2,
+      "resistance": 2,
+      "speed": 40,
+      "width": 24,
+      "height": 28
+    }
+  ]
+}

@@ -1,1 +1,12 @@
-{ "items": [] }
+{
+  "items": [
+    {
+      "id": "potion_small",
+      "class": "Potion",
+      "nameKey": "item.potion_small.name",
+      "spriteId": "items/potion",
+      "price": 10,
+      "healAmount": 3
+    }
+  ]
+}
