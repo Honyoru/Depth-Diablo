@@ -2,6 +2,8 @@ package com.epitech.depthdiablo.entity;
 
 import com.badlogic.gdx.utils.JsonValue;
 import com.epitech.depthdiablo.data.DataRegistry;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -36,11 +38,20 @@ public final class EnemyFactory {
     return new EnemySpec(
         id,
         entry.getString("spriteId"),
-        entry.getInt("maxHp"),
-        entry.getInt("attack"),
-        entry.getInt("resistance"),
-        entry.getFloat("speed"),
+        readStats(entry.get("stats")),
         entry.getFloat("width"),
         entry.getFloat("height"));
+  }
+
+  /** Reads one value per {@Link Stat} keyed by the stat's name. */
+  private static BaseStats readStats(JsonValue stats) {
+    if (stats == null) {
+      throw new IllegalArgumentException("Missing \"stats\" object");
+    }
+    Map<Stat, Float> values = new EnumMap<>(Stat.class);
+    for (Stat stat : Stat.values()) {
+      values.put(stat, stats.getFloat(stat.name()));
+    }
+    return new BaseStats(values);
   }
 }

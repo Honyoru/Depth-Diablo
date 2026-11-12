@@ -3,41 +3,29 @@ package com.epitech.depthdiablo.entity;
 import java.util.Objects;
 
 /**
- * The base values of enemy type read from {@code data/enemies.json} (Q93). The Enemiy class tke
- * them in its constructor ; Rat and Zombie only differ by these values (GDD 1.3.1).
+ * The base values of one enemy type, read from {@code data/enemies.json} (Q93). The Enemy class
+ * takes them in its constructor; Rat and Zombie only differ by these values (GDD 1.3.1).
  *
- * <p>Pattern: ValueObject (Q97).
+ * <p>Pattern: Type Object (GPP), as a Value Object record (Q97).
  *
- * @param id the enemy's id ex {@code "rat"}
- * @param spriteId the picture render draws for it
- * @param maxHp its health; checked by Character
- * @param attack the base damage of its hits; checked by Character
- * @param resistance the divisor of the damage its takes; checked by Character
- * @param speed how fast it moves, in pixels or ticks per second; set 0 for static enemy
- * @param width the widgh of his boyBox
- * @param height the heigh of his bodyBox
+ * @param id the enemy's id, e.g. {@code "rat"}
+ * @param spriteId the picture the renderer draws for it, e.g. {@code "enemies/rat"}
+ * @param stats its stats before any item (GDD 1.6); BaseStats checks every value
+ * @param width the width of its body box, in pixels
+ * @param height the height of its body box, in pixels
  */
-public record EnemySpec(
-    String id,
-    String spriteId,
-    int maxHp,
-    int attack,
-    int resistance,
-    float speed,
-    float width,
-    float height) {
+public record EnemySpec(String id, String spriteId, BaseStats stats, float width, float height) {
+
   /**
-   * Checks the values Character does not check.
+   * Checks the values BaseStats does not check.
    *
-   * @throws NullPointerException if a text is null
-   * @throws IlegalArgumentException if the speed is negative or a size is not positive
+   * @throws NullPointerException if a text or the stats are null
+   * @throws IllegalArgumentException if a size is not positive
    */
   public EnemySpec {
-    Objects.requireNonNull(id, "id is null");
-    Objects.requireNonNull(spriteId, "spriteId is null");
-    if (speed < 0) {
-      throw new IllegalArgumentException("speed must not be negative");
-    }
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(spriteId, "spriteId");
+    Objects.requireNonNull(stats, "stats");
     if (width <= 0 || height <= 0) {
       throw new IllegalArgumentException("width and height must be positive");
     }

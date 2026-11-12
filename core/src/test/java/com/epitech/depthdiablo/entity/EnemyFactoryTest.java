@@ -14,9 +14,16 @@ import org.junit.jupiter.api.Test;
 class EnemyFactoryTest {
   private static final String ONE_RAT =
       """
-      { "enemies": [ {
-          "id": "rat", "spriteId": "enemies/rat", "maxHp": 3, "attack": 1, "resistance": 1,
-          "speed": 90, "width": 16, "height": 16 } ] }
+      { "enemies": [ {"id": "rat", "spriteId": "enemies/rat",
+        "stats": {
+        "MAX_HP": 3,
+        "ATTACK": 1,
+        "DEFENSE": 1,
+        "SPEED": 90,
+        "ATTACK_SPEED": 1,
+        "LUCK": 0 },
+        "width": 16,
+        "height": 16 } ] }
       """;
 
   @Test
@@ -25,12 +32,37 @@ class EnemyFactoryTest {
 
     EnemySpec rat = factory.spec("rat");
 
-    assertEquals(new EnemySpec("rat", "enemies/rat", 3, 1, 1, 90, 16, 16), rat);
+    assertEquals("rat", rat.id());
+    assertEquals("enemies/rat", rat.spriteId());
+    assertEquals(16, rat.width());
+    assertEquals(16, rat.height());
+  }
+
+  @Test
+  void should_read_every_stat_of_the_entry_when_asked_for_a_spec() {
+    EnemyFactory factory = new EnemyFactory(new DataRegistry("enemies", () -> ONE_RAT));
+
+    StatSource stats = factory.spec("rat").stats();
+
+    assertEquals(3, stats.get(Stat.MAX_HP));
+    assertEquals(1, stats.get(Stat.ATTACK));
+    assertEquals(1, stats.get(Stat.DEFENSE));
+    assertEquals(90, stats.get(Stat.SPEED));
+    assertEquals(1, stats.get(Stat.ATTACK_SPEED));
+    assertEquals(0, stats.get(Stat.LUCK));
   }
 
   @Test
   void should_reject_an_entry_when_its_speed_is_negative() {
-    String file = ONE_RAT.replace("\"speed\": 90", "\"speed\": -1");
+    String file = ONE_RAT.replace("\"SPEED\": 90", "\"SPEED\": -1");
+    EnemyFactory factory = new EnemyFactory(new DataRegistry("enemies", () -> file));
+
+    assertThrows(IllegalArgumentException.class, () -> factory.spec("rat"));
+  }
+
+  @Test
+  void should_reject_an_entry_when_a_stat_is_missing() {
+    String file = ONE_RAT.replace("\"LUCK\": 0", "\"LUK\": 0");
     EnemyFactory factory = new EnemyFactory(new DataRegistry("enemies", () -> file));
 
     assertThrows(IllegalArgumentException.class, () -> factory.spec("rat"));
@@ -45,8 +77,8 @@ class EnemyFactoryTest {
   }
 
   @Test
-  void should_reject_an_entry_when_a_value_is_missing() {
-    String file = "{ \"enemies\": [ { \"id\": \"rat\" } ] }";
+  void should_reject_an_entry_when_it_has_no_stats() {
+    String file = "{ \"enemies\": [ { \"id\": \"rat\", \"spriteId\": \"enemies/rat\" } ] }";
     EnemyFactory factory = new EnemyFactory(new DataRegistry("enemies", () -> file));
 
     assertThrows(IllegalArgumentException.class, () -> factory.spec("rat"));

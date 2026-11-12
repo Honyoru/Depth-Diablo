@@ -3,20 +3,28 @@
     {
       "id": "rat",
       "spriteId": "enemies/rat",
-      "maxHp": 3,
-      "attack": 1,
-      "resistance": 1,
-      "speed": 90,
+      "stats": {
+        "MAX_HP": 3,
+        "ATTACK": 1,
+        "DEFENSE": 1,
+        "SPEED": 90,
+        "ATTACK_SPEED": 1,
+        "LUCK": 0
+      },
       "width": 16,
       "height": 16
     },
     {
       "id": "zombie",
       "spriteId": "enemies/zombie",
-      "maxHp": 8,
-      "attack": 2,
-      "resistance": 2,
-      "speed": 40,
+      "stats": {
+        "MAX_HP": 8,
+        "ATTACK": 2,
+        "DEFENSE": 2,
+        "SPEED": 40,
+        "ATTACK_SPEED": 0.5,
+        "LUCK": 0
+      },
       "width": 24,
       "height": 28
     }
