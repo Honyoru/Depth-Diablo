@@ -6,17 +6,23 @@ import com.epitech.depthdiablo.entity.Aabb;
 public interface Damageable {
 
   /**
-   * @return The hurtbox of the object.
+   * Returns where this one can be hit (GDD 1.5).
+   *
+   * @return its hurtbox
    */
   Aabb hurtbox();
 
   /**
-   * @param amount The amount of damage to take.
+   * Loses HP from a hit. Nothing happens while it is dead or invincible.
+   *
+   * @param amount the damage to take; at least 1
    */
   void takeDamage(int amount);
 
   /**
-   * @return Whether the object is dead.
+   * Tells whether its HP reached 0.
+   *
+   * @return true once it is dead
    */
   boolean isDead();
 

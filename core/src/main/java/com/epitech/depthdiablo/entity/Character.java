@@ -62,7 +62,11 @@ public abstract class Character extends Entity implements Damageable {
     think(tick);
   }
 
-  /** Performs character-specific behavior for the given tick. */
+  /**
+   * Performs character-specific behavior for the given tick.
+   *
+   * @param tick the number of the current logic tick
+   */
   protected abstract void think(long tick);
 
   @Override
@@ -103,7 +107,13 @@ public abstract class Character extends Entity implements Damageable {
     return hp == 0;
   }
 
-  /** Grants invincibility for at least the specified number of ticks. */
+  /**
+   * Grants invincibility for at least the given number of ticks, such as a dodge roll. It never
+   * shortens the invincibility already running.
+   *
+   * @param ticks how many ticks it lasts at least; 0 or more
+   * @throws IllegalArgumentException if {@code ticks} is negative
+   */
   public void grantInvincibility(int ticks) {
     if (ticks < 0) {
       throw new IllegalArgumentException("Invincibility ticks must not be negative, was " + ticks);
@@ -111,12 +121,20 @@ public abstract class Character extends Entity implements Damageable {
     invincibilityTicksLeft = Math.max(invincibilityTicksLeft, ticks);
   }
 
-  /** Returns whether the character currently has active invincibility. */
+  /**
+   * Tells whether the character cannot take damage right now (i-frames after a hit, dodge roll).
+   *
+   * @return true while invincibility ticks are left
+   */
   public boolean isInvincible() {
     return invincibilityTicksLeft > 0;
   }
 
-  /** Returns the character's current health. */
+  /**
+   * Returns the character's current health.
+   *
+   * @return the current HP; 0 once dead
+   */
   public int hp() {
     return hp;
   }
