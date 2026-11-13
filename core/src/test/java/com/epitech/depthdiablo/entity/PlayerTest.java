@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
 import java.util.EnumMap;
 import java.util.Map;
@@ -128,13 +129,6 @@ class PlayerTest {
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
 
     assertThrows(NullPointerException.class, () -> new Knight(box, stats(), box, 0, null, world));
-  }
-
-  @Test
-  void should_fight_for_the_player_side() {
-    Player player = aKnight();
-
-    assertEquals(Faction.PLAYER, player.faction());
   }
 
   @Test

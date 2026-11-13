@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.entity;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
 import java.util.Objects;
 
