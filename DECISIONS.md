@@ -52,6 +52,7 @@ Status note (Ange, 4 Nov): the team reviewed the whole draft orally, and every "
 - Collision (Q41; hitbox shape changed 12 Nov): body boxes and hurtboxes are free AABBs. Every attack hitbox is an oriented box (`Obb`), checked against hurtboxes with the separating axis theorem; traps and contact attacks use an `Obb` at angle 0 around their box. Touching edges never overlap. Fixed time step of 60 logic updates per second, separate from rendering (Q42).
 - Melee swing (12 Nov): the hitbox is a rectangle (weapon reach x width) that turns towards the aim and sweeps from `aim - arc / 2` to `aim + arc / 2` during the swing. One swing hits each target at most once; a new swing can hit it again.
 - Factions (12 Nov): every Damageable fights for a side (`PLAYER`, `ENEMY` or `NEUTRAL`). An attack never hurts its own side, so enemies never hit each other; a `NEUTRAL` attack (trap) hurts everyone. An attack keeps the faction it was launched with; a charm can change a character's faction for its next attacks.
+- Hit result (13 Nov): a hit returns what it did, its damage and whether it killed the target (`HitResult`, named in the item UML). A hit lands only if it deals damage; a dead or invincible target takes none, so it is not touched: the same attack can still hit it once its invincibility ends.
 - Traps: spikes with an activation delay (Q36).
 
 ## 6. Items, inventory and shop
