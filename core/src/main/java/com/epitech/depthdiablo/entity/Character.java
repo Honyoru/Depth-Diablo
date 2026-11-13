@@ -15,6 +15,7 @@ public abstract class Character extends Entity implements Damageable {
   private final int invincibilityTicksAfterHit;
   private int invincibilityTicksLeft;
   private final Aabb hurtboxFromBody;
+  private int swingTicksLeft;
   private int attackCooldownTicksLeft;
 
   /**
@@ -48,15 +49,17 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
-   * Counts the invincibility and the attack cooldown down, then performs character-specific
-   * behavior for the tick.
+   * Counts the invincibility down, then the swing of the current attack, then its cooldown once the
+   * swing is over, and performs character-specific behavior for the tick.
    */
   @Override
   protected final void onUpdate(long tick) {
     if (invincibilityTicksLeft > 0) {
       invincibilityTicksLeft--;
     }
-    if (attackCooldownTicksLeft > 0) {
+    if (swingTicksLeft > 0) {
+      swingTicksLeft--;
+    } else if (attackCooldownTicksLeft > 0) {
       attackCooldownTicksLeft--;
     }
     think(tick);
@@ -177,25 +180,32 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
-   * Tells whether this character can start an attack now: it is alive, its attack speed is above 0
-   * and its last attack's cooldown is over.
+   * Tells whether this character can start an attack now: it is alive, its attack speed is above 0,
+   * and its last attack's swing and cooldown are over.
    *
    * @return true if it can attack
    */
   public boolean canAttack() {
-    return !isDead() && attackSpeed() > 0 && attackCooldownTicksLeft == 0;
+    return !isDead() && attackSpeed() > 0 && swingTicksLeft == 0 && attackCooldownTicksLeft == 0;
   }
 
   /**
-   * Starts the cooldown of an attack: the character must wait {@code 60 / attack speed} ticks,
-   * rounded and at least 1, before the next one. Players and enemies share it (DECISIONS §5).
+   * Starts an attack: the swing runs first, then the character waits {@code 60 / attack speed}
+   * ticks, rounded and at least 1, before the next one. The cooldown only counts down once the
+   * swing is over, so two swings never overlap. Players and enemies share it (DECISIONS §5).
    *
+   * @param swingTicks how many ticks the swing of the weapon lasts; 0 for an attack with no swing
+   * @throws IllegalArgumentException if {@code swingTicks} is negative
    * @throws IllegalStateException if the character cannot attack now (see {@link #canAttack})
    */
-  public void startAttackCooldown() {
+  public void startAttackCooldown(int swingTicks) {
+    if (swingTicks < 0) {
+      throw new IllegalArgumentException("Swing ticks must not be negative: " + swingTicks);
+    }
     if (!canAttack()) {
       throw new IllegalStateException("Cannot attack now");
     }
+    swingTicksLeft = swingTicks;
     attackCooldownTicksLeft =
         Math.max(1, Math.round(GameConstants.TICKS_PER_SECOND / attackSpeed()));
   }

@@ -306,7 +306,7 @@ class CharacterTest {
   void should_not_attack_again_during_its_cooldown() {
     Character character = aCharacter().withAttackSpeed(1f).build();
 
-    character.startAttackCooldown();
+    character.startAttackCooldown(0);
 
     assertFalse(character.canAttack());
   }
@@ -314,7 +314,7 @@ class CharacterTest {
   @Test
   void should_attack_again_after_60_ticks_at_one_attack_per_second() {
     Character character = aCharacter().withAttackSpeed(1f).build();
-    character.startAttackCooldown();
+    character.startAttackCooldown(0);
 
     for (long tick = 1; tick <= 59; tick++) {
       character.update(tick);
@@ -328,7 +328,7 @@ class CharacterTest {
   @Test
   void should_wait_half_as_long_at_two_attacks_per_second() {
     Character character = aCharacter().withAttackSpeed(2f).build();
-    character.startAttackCooldown();
+    character.startAttackCooldown(0);
 
     for (long tick = 1; tick <= 30; tick++) {
       character.update(tick);
@@ -353,9 +353,42 @@ class CharacterTest {
   @Test
   void should_throw_when_starting_a_cooldown_it_cannot_start() {
     Character character = aCharacter().build();
-    character.startAttackCooldown();
+    character.startAttackCooldown(0);
 
-    assertThrows(IllegalStateException.class, character::startAttackCooldown);
+    assertThrows(IllegalStateException.class, () -> character.startAttackCooldown(0));
+  }
+
+  @Test
+  void should_not_attack_again_during_its_swing() {
+    Character character = aCharacter().withAttackSpeed(1f).build();
+    character.startAttackCooldown(12);
+
+    for (long tick = 1; tick <= 11; tick++) {
+      character.update(tick);
+    }
+
+    assertFalse(character.canAttack());
+  }
+
+  @Test
+  void should_count_the_cooldown_only_once_the_swing_is_over() {
+    Character character = aCharacter().withAttackSpeed(1f).build();
+    character.startAttackCooldown(12);
+
+    for (long tick = 1; tick <= 71; tick++) {
+      character.update(tick);
+    }
+    assertFalse(character.canAttack());
+
+    character.update(72);
+    assertTrue(character.canAttack());
+  }
+
+  @Test
+  void should_throw_when_the_swing_ticks_are_negative() {
+    Character character = aCharacter().build();
+
+    assertThrows(IllegalArgumentException.class, () -> character.startAttackCooldown(-1));
   }
 
   @Test
