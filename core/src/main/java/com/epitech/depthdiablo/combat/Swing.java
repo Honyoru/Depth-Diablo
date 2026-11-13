@@ -1,12 +1,16 @@
 package com.epitech.depthdiablo.combat;
 
+import com.epitech.depthdiablo.engine.DamageDealt;
+import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.EventBus;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.entity.Entity;
+import com.epitech.depthdiablo.entity.Updatable;
 import com.epitech.depthdiablo.item.MeleeWeapon;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -16,7 +20,7 @@ import java.util.function.Supplier;
  * <p>The holder owns its swing and updates it each tick. The blade turns around the holder's
  * centre, so it follows the holder if it moves during the swing.
  */
-public final class Swing {
+public final class Swing implements Updatable {
   private final MeleeWeapon weapon;
   private final Character holder;
   private final float aimDegrees;
@@ -54,6 +58,30 @@ public final class Swing {
   }
 
   /**
+   * Runs one tick of the swing: the blade moves to its next step around the holder, then hits each
+   * target it touches, once per swing. A hit that lands publishes a DamageDealt event, and an
+   * EntityDied event if it kills. A dead holder hits nothing, but its swing still runs to the end.
+   * Does nothing once the swing is over.
+   *
+   * @param tick the number of the current logic tick
+   */
+  @Override
+  public void update(long tick) {
+    if (isOver()) {
+      return;
+    }
+    hitbox.reshape(bladeAt(ticksElapsed()));
+    if (!holder.isDead()) {
+      for (Entity entity : targets.get()) {
+        if (entity instanceof Character target && hitbox.canHit(target)) {
+          strike(target);
+        }
+      }
+    }
+    hitbox.update(tick);
+  }
+
+  /**
    * Returns where the blade is now.
    *
    * @return the blade as a rotated rectangle
@@ -87,6 +115,17 @@ public final class Swing {
    */
   public boolean isOver() {
     return hitbox.isExpired();
+  }
+
+  private void strike(Character target) {
+    HitResult result = weapon.hit(holder, target);
+    hitbox.recordHit(target, result);
+    if (result.landed()) {
+      events.publish(new DamageDealt(holder, target, result.damage()));
+      if (result.killed()) {
+        events.publish(new EntityDied(target, Optional.of(holder)));
+      }
+    }
   }
 
   private Obb bladeAt(int tickIndex) {
