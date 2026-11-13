@@ -15,6 +15,7 @@ import java.util.Objects;
 public final class Hitbox implements Updatable {
   private Obb shape;
   private final Entity owner;
+  private final Faction faction;
   private int ticksLeft;
 
   /**
@@ -22,13 +23,16 @@ public final class Hitbox implements Updatable {
    *
    * @param shape the area it covers in the world
    * @param owner the entity whose attack it is; it never hits its owner
+   * @param faction the side the attack fights for, taken when the attack starts; a target of a side
+   *     it cannot hurt is never hit
    * @param lifetimeTicks how many logic ticks it lasts (60 per second, Q42); above 0
-   * @throws NullPointerException if {@code shape} or {@code owner} is {@code null}
+   * @throws NullPointerException if {@code shape}, {@code owner} or {@code faction} is {@code null}
    * @throws IllegalArgumentException if {@code lifetimeTicks} is 0 or less
    */
-  public Hitbox(Obb shape, Entity owner, int lifetimeTicks) {
+  public Hitbox(Obb shape, Entity owner, Faction faction, int lifetimeTicks) {
     this.shape = Objects.requireNonNull(shape, "The shape of a hitbox must not be null");
     this.owner = Objects.requireNonNull(owner, "The owner of a hitbox must not be null");
+    this.faction = Objects.requireNonNull(faction, "The faction of a hitbox must not be null");
     if (lifetimeTicks <= 0) {
       throw new IllegalArgumentException("Lifetime must be above 0 ticks: " + lifetimeTicks);
     }
@@ -73,6 +77,15 @@ public final class Hitbox implements Updatable {
    */
   public Entity owner() {
     return owner;
+  }
+
+  /**
+   * Returns the side this attack fights for.
+   *
+   * @return its faction, fixed when the attack started
+   */
+  public Faction faction() {
+    return faction;
   }
 
   /**
