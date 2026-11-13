@@ -2,7 +2,10 @@ package com.epitech.depthdiablo.combat;
 
 import com.epitech.depthdiablo.entity.Entity;
 import com.epitech.depthdiablo.entity.Updatable;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * The area of an attack that deals damage (GDD 1.5): a melee swing, a projectile, a trap or a
@@ -17,6 +20,7 @@ public final class Hitbox implements Updatable {
   private final Entity owner;
   private final Faction faction;
   private int ticksLeft;
+  private final Set<Damageable> alreadyHit = Collections.newSetFromMap(new IdentityHashMap<>());
 
   /**
    * Creates a hitbox.
@@ -59,6 +63,44 @@ public final class Hitbox implements Updatable {
    */
   public boolean isExpired() {
     return ticksLeft == 0;
+  }
+
+  /**
+   * Tells whether this hitbox can hit the target now (GDD 1.5): it is not expired, the target is
+   * not its owner, its faction can hurt the target's, it did not land a hit on the target yet, the
+   * target is alive, and its hurtbox overlaps this hitbox's shape. It changes nothing: the owner
+   * hits, then calls {@link #recordHit}.
+   *
+   * @param target the one that could be hit
+   * @return true if the target can be hit now
+   * @throws NullPointerException if {@code target} is {@code null}
+   */
+  public boolean canHit(Damageable target) {
+    Objects.requireNonNull(target, "target is null");
+    return !isExpired()
+        && !owner.equals(target)
+        && faction.canHurt(target.faction())
+        && !alreadyHit.contains(target)
+        && !target.isDead()
+        && shape.overlaps(target.hurtbox());
+  }
+
+  /**
+   * Records the result of a hit on the target. A hit that landed marks the target, so this hitbox
+   * never hits it again during its lifetime. A hit that did not land (the target was invincible)
+   * does not count: the same attack can still hit it once its invincibility ends. A new attack
+   * creates a new hitbox, which can hit the same target again.
+   *
+   * @param target the one that was hit
+   * @param result what the hit did
+   * @throws NullPointerException if {@code target} or {@code result} is {@code null}
+   */
+  public void recordHit(Damageable target, HitResult result) {
+    Objects.requireNonNull(target, "target is null");
+    Objects.requireNonNull(result, "result is null");
+    if (result.landed()) {
+      alreadyHit.add(target);
+    }
   }
 
   /**

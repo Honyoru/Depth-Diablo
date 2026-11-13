@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.Character;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +16,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 /** GDD 1.5: a hitbox is the area of an attack; it never hits its owner. */
 class HitboxTest {
   private static final Obb SWING = new Obb(30, 8, 0, 24, 8);
+  private static final Aabb IN_REACH = new Aabb(20, 0, 16, 16);
+  private static final HitResult LANDED = new HitResult(3, false);
 
   @Test
   void should_keep_its_shape_owner_faction_and_lifetime() {
@@ -105,5 +108,109 @@ class HitboxTest {
 
     assertEquals(0, hitbox.ticksLeft());
     assertTrue(hitbox.isExpired());
+  }
+
+  @Test
+  void should_hit_an_enemy_its_shape_overlaps() {
+    Character target = aCharacter().withHurtbox(IN_REACH).build();
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    assertTrue(hitbox.canHit(target));
+  }
+
+  @Test
+  void should_not_hit_a_target_out_of_its_shape() {
+    Character target = aCharacter().withHurtbox(new Aabb(100, 0, 16, 16)).build();
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    assertFalse(hitbox.canHit(target));
+  }
+
+  @Test
+  void should_never_hit_its_owner() {
+    Character owner = aCharacter().withHurtbox(IN_REACH).build();
+    Hitbox hitbox = new Hitbox(SWING, owner, Faction.NEUTRAL, 12);
+
+    assertFalse(hitbox.canHit(owner));
+  }
+
+  @Test
+  void should_not_hit_its_own_side() {
+    Character ally = aCharacter().withFaction(Faction.PLAYER).withHurtbox(IN_REACH).build();
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    assertFalse(hitbox.canHit(ally));
+  }
+
+  @Test
+  void should_not_hit_once_expired() {
+    Character target = aCharacter().withHurtbox(IN_REACH).build();
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 1);
+
+    hitbox.update(1);
+
+    assertFalse(hitbox.canHit(target));
+  }
+
+  @Test
+  void should_not_hit_a_dead_target() {
+    Character target = aCharacter().withHp(1).withHurtbox(IN_REACH).build();
+    target.takeDamage(1);
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    assertFalse(hitbox.canHit(target));
+  }
+
+  @Test
+  void should_throw_when_the_target_to_check_is_null() {
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    assertThrows(NullPointerException.class, () -> hitbox.canHit(null));
+  }
+
+  @Test
+  void should_not_hit_the_same_target_twice() {
+    Character target = aCharacter().withHurtbox(IN_REACH).build();
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    hitbox.recordHit(target, LANDED);
+
+    assertFalse(hitbox.canHit(target));
+  }
+
+  @Test
+  void should_still_hit_another_target_after_a_hit() {
+    Character first = aCharacter().withHurtbox(IN_REACH).build();
+    Character second = aCharacter().withHurtbox(IN_REACH).build();
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    hitbox.recordHit(first, LANDED);
+
+    assertTrue(hitbox.canHit(second));
+  }
+
+  @Test
+  void should_still_hit_a_target_its_hit_did_not_land_on() {
+    Character target = aCharacter().withHurtbox(IN_REACH).build();
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    hitbox.recordHit(target, HitResult.NONE);
+
+    assertTrue(hitbox.canHit(target));
+  }
+
+  @Test
+  void should_throw_when_the_target_to_record_is_null() {
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    assertThrows(NullPointerException.class, () -> hitbox.recordHit(null, LANDED));
+  }
+
+  @Test
+  void should_throw_when_the_result_to_record_is_null() {
+    Character target = aCharacter().build();
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    assertThrows(NullPointerException.class, () -> hitbox.recordHit(target, null));
   }
 }
