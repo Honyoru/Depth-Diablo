@@ -7,6 +7,19 @@
       "spriteId": "items/potion",
       "price": 10,
       "healAmount": 3
+    },
+    {
+      "id": "sword",
+      "class": "Sword",
+      "nameKey": "item.sword.name",
+      "spriteId": "items/sword",
+      "rarity": "COMMON",
+      "price": 30,
+      "attackBonus": 2,
+      "range": 24,
+      "width": 8,
+      "arcDegrees": 90,
+      "swingTicks": 12
     }
   ]
 }

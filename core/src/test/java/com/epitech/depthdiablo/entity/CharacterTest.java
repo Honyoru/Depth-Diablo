@@ -11,6 +11,7 @@ import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.combat.Swing;
 import com.epitech.depthdiablo.engine.EventBus;
 import com.epitech.depthdiablo.item.Sword;
+import com.epitech.depthdiablo.testdata.Items;
 import java.util.List;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
@@ -404,7 +405,7 @@ class CharacterTest {
   void should_hold_the_swing_it_starts() {
     CountingCharacter character = new CountingCharacter();
 
-    character.startSwing(new Sword(), 30f, List::of, new EventBus());
+    character.startSwing(Items.sword(), 30f, List::of, new EventBus());
 
     assertEquals(30f, character.currentSwing().orElseThrow().aimDegrees());
   }
@@ -412,7 +413,7 @@ class CharacterTest {
   @Test
   void should_run_its_swing_once_per_update() {
     CountingCharacter character = new CountingCharacter();
-    character.startSwing(new Sword(), 0f, List::of, new EventBus());
+    character.startSwing(Items.sword(), 0f, List::of, new EventBus());
     Swing swing = character.currentSwing().orElseThrow();
 
     character.update(1);
@@ -424,9 +425,10 @@ class CharacterTest {
   @Test
   void should_drop_its_swing_once_it_is_over() {
     CountingCharacter character = new CountingCharacter();
-    character.startSwing(new Sword(), 0f, List::of, new EventBus());
+    Sword sword = Items.sword();
+    character.startSwing(sword, 0f, List::of, new EventBus());
 
-    for (long tick = 1; tick <= 12; tick++) {
+    for (long tick = 1; tick <= sword.swingTicks(); tick++) {
       character.update(tick);
     }
 
@@ -436,7 +438,7 @@ class CharacterTest {
   @Test
   void should_keep_its_swing_when_a_second_one_is_refused() {
     CountingCharacter character = new CountingCharacter();
-    Sword sword = new Sword();
+    Sword sword = Items.sword();
     character.startSwing(sword, 30f, List::of, new EventBus());
 
     assertThrows(

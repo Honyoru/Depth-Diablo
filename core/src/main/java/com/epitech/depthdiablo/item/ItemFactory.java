@@ -2,7 +2,9 @@ package com.epitech.depthdiablo.item;
 
 import com.badlogic.gdx.utils.JsonValue;
 import com.epitech.depthdiablo.data.DataRegistry;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 /**
  * Builds items from {@code data/items.json} (Q23, Q129). Each entry names its class ex {@code
@@ -11,6 +13,31 @@ import java.util.Objects;
  * <p>Pattern: Simple Factory
  */
 public final class ItemFactory {
+  /** One builder per {@code "class"} of the data file; a new item type is one more line. */
+  private static final Map<String, BiFunction<String, JsonValue, Item>> BUILDERS =
+      Map.of(
+          "Potion",
+          (id, entry) ->
+              new Potion(
+                  id,
+                  entry.getString("nameKey"),
+                  entry.getString("spriteId"),
+                  entry.getInt("price"),
+                  entry.getInt("healAmount")),
+          "Sword",
+          (id, entry) ->
+              new Sword(
+                  id,
+                  entry.getString("nameKey"),
+                  entry.getString("spriteId"),
+                  Rarity.valueOf(entry.getString("rarity")),
+                  entry.getInt("price"),
+                  entry.getInt("attackBonus"),
+                  entry.getFloat("range"),
+                  entry.getFloat("width"),
+                  entry.getFloat("arcDegrees"),
+                  entry.getInt("swingTicks")));
+
   private final DataRegistry items;
 
   /**
@@ -34,15 +61,10 @@ public final class ItemFactory {
   public Item create(String id) {
     JsonValue entry = items.definition(id);
     String type = entry.getString("class");
-    return switch (type) {
-      case "Potion" ->
-          new Potion(
-              id,
-              entry.getString("nameKey"),
-              entry.getString("spriteId"),
-              entry.getInt("price"),
-              entry.getInt("healAmount"));
-      default -> throw new IllegalArgumentException("Unknown item class for " + id + ": " + type);
-    };
+    BiFunction<String, JsonValue, Item> builder = BUILDERS.get(type);
+    if (builder == null) {
+      throw new IllegalArgumentException("Unknown item class for " + id + ": " + type);
+    }
+    return builder.apply(id, entry);
   }
 }

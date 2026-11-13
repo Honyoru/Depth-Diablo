@@ -15,6 +15,7 @@ import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.entity.Entity;
 import com.epitech.depthdiablo.item.MeleeWeapon;
 import com.epitech.depthdiablo.item.Sword;
+import com.epitech.depthdiablo.testdata.Items;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,14 +38,14 @@ class SwingTest {
 
   @Test
   void should_start_the_blade_half_an_arc_before_the_aim() {
-    Swing swing = aSwing(new Sword(), 0f);
+    Swing swing = aSwing(Items.sword(), 0f);
 
     assertEquals(-45f, swing.shape().angleDegrees(), DELTA);
   }
 
   @Test
   void should_turn_the_blade_around_the_holder_centre() {
-    Swing swing = aSwing(new Sword(), 0f);
+    Swing swing = aSwing(Items.sword(), 0f);
 
     // half a blade (12 px) from (100, 50), at -45 degrees
     assertEquals(108.485f, swing.shape().centreX(), DELTA);
@@ -53,12 +54,12 @@ class SwingTest {
 
   @Test
   void should_keep_its_aim() {
-    assertEquals(30f, aSwing(new Sword(), 30f).aimDegrees());
+    assertEquals(30f, aSwing(Items.sword(), 30f).aimDegrees());
   }
 
   @Test
   void should_not_be_over_when_it_starts() {
-    Swing swing = aSwing(new Sword(), 0f);
+    Swing swing = aSwing(Items.sword(), 0f);
 
     assertEquals(0, swing.ticksElapsed());
     assertFalse(swing.isOver());
@@ -66,13 +67,13 @@ class SwingTest {
 
   @Test
   void should_throw_when_the_aim_is_not_a_number() {
-    assertThrows(IllegalArgumentException.class, () -> aSwing(new Sword(), Float.NaN));
+    assertThrows(IllegalArgumentException.class, () -> aSwing(Items.sword(), Float.NaN));
   }
 
   @Test
   void should_throw_when_the_aim_is_infinite() {
     assertThrows(
-        IllegalArgumentException.class, () -> aSwing(new Sword(), Float.POSITIVE_INFINITY));
+        IllegalArgumentException.class, () -> aSwing(Items.sword(), Float.POSITIVE_INFINITY));
   }
 
   @Test
@@ -85,19 +86,20 @@ class SwingTest {
   void should_throw_when_the_holder_is_null() {
     assertThrows(
         NullPointerException.class,
-        () -> new Swing(new Sword(), null, 0f, NO_TARGETS, new EventBus()));
+        () -> new Swing(Items.sword(), null, 0f, NO_TARGETS, new EventBus()));
   }
 
   @Test
   void should_throw_when_the_targets_are_null() {
     assertThrows(
-        NullPointerException.class, () -> new Swing(new Sword(), holder, 0f, null, new EventBus()));
+        NullPointerException.class,
+        () -> new Swing(Items.sword(), holder, 0f, null, new EventBus()));
   }
 
   @Test
   void should_throw_when_the_events_are_null() {
     assertThrows(
-        NullPointerException.class, () -> new Swing(new Sword(), holder, 0f, NO_TARGETS, null));
+        NullPointerException.class, () -> new Swing(Items.sword(), holder, 0f, NO_TARGETS, null));
   }
 
   @Test
@@ -166,7 +168,7 @@ class SwingTest {
     List<GameEvent> seen = new ArrayList<>();
     events.subscribeAll(seen::add);
 
-    runWholeSwing(new Swing(new Sword(), holder, 0f, () -> List.of(enemy), events));
+    runWholeSwing(new Swing(Items.sword(), holder, 0f, () -> List.of(enemy), events));
     events.flush();
 
     assertEquals(List.of(new DamageDealt(holder, enemy, 4)), seen);
@@ -179,7 +181,7 @@ class SwingTest {
     List<GameEvent> seen = new ArrayList<>();
     events.subscribeAll(seen::add);
 
-    runWholeSwing(new Swing(new Sword(), holder, 0f, () -> List.of(enemy), events));
+    runWholeSwing(new Swing(Items.sword(), holder, 0f, () -> List.of(enemy), events));
     events.flush();
 
     assertEquals(
@@ -189,7 +191,7 @@ class SwingTest {
 
   @Test
   void should_end_the_sweep_half_an_arc_after_the_aim() {
-    Swing swing = aSwing(new Sword(), 0f);
+    Swing swing = aSwing(Items.sword(), 0f);
 
     runWholeSwing(swing);
 
@@ -198,29 +200,32 @@ class SwingTest {
 
   @Test
   void should_be_over_after_its_swing_ticks() {
-    Swing swing = aSwing(new Sword(), 0f);
+    Sword sword = Items.sword();
+    Swing swing = aSwing(sword, 0f);
+    int last = sword.swingTicks();
 
-    for (long tick = 1; tick <= 11; tick++) {
+    for (long tick = 1; tick < last; tick++) {
       swing.update(tick);
     }
     assertFalse(swing.isOver());
 
-    swing.update(12);
+    swing.update(last);
     assertTrue(swing.isOver());
   }
 
   @Test
   void should_do_nothing_once_over() {
-    Swing swing = aSwing(new Sword(), 0f);
+    Sword sword = Items.sword();
+    Swing swing = aSwing(sword, 0f);
     runWholeSwing(swing);
 
-    swing.update(13);
+    swing.update(sword.swingTicks() + 1L);
 
-    assertEquals(12, swing.ticksElapsed());
+    assertEquals(sword.swingTicks(), swing.ticksElapsed());
   }
 
   private Swing aSwingAt(Character target) {
-    return new Swing(new Sword(), holder, 0f, () -> List.of(target), new EventBus());
+    return new Swing(Items.sword(), holder, 0f, () -> List.of(target), new EventBus());
   }
 
   private static Character anEnemyAt(float x, float y, int hp) {
@@ -228,7 +233,7 @@ class SwingTest {
   }
 
   private static void runWholeSwing(Swing swing) {
-    for (long tick = 1; tick <= 12; tick++) {
+    for (long tick = 1; !swing.isOver(); tick++) {
       swing.update(tick);
     }
   }
