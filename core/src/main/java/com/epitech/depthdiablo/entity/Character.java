@@ -2,7 +2,13 @@ package com.epitech.depthdiablo.entity;
 
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Damageable;
+import com.epitech.depthdiablo.combat.Swing;
+import com.epitech.depthdiablo.engine.EventBus;
+import com.epitech.depthdiablo.item.MeleeWeapon;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Base class for player and enemy entities, with shared health and damage handling. The final
@@ -17,6 +23,7 @@ public abstract class Character extends Entity implements Damageable {
   private final Aabb hurtboxFromBody;
   private int swingTicksLeft;
   private int attackCooldownTicksLeft;
+  private Swing currentSwing;
 
   /**
    * Creates a character with the specified body box, stats, hurtbox, and post-hit invincibility
@@ -49,13 +56,17 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
-   * Counts the invincibility down, then the swing of the current attack, then its cooldown once the
-   * swing is over, and performs character-specific behavior for the tick.
+   * Counts the invincibility down, runs the current swing, counts the swing of the current attack
+   * down, then its cooldown once the swing is over, and performs character-specific behavior for
+   * the tick.
    */
   @Override
   protected final void onUpdate(long tick) {
     if (invincibilityTicksLeft > 0) {
       invincibilityTicksLeft--;
+    }
+    if (currentSwing != null) {
+      currentSwing.update(tick); // does nothing once the swing is over
     }
     if (swingTicksLeft > 0) {
       swingTicksLeft--;
@@ -208,6 +219,33 @@ public abstract class Character extends Entity implements Damageable {
     swingTicksLeft = swingTicks;
     attackCooldownTicksLeft =
         Math.max(1, Math.round(GameConstants.TICKS_PER_SECOND / attackSpeed()));
+  }
+
+  /**
+   * Swings a melee weapon towards the aim. The swing runs on the next ticks, during this
+   * character's update; a player or an enemy calls it from {@link #think(long)}.
+   *
+   * @param weapon the weapon to swing
+   * @param aimDegrees the direction of the attack, in degrees (0 = right, 90 = up)
+   * @param targets gives the entities the blade may hit, read again at each tick
+   * @param events where the swing publishes the damage it deals and the deaths it causes
+   * @throws NullPointerException if an argument is {@code null}
+   * @throws IllegalArgumentException if the aim is not a finite number
+   * @throws IllegalStateException if this character cannot attack now (see {@link #canAttack})
+   */
+  protected final void startSwing(
+      MeleeWeapon weapon, float aimDegrees, Supplier<List<Entity>> targets, EventBus events) {
+    Objects.requireNonNull(weapon, "weapon is null");
+    currentSwing = weapon.attack(this, aimDegrees, targets, events);
+  }
+
+  /**
+   * Returns the swing running now, for the renderer.
+   *
+   * @return the current swing, or empty if this character is not swinging or its swing is over
+   */
+  public Optional<Swing> currentSwing() {
+    return Optional.ofNullable(currentSwing).filter(swing -> !swing.isOver());
   }
 
   /**
