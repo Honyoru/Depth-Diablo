@@ -298,6 +298,67 @@ class CharacterTest {
   }
 
   @Test
+  void should_be_able_to_attack_when_created() {
+    assertTrue(aCharacter().build().canAttack());
+  }
+
+  @Test
+  void should_not_attack_again_during_its_cooldown() {
+    Character character = aCharacter().withAttackSpeed(1f).build();
+
+    character.startAttackCooldown();
+
+    assertFalse(character.canAttack());
+  }
+
+  @Test
+  void should_attack_again_after_60_ticks_at_one_attack_per_second() {
+    Character character = aCharacter().withAttackSpeed(1f).build();
+    character.startAttackCooldown();
+
+    for (long tick = 1; tick <= 59; tick++) {
+      character.update(tick);
+    }
+    assertFalse(character.canAttack());
+
+    character.update(60);
+    assertTrue(character.canAttack());
+  }
+
+  @Test
+  void should_wait_half_as_long_at_two_attacks_per_second() {
+    Character character = aCharacter().withAttackSpeed(2f).build();
+    character.startAttackCooldown();
+
+    for (long tick = 1; tick <= 30; tick++) {
+      character.update(tick);
+    }
+
+    assertTrue(character.canAttack());
+  }
+
+  @Test
+  void should_never_attack_with_an_attack_speed_of_0() {
+    assertFalse(aCharacter().withAttackSpeed(0f).build().canAttack());
+  }
+
+  @Test
+  void should_not_attack_when_dead() {
+    Character character = aCharacter().withHp(1).build();
+    character.takeDamage(1);
+
+    assertFalse(character.canAttack());
+  }
+
+  @Test
+  void should_throw_when_starting_a_cooldown_it_cannot_start() {
+    Character character = aCharacter().build();
+    character.startAttackCooldown();
+
+    assertThrows(IllegalStateException.class, character::startAttackCooldown);
+  }
+
+  @Test
   void should_throw_when_the_stat_source_is_null() {
     assertThrows(NullPointerException.class, () -> new CountingCharacter(null));
   }

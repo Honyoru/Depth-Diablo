@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.entity;
 
+import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Damageable;
 import java.util.Objects;
 
@@ -11,10 +12,10 @@ import java.util.Objects;
 public abstract class Character extends Entity implements Damageable {
   private final StatSource stats;
   private int hp;
-  private final Aabb hurtbox;
   private final int invincibilityTicksAfterHit;
   private int invincibilityTicksLeft;
   private final Aabb hurtboxFromBody;
+  private int attackCooldownTicksLeft;
 
   /**
    * Creates a character with the specified body box, stats, hurtbox, and post-hit invincibility
@@ -43,15 +44,20 @@ public abstract class Character extends Entity implements Damageable {
     this.hurtboxFromBody = hurtbox.translated(-bodyBox.x(), -bodyBox.y());
     this.stats = Objects.requireNonNull(stats, "The stats of a character must not be null");
     this.hp = (int) stats.get(Stat.MAX_HP);
-    this.hurtbox = hurtbox;
     this.invincibilityTicksAfterHit = invincibilityTicksAfterHit;
   }
 
-  /** Updates invincibility bookkeeping and performs character-specific behavior for the tick. */
+  /**
+   * Counts the invincibility and the attack cooldown down, then performs character-specific
+   * behavior for the tick.
+   */
   @Override
   protected final void onUpdate(long tick) {
     if (invincibilityTicksLeft > 0) {
       invincibilityTicksLeft--;
+    }
+    if (attackCooldownTicksLeft > 0) {
+      attackCooldownTicksLeft--;
     }
     think(tick);
   }
@@ -150,6 +156,30 @@ public abstract class Character extends Entity implements Damageable {
    */
   public float attackSpeed() {
     return stats.get(Stat.ATTACK_SPEED);
+  }
+
+  /**
+   * Tells whether this character can start an attack now: it is alive, its attack speed is above 0
+   * and its last attack's cooldown is over.
+   *
+   * @return true if it can attack
+   */
+  public boolean canAttack() {
+    return !isDead() && attackSpeed() > 0 && attackCooldownTicksLeft == 0;
+  }
+
+  /**
+   * Starts the cooldown of an attack: the character must wait {@code 60 / attack speed} ticks,
+   * rounded and at least 1, before the next one. Players and enemies share it (DECISIONS §5).
+   *
+   * @throws IllegalStateException if the character cannot attack now (see {@link #canAttack})
+   */
+  public void startAttackCooldown() {
+    if (!canAttack()) {
+      throw new IllegalStateException("Cannot attack now");
+    }
+    attackCooldownTicksLeft =
+        Math.max(1, Math.round(GameConstants.TICKS_PER_SECOND / attackSpeed()));
   }
 
   /**
