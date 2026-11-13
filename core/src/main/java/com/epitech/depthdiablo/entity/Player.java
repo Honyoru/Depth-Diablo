@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.entity;
 
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
+import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.input.PlayerInput;
 import java.util.Objects;
 
@@ -57,5 +58,15 @@ public abstract class Player extends Character {
    */
   public boolean isMoving() {
     return moving;
+  }
+
+  /**
+   * Returns the player's side. Knight, Mage and Archer all fight for it, so it is final.
+   *
+   * @return {@link Faction#PLAYER}
+   */
+  @Override
+  public final Faction faction() {
+    return Faction.PLAYER;
   }
 }

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.epitech.depthdiablo.combat.Faction;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.constraints.IntRange;
@@ -318,6 +319,11 @@ class CharacterTest {
     protected void think(long tick) {
       thinks++;
       lastTick = tick;
+    }
+
+    @Override
+    public Faction faction() {
+      return Faction.ENEMY;
     }
   }
 }

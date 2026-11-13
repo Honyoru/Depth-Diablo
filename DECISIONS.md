@@ -49,7 +49,9 @@ Status note (Ange, 4 Nov): the team reviewed the whole draft orally, and every "
 - No crits, no chance-based dodge, no block (Q27).
 - Invincibility frames after a hit, 0.3 to 0.8 s placeholder (Q28). Knockback on every hit, for feedback (Q29).
 - Hurtbox and hitbox are separate: damage only happens when an attacker's hitbox overlaps a target's hurtbox (1.5).
-- Collision: free AABB hitboxes (Q41). Fixed time step of 60 logic updates per second, separate from rendering (Q42).
+- Collision (Q41; hitbox shape changed 12 Nov): body boxes and hurtboxes are free AABBs. Every attack hitbox is an oriented box (`Obb`), checked against hurtboxes with the separating axis theorem; traps and contact attacks use an `Obb` at angle 0 around their box. Touching edges never overlap. Fixed time step of 60 logic updates per second, separate from rendering (Q42).
+- Melee swing (12 Nov): the hitbox is a rectangle (weapon reach x width) that turns towards the aim and sweeps from `aim - arc / 2` to `aim + arc / 2` during the swing. One swing hits each target at most once; a new swing can hit it again.
+- Factions (12 Nov): every Damageable fights for a side (`PLAYER`, `ENEMY` or `NEUTRAL`). An attack never hurts its own side, so enemies never hit each other; a `NEUTRAL` attack (trap) hurts everyone. An attack keeps the faction it was launched with; a charm can change a character's faction for its next attacks.
 - Traps: spikes with an activation delay (Q36).
 
 ## 6. Items, inventory and shop

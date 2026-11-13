@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.testdata;
 
+import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.BaseStats;
 import com.epitech.depthdiablo.entity.Character;
@@ -14,6 +15,7 @@ public final class CharacterBuilder {
   private final Map<Stat, Float> stats = new EnumMap<>(Stat.class);
   private Aabb hurtbox = new Aabb(0, 0, 16, 16);
   private int invincibilityTicksAfterHit;
+  private Faction faction = Faction.ENEMY;
 
   private CharacterBuilder() {
     stats.put(Stat.MAX_HP, 10f);
@@ -26,7 +28,7 @@ public final class CharacterBuilder {
 
   /**
    * Starts a character with 10 HP, 1 attack, 1 defense, a speed and attack speed of 1, 0 luck, a 16
-   * x 16 body box and hurtbox at the origin and no i-frames after a hit.
+   * x 16 body box and hurtbox at the origin, no i-frames after a hit, on the ENEMY side.
    *
    * @return a new builder
    */
@@ -123,24 +125,49 @@ public final class CharacterBuilder {
   }
 
   /**
+   * Sets the side the character fights for.
+   *
+   * @param side its faction
+   * @return this builder
+   */
+  public CharacterBuilder withFaction(Faction side) {
+    this.faction = side;
+    return this;
+  }
+
+  /**
    * Builds the character.
    *
    * @return a character that does nothing on its own
    * @throws IllegalArgumentException if a stat is invalid (see {@link BaseStats})
    */
   public Character build() {
-    return new IdleCharacter(bodyBox, new BaseStats(stats), hurtbox, invincibilityTicksAfterHit);
+    return new IdleCharacter(
+        bodyBox, new BaseStats(stats), hurtbox, invincibilityTicksAfterHit, faction);
   }
 
   /** Hand-written fake (Q117): a character with no behaviour of its own. */
   private static final class IdleCharacter extends Character {
-    IdleCharacter(Aabb bodyBox, StatSource stats, Aabb hurtbox, int invincibilityTicksAfterHit) {
+    private final Faction faction;
+
+    IdleCharacter(
+        Aabb bodyBox,
+        StatSource stats,
+        Aabb hurtbox,
+        int invincibilityTicksAfterHit,
+        Faction faction) {
       super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit);
+      this.faction = faction;
     }
 
     @Override
     protected void think(long tick) {
       // An idle character never acts.
+    }
+
+    @Override
+    public Faction faction() {
+      return faction;
     }
   }
 }

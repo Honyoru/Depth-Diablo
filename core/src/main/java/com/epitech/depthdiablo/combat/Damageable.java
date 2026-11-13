@@ -19,4 +19,12 @@ public interface Damageable {
    * @return Whether the object is dead.
    */
   boolean isDead();
+
+  /**
+   * Returns the side this one fights for (GDD 1.5). An attack never hurts its own side, so enemies
+   * never hit each other.
+   *
+   * @return its faction now; it may change while it lives, for example when charmed
+   */
+  Faction faction();
 }

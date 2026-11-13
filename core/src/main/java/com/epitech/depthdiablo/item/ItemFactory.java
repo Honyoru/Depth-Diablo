@@ -6,7 +6,7 @@ import java.util.Objects;
 
 /**
  * Builds items from {@code data/items.json} (Q23, Q129). Each entry names its class ex {@code
- * "class":"Potion"} plus its values. After F5 the next {@Link #create(string)} use the new values.
+ * "class":"Potion"} plus its values. After F5 the next {@link #create(String)} use the new values.
  *
  * <p>Pattern: Simple Factory
  */
@@ -27,7 +27,7 @@ public final class ItemFactory {
    * Builds a new item from its entry.
    *
    * @param id the item's id ex {@code "potion_small"}
-   * @return a new item wich the entry's alues
+   * @return a new item which the entry's values
    * @throws IllegalArgumentException if the id is unknown, the class is unknown or a value is
    *     missing or invalid
    */

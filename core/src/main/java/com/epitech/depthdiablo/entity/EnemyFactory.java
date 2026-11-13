@@ -8,8 +8,8 @@ import java.util.Objects;
 
 /**
  * Reads enemy type from {@code data/enemies.json} (Q23, Q129). Until the Enemy class exists it
- * gives the values as an {@Link EnemySpec};{@code create(id, floor, summoned)} (UML) will build the
- * Enemy from it. After F5 the next call uses the new values.
+ * gives the values as an {@link EnemySpec}; {@code create(id, floor, summoned)} (UML) will build
+ * the Enemy from it. After F5 the next call uses the new values.
  *
  * <p>Pattern: Simple Factory.
  */
@@ -43,7 +43,7 @@ public final class EnemyFactory {
         entry.getFloat("height"));
   }
 
-  /** Reads one value per {@Link Stat} keyed by the stat's name. */
+  /** Reads one value per {@link Stat} keyed by the stat's name. */
   private static BaseStats readStats(JsonValue stats) {
     if (stats == null) {
       throw new IllegalArgumentException("Missing \"stats\" object");
