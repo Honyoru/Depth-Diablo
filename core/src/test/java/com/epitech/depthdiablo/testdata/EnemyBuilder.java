@@ -23,7 +23,85 @@ public final class EnemyBuilder {
 
   private EnemyBuilder(Kind kind, float maxHp, float attack) {
     this.kind = kind;
+    stats.put(Stat.MAX_HP, maxHp);
+    stats.put(Stat.ATTACK, attack);
+    stats.put(Stat.DEFENSE, 1f);
+    stats.put(Stat.SPEED, 60f);
+    stats.put(Stat.ATTACK_SPEED, 1f);
+    stats.put(Stat.LUCK, 0f);
+  }
 
+  /**
+   * Starts a rat: 3 HP, 2 attack, 1 defense, a 16 x 16 body box and hurtbox at the origin, a reach
+   * of 4, not summoned.
+   *
+   * @return a new builder
+   */
+  public static EnemyBuilder aRat(){
+    return new EnemyBuilder(Rat::new, 3f, 2f);
+  }
+
+  /**
+   * Starts a zombie: 8 HP, 3 attack, otherwise like {@link #aRat()}.
+   *
+   * @return a new builder
+   */
+  public static EnemyBuilder aZombie(){
+    return new EnemyBuilder(Zombie::new, 8f, 3f);
+  }
+
+  /**
+   * Moves the enemy's body box and hurtbox to the given corner.
+   *
+   * @param x the x of the bottom-left corner
+   * @param y the y of the bottom-left corner
+   * @return this builder
+   */
+  public EnemyBuilder at(float x, float y) {
+    this.bodyBox = new Aabb(x, y, bodyBox.width(), bodyBox.height());
+    return this;
+  }
+
+  /**
+   * Sets how far its attack goes past its body box.
+   *
+   * @param value the reach in pixels
+   * @return this builder
+   */
+  public EnemyBuilder withReach(float value) {
+    this.reach = value;
+    return this;
+  }
+
+  /**
+   * Marks the enemy as spawned by a summoner.
+   *
+   * @return this builder
+   */
+  public EnemyBuilder summoned() {
+    this.summoned = true;
+    return this;
+  }
+
+  /**
+   * Builds the enemy.
+   *
+   * @return a new rat or zombie
+   */
+  public MeleeEnemy build() {
+    return kind.create(bodyBox, new BaseStats(stats), bodyBox, 0, summoned, reach);
+  }
+
+  /** The constructor of a real melee enemy: {@code Rat::new} or {@code Zombie::new}. */
+  @FunctionalInterface
+  private interface Kind {
+    MeleeEnemy create(
+        Aabb bodyBox,
+        StatSource stats,
+        Aabb hurtbox,
+        int invincibilityTicksAfterHit,
+        boolean summoned,
+        float reach);
   }
 
 }
