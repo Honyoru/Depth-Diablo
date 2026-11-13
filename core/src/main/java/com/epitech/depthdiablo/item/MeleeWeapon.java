@@ -1,5 +1,7 @@
 package com.epitech.depthdiablo.item;
 
+import com.epitech.depthdiablo.combat.Obb;
+
 /**
  * A weapon that hits up close with a blade (GDD 1.6). Its swing is a rotated rectangle (an Obb) as
  * long as the weapon's range, which sweeps an arc around the aim during a few ticks.
@@ -54,6 +56,30 @@ public abstract class MeleeWeapon extends Weapon {
     this.width = width;
     this.arcDegrees = arcDegrees;
     this.swingTicks = swingTicks;
+  }
+
+  /**
+   * Builds the blade at one moment of a swing. The blade starts at the pivot and points away from
+   * it; during the swing it turns from {@code aim - arc/2} to {@code aim + arc/2}.
+   *
+   * @param pivotX the x of the point the blade turns around, usually the holder's centre
+   * @param pivotY the y of that point
+   * @param aimDegrees the direction of the attack, in degrees (0 = right, 90 = up)
+   * @param progress how far the swing is, from 0 (start) to 1 (end)
+   * @return the blade as a rotated rectangle, {@link #range()} long and {@link #width()} wide
+   * @throws IllegalArgumentException if the pivot or the aim is not finite, or the progress is
+   *     outside 0 to 1
+   */
+  public final Obb swingShape(float pivotX, float pivotY, float aimDegrees, float progress) {
+    if (!(progress >= 0 && progress <= 1)) {
+      throw new IllegalArgumentException("Progress must be from 0 to 1: " + progress);
+    }
+    float angle = aimDegrees - arcDegrees / 2 + arcDegrees * progress;
+    double radians = Math.toRadians(angle);
+    float halfRange = range() / 2;
+    float centreX = pivotX + (float) Math.cos(radians) * halfRange;
+    float centreY = pivotY + (float) Math.sin(radians) * halfRange;
+    return new Obb(centreX, centreY, angle, range(), width());
   }
 
   /**

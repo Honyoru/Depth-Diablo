@@ -3,10 +3,12 @@ package com.epitech.depthdiablo.item;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.epitech.depthdiablo.combat.Obb;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.6: a melee weapon sweeps a blade of a given size over an arc during a few ticks. */
 class MeleeWeaponTest {
+  private static final float DELTA = 0.001f;
 
   @Test
   void should_keep_its_blade_values_when_created() {
@@ -67,6 +69,66 @@ class MeleeWeaponTest {
   @Test
   void should_throw_when_the_swing_lasts_0_ticks() {
     assertThrows(IllegalArgumentException.class, () -> aMeleeWeapon(8f, 90f, 0));
+  }
+
+  @Test
+  void should_point_the_blade_at_the_aim_in_the_middle_of_the_swing() {
+    Obb blade = aMeleeWeapon(8f, 90f, 12).swingShape(100, 50, 0, 0.5f);
+
+    assertEquals(112f, blade.centreX(), DELTA);
+    assertEquals(50f, blade.centreY(), DELTA);
+    assertEquals(0f, blade.angleDegrees(), DELTA);
+  }
+
+  @Test
+  void should_start_the_swing_half_an_arc_before_the_aim() {
+    Obb blade = aMeleeWeapon(8f, 90f, 12).swingShape(100, 50, 0, 0f);
+
+    assertEquals(-45f, blade.angleDegrees(), DELTA);
+  }
+
+  @Test
+  void should_end_the_swing_half_an_arc_after_the_aim() {
+    Obb blade = aMeleeWeapon(8f, 90f, 12).swingShape(100, 50, 0, 1f);
+
+    assertEquals(45f, blade.angleDegrees(), DELTA);
+  }
+
+  @Test
+  void should_put_the_blade_above_the_pivot_when_aiming_up() {
+    Obb blade = aMeleeWeapon(8f, 90f, 12).swingShape(100, 50, 90, 0.5f);
+
+    assertEquals(100f, blade.centreX(), DELTA);
+    assertEquals(62f, blade.centreY(), DELTA);
+  }
+
+  @Test
+  void should_give_the_blade_the_weapon_size() {
+    Obb blade = aMeleeWeapon(8f, 90f, 12).swingShape(100, 50, 0, 0.5f);
+
+    assertEquals(24f, blade.length());
+    assertEquals(8f, blade.width());
+  }
+
+  @Test
+  void should_throw_when_the_progress_is_negative() {
+    MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
+
+    assertThrows(IllegalArgumentException.class, () -> weapon.swingShape(100, 50, 0, -0.1f));
+  }
+
+  @Test
+  void should_throw_when_the_progress_is_above_1() {
+    MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
+
+    assertThrows(IllegalArgumentException.class, () -> weapon.swingShape(100, 50, 0, 1.1f));
+  }
+
+  @Test
+  void should_throw_when_the_progress_is_not_a_number() {
+    MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
+
+    assertThrows(IllegalArgumentException.class, () -> weapon.swingShape(100, 50, 0, Float.NaN));
   }
 
   private static MeleeWeapon aMeleeWeapon(float width, float arcDegrees, int swingTicks) {
