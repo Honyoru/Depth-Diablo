@@ -213,4 +213,44 @@ class HitboxTest {
 
     assertThrows(NullPointerException.class, () -> hitbox.recordHit(target, null));
   }
+
+  @Test
+  void should_cover_its_new_shape_after_a_reshape() {
+    Obb turned = new Obb(30, 8, 90, 24, 8);
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    hitbox.reshape(turned);
+
+    assertSame(turned, hitbox.shape());
+  }
+
+  @Test
+  void should_hit_a_target_its_new_shape_reaches() {
+    Character target = aCharacter().withHurtbox(new Aabb(100, 0, 16, 16)).build();
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    hitbox.reshape(new Obb(108, 8, 0, 24, 8));
+
+    assertTrue(hitbox.canHit(target));
+  }
+
+  @Test
+  void should_keep_its_hits_and_lifetime_after_a_reshape() {
+    Character target = aCharacter().withHurtbox(IN_REACH).build();
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+    hitbox.recordHit(target, LANDED);
+    hitbox.update(1);
+
+    hitbox.reshape(new Obb(30, 8, 45, 24, 8));
+
+    assertFalse(hitbox.canHit(target));
+    assertEquals(11, hitbox.ticksLeft());
+  }
+
+  @Test
+  void should_throw_when_the_new_shape_is_null() {
+    Hitbox hitbox = new Hitbox(SWING, aCharacter().build(), Faction.PLAYER, 12);
+
+    assertThrows(NullPointerException.class, () -> hitbox.reshape(null));
+  }
 }

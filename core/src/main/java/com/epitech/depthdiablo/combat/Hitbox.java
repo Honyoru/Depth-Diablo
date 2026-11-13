@@ -104,6 +104,18 @@ public final class Hitbox implements Updatable {
   }
 
   /**
+   * Replaces the area this hitbox covers, for an attack that moves or turns: a melee swing sweeping
+   * towards the end of its arc, or a projectile in flight. The targets it already hit and its ticks
+   * left stay the same, so a swing never hits the same target twice.
+   *
+   * @param newShape the area it covers from now on
+   * @throws NullPointerException if {@code newShape} is {@code null}
+   */
+  public void reshape(Obb newShape) {
+    this.shape = Objects.requireNonNull(newShape, "newShape is null");
+  }
+
+  /**
    * Returns the area this hitbox covers now.
    *
    * @return its shape
