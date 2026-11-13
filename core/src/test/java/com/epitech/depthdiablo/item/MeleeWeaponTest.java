@@ -1,14 +1,24 @@
 package com.epitech.depthdiablo.item;
 
+import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.combat.Obb;
+import com.epitech.depthdiablo.combat.Swing;
+import com.epitech.depthdiablo.engine.EventBus;
+import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.Entity;
+import java.util.List;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.6: a melee weapon sweeps a blade of a given size over an arc during a few ticks. */
 class MeleeWeaponTest {
   private static final float DELTA = 0.001f;
+  private static final Supplier<List<Entity>> NO_TARGETS = List::of;
 
   @Test
   void should_keep_its_blade_values_when_created() {
@@ -129,6 +139,68 @@ class MeleeWeaponTest {
     MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
 
     assertThrows(IllegalArgumentException.class, () -> weapon.swingShape(100, 50, 0, Float.NaN));
+  }
+
+  @Test
+  void should_start_a_swing_towards_the_aim() {
+    Character holder = aCharacter().build();
+
+    Swing swing = aMeleeWeapon(8f, 90f, 12).attack(holder, 30f, NO_TARGETS, new EventBus());
+
+    assertEquals(30f, swing.aimDegrees());
+    assertFalse(swing.isOver());
+  }
+
+  @Test
+  void should_stop_the_holder_from_attacking_again_at_once() {
+    Character holder = aCharacter().build();
+
+    aMeleeWeapon(8f, 90f, 12).attack(holder, 0f, NO_TARGETS, new EventBus());
+
+    assertFalse(holder.canAttack());
+  }
+
+  @Test
+  void should_let_the_holder_attack_again_after_the_swing_and_the_cooldown() {
+    Character holder = aCharacter().withAttackSpeed(1f).build();
+    aMeleeWeapon(8f, 90f, 12).attack(holder, 0f, NO_TARGETS, new EventBus());
+
+    for (long tick = 1; tick <= 71; tick++) {
+      holder.update(tick);
+    }
+    assertFalse(holder.canAttack());
+
+    holder.update(72); // 12 swing ticks + 60 cooldown ticks
+    assertTrue(holder.canAttack());
+  }
+
+  @Test
+  void should_throw_when_the_holder_cannot_attack_now() {
+    Character holder = aCharacter().build();
+    MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
+    weapon.attack(holder, 0f, NO_TARGETS, new EventBus());
+
+    assertThrows(
+        IllegalStateException.class, () -> weapon.attack(holder, 0f, NO_TARGETS, new EventBus()));
+  }
+
+  @Test
+  void should_keep_the_holder_ready_when_the_aim_is_wrong() {
+    Character holder = aCharacter().build();
+    MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> weapon.attack(holder, Float.NaN, NO_TARGETS, new EventBus()));
+    assertTrue(holder.canAttack());
+  }
+
+  @Test
+  void should_throw_when_the_holder_is_null() {
+    MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
+
+    assertThrows(
+        NullPointerException.class, () -> weapon.attack(null, 0f, NO_TARGETS, new EventBus()));
   }
 
   private static MeleeWeapon aMeleeWeapon(float width, float arcDegrees, int swingTicks) {
