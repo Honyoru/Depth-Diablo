@@ -16,8 +16,8 @@ public interface Attack {
    *
    * @param attacker the character who hits
    * @param target the character who is hit
-   * @return the damage dealt; 0 if the target took none (dead or invincible)
+   * @return what the hit did; {@link HitResult#NONE} if it did not land (dead or invincible target)
    * @throws NullPointerException if {@code attacker} or {@code target} is {@code null}
    */
-  int hit(Character attacker, Character target);
+  HitResult hit(Character attacker, Character target);
 }

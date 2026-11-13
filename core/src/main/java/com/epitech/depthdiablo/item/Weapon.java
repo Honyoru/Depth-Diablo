@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.DamageFormula;
+import com.epitech.depthdiablo.combat.HitResult;
 import com.epitech.depthdiablo.entity.Character;
 import java.util.Objects;
 
@@ -56,20 +57,21 @@ public abstract class Weapon extends Equipment implements Attack {
    *
    * @param attacker the character who holds this weapon
    * @param target the character who is hit
-   * @return the damage dealt; 0 if the target is dead or invincible
+   * @return the damage dealt and whether it killed the target; {@link HitResult#NONE} if the target
+   *     is dead or invincible
    * @throws NullPointerException if {@code attacker} or {@code target} is {@code null}
    */
   @Override
-  public int hit(Character attacker, Character target) {
+  public HitResult hit(Character attacker, Character target) {
     Objects.requireNonNull(attacker, "The character attacking must not be null");
     Objects.requireNonNull(target, "The target of the attack must not be null");
     if (target.isDead() || target.isInvincible()) {
-      return 0;
+      return HitResult.NONE;
     }
     int damage =
         DamageFormula.compute(attacker.attack(), attackBonus, 1.0, target.defense(), 0, 1.0);
     target.takeDamage(damage);
-    return damage;
+    return new HitResult(damage, target.isDead());
   }
 
   /**

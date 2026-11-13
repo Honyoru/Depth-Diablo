@@ -2,10 +2,13 @@ package com.epitech.depthdiablo.item;
 
 import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.combat.Attack;
+import com.epitech.depthdiablo.combat.HitResult;
 import com.epitech.depthdiablo.entity.Character;
 import org.junit.jupiter.api.Test;
 
@@ -68,10 +71,24 @@ class WeaponTest {
     Character target = aCharacter().withHp(20).withDefense(3).build();
     Weapon weapon = aWeapon(Rarity.RARE, 2, 24f);
 
-    int damage = weapon.hit(attacker, target);
+    HitResult result = weapon.hit(attacker, target);
 
-    assertEquals(4, damage);
+    assertEquals(4, result.damage());
+    assertFalse(result.killed());
     assertEquals(16, target.hp());
+  }
+
+  @Test
+  void should_tell_when_its_hit_kills_the_target() {
+    Character attacker = aCharacter().withAttack(10).build();
+    Character target = aCharacter().withHp(4).withDefense(3).build();
+    Weapon weapon = aWeapon(Rarity.RARE, 2, 24f);
+
+    HitResult result = weapon.hit(attacker, target);
+
+    assertEquals(4, result.damage());
+    assertTrue(result.killed());
+    assertTrue(target.isDead());
   }
 
   @Test
@@ -81,9 +98,9 @@ class WeaponTest {
     target.grantInvincibility(30);
     Weapon weapon = aWeapon(Rarity.RARE, 2, 24f);
 
-    int damage = weapon.hit(attacker, target);
+    HitResult result = weapon.hit(attacker, target);
 
-    assertEquals(0, damage);
+    assertEquals(HitResult.NONE, result);
     assertEquals(20, target.hp());
   }
 
@@ -94,9 +111,9 @@ class WeaponTest {
     target.takeDamage(1);
     Weapon weapon = aWeapon(Rarity.RARE, 2, 24f);
 
-    int damage = weapon.hit(attacker, target);
+    HitResult result = weapon.hit(attacker, target);
 
-    assertEquals(0, damage);
+    assertEquals(HitResult.NONE, result);
   }
 
   @Test
