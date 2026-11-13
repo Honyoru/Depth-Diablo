@@ -51,7 +51,7 @@ public abstract class Enemy extends Character {
    */
   @Override
   protected void think(long tick){
-    if(ai==null){
+    if(ai == null){
       ai = new DefaultStateMachine<>(this, EnemyState.IDLE);
     }
     ai.update();
@@ -115,8 +115,16 @@ public abstract class Enemy extends Character {
    *
    * @return the current state of its state machine; {@link EnemyState#IDLE} before its first tick
    */
-  public EnemyState state
+  public EnemyState state() {
+    return ai == null ? EnemyState.IDLE : ai.getCurrentState();
+  }
 
-
-
+  /**
+   * Tells whether a summoner spawned this enemy; a summoned enemy never drops loot (Q16).
+   *
+   * @return true if it was summoned
+   */
+  public boolean isSummoned(){
+    return summoned;
+  }
 }
