@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.entity;
 
+import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
 
 /** The melee class (GDD 1.2). It differs from the other classes by its stats and weapon (Q15). */
@@ -13,13 +14,15 @@ public final class Knight extends Player {
    * @param hurtbox the knight's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
    * @param input what the user asks for; must not be {@code null}
+   * @param world the world the player walks in, asked what blocks it; must not be {@code null}
    */
   public Knight(
       Aabb bodyBox,
       StatSource stats,
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
-      PlayerInput input) {
-    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, input);
+      PlayerInput input,
+      World world) {
+    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, input, world);
   }
 }

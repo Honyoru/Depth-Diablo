@@ -21,6 +21,8 @@ class PlayerTest {
 
   private final FakePlayerInput input = new FakePlayerInput();
 
+  private final World world = new World();
+
   @Test
   void should_stand_still_when_the_input_has_no_direction() {
     Player player = aKnight();
@@ -125,7 +127,14 @@ class PlayerTest {
   void should_reject_a_null_input() {
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
 
-    assertThrows(NullPointerException.class, () -> new Knight(box, stats(), box, 0, null));
+    assertThrows(NullPointerException.class, () -> new Knight(box, stats(), box, 0, null, world));
+  }
+
+  @Test
+  void should_fight_for_the_player_side() {
+    Player player = aKnight();
+
+    assertEquals(Faction.PLAYER, player.faction());
   }
 
   @Test
@@ -137,7 +146,7 @@ class PlayerTest {
 
   private Knight aKnight() {
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
-    return new Knight(box, stats(), box, 0, input);
+    return new Knight(box, stats(), box, 0, input, world);
   }
 
   private static BaseStats stats() {

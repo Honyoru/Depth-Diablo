@@ -38,4 +38,15 @@ public record Aabb(float x, float y, float width, float height) {
   private static boolean overlapsOnAxis(float start1, float size1, float start2, float size2) {
     return start1 + size1 > start2 && start2 + size2 > start1;
   }
+
+  /**
+   * Returns a box of the same size, shifted by the given amounts.
+   *
+   * @param dx how far to shift along x
+   * @param dy how far to shift along y
+   * @return a new Aabb; this one does not change
+   */
+  public Aabb translated(float dx, float dy) {
+    return new Aabb(x + dx, y + dy, width, height);
+  }
 }

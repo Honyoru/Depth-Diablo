@@ -182,7 +182,7 @@ class CharacterTest {
 
     Aabb hurtbox = character.hurtbox();
 
-    assertSame(box, hurtbox);
+    assertEquals(box, hurtbox);
   }
 
   @Test

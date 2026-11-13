@@ -14,6 +14,7 @@ public abstract class Character extends Entity implements Damageable {
   private final Aabb hurtbox;
   private final int invincibilityTicksAfterHit;
   private int invincibilityTicksLeft;
+  private final Aabb hurtboxFromBody;
 
   /**
    * Creates a character with the specified body box, stats, hurtbox, and post-hit invincibility
@@ -35,6 +36,8 @@ public abstract class Character extends Entity implements Damageable {
     if (invincibilityTicksAfterHit < 0) {
       throw new IllegalArgumentException("invincibilityTicksAfterHit must not be negative");
     }
+    Objects.requireNonNull(hurtbox, "hurtbox");
+    this.hurtboxFromBody = hurtbox.translated(-bodyBox.x(), -bodyBox.y());
     this.stats = Objects.requireNonNull(stats, "stats");
     this.hp = (int) stats.get(Stat.MAX_HP);
     this.hurtbox = Objects.requireNonNull(hurtbox, "hurtbox");
@@ -55,7 +58,7 @@ public abstract class Character extends Entity implements Damageable {
 
   @Override
   public Aabb hurtbox() {
-    return hurtbox;
+    return hurtboxFromBody.translated(bodyBox().x(), bodyBox().y());
   }
 
   @Override

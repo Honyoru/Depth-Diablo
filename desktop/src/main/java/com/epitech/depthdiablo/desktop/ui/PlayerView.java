@@ -13,7 +13,7 @@ import com.epitech.depthdiablo.entity.Player;
 final class PlayerView implements Disposable {
   private static final int FRAME_SIZE = 32;
   private static final float FRAME_SECONDS = 0.15f;
-
+  private static final float FRAME_MARGIN = 2;
   private final Texture idleSheet;
   private final Texture moveSheet;
   private final Animation<TextureRegion> idle;
@@ -58,10 +58,11 @@ final class PlayerView implements Disposable {
     stateTime += delta;
     TextureRegion frame = (player.isMoving() ? move : idle).getKeyFrame(stateTime);
     float left = position.x + (player.bodyBox().width() - FRAME_SIZE) / 2f;
+    float bottom = position.y - FRAME_MARGIN;
     if (lookingLeft) {
-      batch.draw(frame, left + FRAME_SIZE, position.y, -FRAME_SIZE, FRAME_SIZE);
+      batch.draw(frame, left + FRAME_SIZE, bottom, -FRAME_SIZE, FRAME_SIZE);
     } else {
-      batch.draw(frame, left, position.y, FRAME_SIZE, FRAME_SIZE);
+      batch.draw(frame, left, bottom, FRAME_SIZE, FRAME_SIZE);
     }
   }
 

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -20,6 +21,7 @@ import com.epitech.depthdiablo.entity.BaseStats;
 import com.epitech.depthdiablo.entity.Knight;
 import com.epitech.depthdiablo.entity.Player;
 import com.epitech.depthdiablo.entity.Stat;
+import com.epitech.depthdiablo.entity.Wall;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -94,7 +96,8 @@ public final class GameScreen extends ScreenAdapter {
     this.mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, app.batch());
     this.batch = app.batch();
     this.worldCamera.zoom = CAMERA_ZOOM;
-    this.player = spawnKnight(input);
+    addWalls();
+    this.player = spawnKnight(input, world);
     this.world.add(player);
     this.playerView = new PlayerView();
     this.previousPosition.set(player.position());
@@ -199,7 +202,7 @@ public final class GameScreen extends ScreenAdapter {
     tiledMap.dispose();
   }
 
-  private static Player spawnKnight(KeyboardPlayerInput input) {
+  private static Player spawnKnight(KeyboardPlayerInput input, World world) {
     Map<Stat, Float> stats = new EnumMap<>(Stat.class);
     stats.put(Stat.MAX_HP, 100f);
     stats.put(Stat.ATTACK, 10f);
@@ -207,8 +210,27 @@ public final class GameScreen extends ScreenAdapter {
     stats.put(Stat.SPEED, 120f);
     stats.put(Stat.ATTACK_SPEED, 1f);
     stats.put(Stat.LUCK, 0f);
-    Aabb body = new Aabb(472f, 312f, 16f, 16f); // centre of the 960 x 640 map
-    return new Knight(body, new BaseStats(stats), body, GameConstants.TICKS_PER_SECOND / 2, input);
+    Aabb body = new Aabb(466f, 306f, 28f, 28f); // centre of the 960 x 640 map, size of the art
+    return new Knight(
+        body, new BaseStats(stats), body, GameConstants.TICKS_PER_SECOND / 2, input, world);
+  }
+
+  /** Adds one blocking {@link Wall} per map tile whose "collides" property is true. */
+  private void addWalls() {
+    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+    float tile = GameConstants.TILE_SIZE;
+    for (int x = 0; x < layer.getWidth(); x++) {
+      for (int y = 0; y < layer.getHeight(); y++) {
+        TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+        if (cell == null || cell.getTile() == null) {
+          continue; // empty tile
+        }
+        boolean collides = cell.getTile().getProperties().get("collides", false, Boolean.class);
+        if (collides) {
+          world.add(new Wall(new Aabb(x * tile, y * tile, tile, tile)));
+        }
+      }
+    }
   }
 
   private void followPlayer() {

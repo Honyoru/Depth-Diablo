@@ -12,6 +12,7 @@ import java.util.Objects;
  */
 public abstract class Player extends Character {
   private final PlayerInput input;
+  private final World world;
   private boolean moving;
 
   /**
@@ -22,22 +23,27 @@ public abstract class Player extends Character {
    * @param hurtbox the player's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
    * @param input what the user asks for; must not be {@code null}
+   * @param world the world the player walks in, asked what blocks it; must not be {@code null}
    */
   protected Player(
       Aabb bodyBox,
       StatSource stats,
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
-      PlayerInput input) {
+      PlayerInput input,
+      World world) {
     super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit);
-    this.input = Objects.requireNonNull(input, "input");
+    this.input =
+        Objects.requireNonNull(input, "The input should not be null for player to be movable");
+    this.world =
+        Objects.requireNonNull(world, "The world should not be null player to spawn in it");
   }
 
+  @Override
   /**
    * Walks one tick in the direction of the input, at the SPEED stat (pixels per second). A
    * direction longer than 1 is shortened to 1, so a diagonal is not faster than a straight line.
    */
-  @Override
   protected final void think(long tick) {
     Vector2 direction = input.moveDirection();
     if (direction.len2() > 1f) {
@@ -47,8 +53,24 @@ public abstract class Player extends Character {
     if (!moving) {
       return;
     }
-    float step = speed() / GameConstants.TICKS_PER_SECOND;
-    moveTo(position().mulAdd(direction, step));
+    Vector2 step = direction.scl(speed() / GameConstants.TICKS_PER_SECOND);
+    Vector2 position = position();
+
+    Vector2 alongX = new Vector2(position).add(step.x, 0f);
+    if (canStandAt(alongX)) {
+      position.set(alongX);
+    }
+    Vector2 alongY = new Vector2(position).add(0f, step.y);
+    if (canStandAt(alongY)) {
+      position.set(alongY);
+    }
+    moveTo(position);
+  }
+
+  /** Tells whether the player's body fits at the given bottom-left corner. */
+  private boolean canStandAt(Vector2 corner) {
+    Aabb body = bodyBox();
+    return world.isFree(new Aabb(corner.x, corner.y, body.width(), body.height()), this);
   }
 
   /**
