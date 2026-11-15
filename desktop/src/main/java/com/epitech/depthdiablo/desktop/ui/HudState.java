@@ -22,7 +22,7 @@ public final class HudState {
    * @param character the player character; must not be {@code null}
    */
   public void syncFromCharacter(Character character) {
-    Objects.requireNonNull(character, "character");
+    Objects.requireNonNull(character, "The character shown on the HUD must not be null");
     this.hp = character.hp();
     this.maxHp = character.maxHp();
     this.playerX = character.bodyBox().x();
@@ -36,7 +36,7 @@ public final class HudState {
    */
   public void addCoins(int amount) {
     if (amount < 0) {
-      throw new IllegalArgumentException("amount must not be negative");
+      throw new IllegalArgumentException("The coin amount must not be negative, was " + amount);
     }
     this.coins += amount;
   }

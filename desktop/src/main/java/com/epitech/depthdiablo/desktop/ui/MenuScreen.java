@@ -31,9 +31,9 @@ public final class MenuScreen extends ScreenAdapter {
    * @param hudSkin the shared UI skin; must not be {@code null}
    */
   public MenuScreen(GameApplication app, MenuFlowState menuFlowState, Skin hudSkin) {
-    this.app = Objects.requireNonNull(app, "app");
-    this.skin = Objects.requireNonNull(hudSkin, "skin");
-    this.flowState = Objects.requireNonNull(menuFlowState, "flowState");
+    this.app = Objects.requireNonNull(app, "The game application must not be null");
+    this.skin = Objects.requireNonNull(hudSkin, "The UI skin must not be null");
+    this.flowState = Objects.requireNonNull(menuFlowState, "The menu flow state must not be null");
     this.stage =
         new Stage(new FitViewport(GameConstants.VIRTUAL_WIDTH, GameConstants.VIRTUAL_HEIGHT));
     this.rootTable = new Table();

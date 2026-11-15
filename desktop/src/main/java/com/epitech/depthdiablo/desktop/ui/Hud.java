@@ -33,12 +33,12 @@ public final class Hud implements Disposable {
    * @param batch the shared sprite batch; must not be {@code null}
    */
   public Hud(Skin skin, HudState state, Batch batch) {
-    Objects.requireNonNull(skin, "skin");
-    this.state = Objects.requireNonNull(state, "state");
+    Objects.requireNonNull(skin, "The UI skin must not be null");
+    this.state = Objects.requireNonNull(state, "The HUD state must not be null");
     this.stage =
         new Stage(
             new FitViewport(GameConstants.VIRTUAL_WIDTH, GameConstants.VIRTUAL_HEIGHT),
-            Objects.requireNonNull(batch, "batch"));
+            Objects.requireNonNull(batch, "The sprite batch must not be null"));
 
     this.healthBar = new ProgressBar(0f, 100f, 1f, false, skin, "default-horizontal");
     this.coinCounter = new ImageTextButton("0", skin, "default");

@@ -75,7 +75,7 @@ public final class MenuFlowState {
    * @param mode the chosen mode; must not be {@code null}
    */
   public void selectMode(GameMode mode) {
-    this.selectedMode = Objects.requireNonNull(mode, "mode");
+    this.selectedMode = Objects.requireNonNull(mode, "The game mode to select must not be null");
     this.currentStep = ScreenStep.CHARACTER_SELECTION;
   }
 
@@ -86,7 +86,7 @@ public final class MenuFlowState {
    * @return {@code true} if the hero is playable and was selected
    */
   public boolean trySelectHero(HeroType hero) {
-    Objects.requireNonNull(hero, "hero");
+    Objects.requireNonNull(hero, "The hero to select must not be null");
     if (!hero.isPlayable()) {
       return false;
     }

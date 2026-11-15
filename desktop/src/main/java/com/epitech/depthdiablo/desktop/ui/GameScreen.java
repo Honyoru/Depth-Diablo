@@ -77,12 +77,14 @@ public final class GameScreen extends ScreenAdapter {
    */
   public GameScreen(
       GameApplication app, Skin skin, MenuFlowState.GameMode mode, MenuFlowState.HeroType hero) {
-    Objects.requireNonNull(skin, "skin");
-    Objects.requireNonNull(hero, "hero");
+    Objects.requireNonNull(skin, "The UI skin must not be null");
+    Objects.requireNonNull(hero, "The selected hero must not be null");
 
-    this.arenaMode = Objects.requireNonNull(mode, "mode") == MenuFlowState.GameMode.ARENA;
+    this.arenaMode =
+        Objects.requireNonNull(mode, "The selected game mode must not be null")
+            == MenuFlowState.GameMode.ARENA;
 
-    this.app = Objects.requireNonNull(app, "app");
+    this.app = Objects.requireNonNull(app, "The game application must not be null");
     this.hudState = new HudState();
     this.hud = new Hud(skin, hudState, app.batch());
 
