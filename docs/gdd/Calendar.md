@@ -47,18 +47,19 @@ Loïc's day-by-day plan, for the team to validate. Two points conflict with earl
 | Mon 9 Nov | B | Entity implements Updatable + Collidable: `blocks()`, `onContact()`, `position()`, `moveTo()`, 12 tests in EntityTest (Loïc, PR #21) | Done |
 | Tue 10 Nov | A | Looping enemy waves | To do |
 | Tue 10 → Wed 11 Nov | B | 4 Arena enemies + gdx-ai FSM | To do |
-| Tue 10 Nov | C | Title screen + game over | In progress (Ange, PR #33, merged 12 Nov): title screen (Play, Quit), mode select (Arena, Endless) and character select (Knight playable, Mage and Archer locked) done in `MenuScreen`, driven by the `MenuFlowState` state machine and its tests. Game over to do |
-| Wed 11 Nov | A | F1 X-ray view (demo bonus) | To do |
+| Tue 10 Nov | C | Title screen + game over | Done (Ange, PR #33 merged 12 Nov; game over on `feature/game-over`, 15 Nov): title screen (Play, Quit), mode select (Arena, Endless) and character select (Knight playable, Mage and Archer locked) done in `MenuScreen`, driven by the `MenuFlowState` state machine and its tests. Game over: when the player's HP reaches 0, `GameScreen` opens the game over page (score = waves defeated, Rerun keeps the mode and goes back to the character select, Main menu goes to the title); new `GAME_OVER` step in `MenuFlowState`, 5 new tests |
+| Wed 11 Nov | A | F1 X-ray view (demo bonus) | Done (Ange, 15 Nov, `feature/view-switcher`): F1 loops through 3 views, sprites → X-ray (body boxes, hurtboxes, velocity vector) → high contrast. `ViewSwitcher` (`DebugFeature`) and `ViewMode` in core, 11 tests; Strategy `Renderer` with `SpriteRenderer`, `XRayRenderer` and `HighContrastRenderer` in desktop. Hitboxes get their colour once attacks exist in the world |
 | Wed 11 Nov | C | Basic sounds + integration | To do |
 | Thu 12 Nov | C | Menu → game wiring: picking a hero opens `GameScreen`, which loads the arena map and runs `World`, `FixedTimestep` and (in Arena mode) `ArenaCycle` at 60 ticks per second; Escape goes back to the title; `MenuFlowStateTest` moved to `desktop/src/test/java` so it runs (Ange, PR #34) | Done |
 | Thu 12 Nov | All | **Arena POC: stabilisation, green tests, demo, delivery** | To do |
 | Fri 13 Nov | A | 5-wave cycles, 1 king, shop | In progress: `ArenaCycle` done (WAVE / BREAK / SHOP phases, boss every 5th wave, score = waves defeated; Ange, PR #15, 6 Nov) and ticked by the game screen since PR #34. King and shop to do |
 | Fri 13 Nov | B | 3 classes + 3 weapons | To do |
 | Fri 13 Nov | C | Floors 1–2 in Tiled | To do |
-| Mon 16 Nov | A | F2 event laser | To do |
+| Mon 16 Nov | A | F2 event laser | Done early (Ange, 15 Nov, `feature/event-laser`): `EventLaser` (`DebugFeature`, listens to every event) turns each event into a half-second line from its emitter to its receiver, drawn over any F1 view and toggled with F2. `GameEvent.receiver()` added (the target of `DamageDealt`, empty for a death); 12 new tests. Lines show in game once combat and enemies publish events |
 | Mon 16 Nov | B | 20-slot inventory + pickup | To do |
 | Mon 16 Nov | C | Floor 3 + chests, doors, keys | To do |
-| Tue 17 → Wed 18 Nov | A | R rewind (SnapshotRing) | To do |
+| Sun 15 Nov | All | Janitor pass (Ange, `fix/janitor`): test fakes written before the real classes replaced by `Wall` and `Potion`; every null and argument check gets a full-sentence message with the bad value; `Wall` made `final`; `resume.md` no longer tracked | Done |
+| Tue 17 → Wed 18 Nov | A | R rewind (SnapshotRing) | To do (Ange, next) |
 | Tue 17 Nov | B | Passive items (Decorator) + burn | To do |
 | Tue 17 → Wed 18 Nov | C | BSP generator + loops | To do |
 | Wed 18 Nov | B | Shop, roulette, coins, loot | To do |
@@ -91,7 +92,8 @@ Rules:
 - Each day's task ends as a pull request ready for review, so the next person starts from `main`.
 - Swaps are fine: two people trade a day and note it here.
 - Mon 9 Nov: Romain took over World and EventBus from Ange and fixed Character, so the Mon 9 Nov task in the Romain column, A · AABB collisions + JSON DataRegistry / EntityFactory, is still to do.
-- 10–12 Nov: Ange took C · Arena map (Tiled) + HUD (Mon 9 Nov, Loïc column, not started) and the title, mode select and character select screens of C · Title screen + game over (Tue 10 Nov), then wired the menu to the game screen (PR #26, #27, #29, #33, #34). Game over is still to do.
+- 10–12 Nov: Ange took C · Arena map (Tiled) + HUD (Mon 9 Nov, Loïc column, not started) and the title, mode select and character select screens of C · Title screen + game over (Tue 10 Nov), then wired the menu to the game screen (PR #26, #27, #29, #33, #34).
+- 15 Nov: Ange did the janitor pass, game over (end of C · Title screen + game over), A · F1 X-ray view (Wed 11 Nov) and A · F2 event laser (Mon 16 Nov, one day early). Branches stacked in this order: `fix/janitor` → `feature/game-over` → `feature/view-switcher` → `feature/event-laser`; merge them in that order. Ange takes A · R rewind next.
 - ItemPickedUp and RoomCleared wait for Player, Enemy and Item; proposed to add them with the Mon 16 Nov tasks. \[OPEN\]
 - Thu 12 keeps the "All" day of the table above. The 12 Nov POC conflict noted at the top of this section is still open.
 
