@@ -21,7 +21,7 @@ public abstract class Entity implements Updatable, Collidable {
    * @throws NullPointerException if the box is null
    */
   protected Entity(Aabb bodyBox) {
-    this.bodyBox = Objects.requireNonNull(bodyBox, "The bodyBox of an entities shoud not be null");
+    this.bodyBox = Objects.requireNonNull(bodyBox, "The body box of an entity must not be null");
   }
 
   /**
@@ -73,7 +73,7 @@ public abstract class Entity implements Updatable, Collidable {
    */
   @Override
   public void onContact(Entity other) {
-    Objects.requireNonNull(other, "The other entity should not be null to test for contact");
+    Objects.requireNonNull(other, "The entity touched must not be null");
   }
 
   /**
@@ -93,7 +93,7 @@ public abstract class Entity implements Updatable, Collidable {
    * @throws NullPointerException if positionis null
    */
   protected final void moveTo(Vector2 position) {
-    Objects.requireNonNull(position, "The position of an entity should not be null");
+    Objects.requireNonNull(position, "The new position of an entity must not be null");
     bodyBox = new Aabb(position.x, position.y, bodyBox.width(), bodyBox.height());
   }
 

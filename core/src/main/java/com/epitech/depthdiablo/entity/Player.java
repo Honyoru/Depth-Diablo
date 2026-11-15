@@ -34,10 +34,8 @@ public abstract class Player extends Character {
       PlayerInput input,
       World world) {
     super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit);
-    this.input =
-        Objects.requireNonNull(input, "The input should not be null for player to be movable");
-    this.world =
-        Objects.requireNonNull(world, "The world should not be null player to spawn in it");
+    this.input = Objects.requireNonNull(input, "The input of a player must not be null");
+    this.world = Objects.requireNonNull(world, "The world of a player must not be null");
   }
 
   @Override

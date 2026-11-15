@@ -23,7 +23,7 @@ public final class EnemyFactory {
    * @throws NullPointerException if {@code enemies} is null
    */
   public EnemyFactory(DataRegistry enemies) {
-    this.enemies = Objects.requireNonNull(enemies, "enemies is null");
+    this.enemies = Objects.requireNonNull(enemies, "The enemy data registry must not be null");
   }
 
   /**
@@ -38,15 +38,16 @@ public final class EnemyFactory {
     return new EnemySpec(
         id,
         entry.getString("spriteId"),
-        readStats(entry.get("stats")),
+        readStats(id, entry.get("stats")),
         entry.getFloat("width"),
         entry.getFloat("height"));
   }
 
   /** Reads one value per {@link Stat} keyed by the stat's name. */
-  private static BaseStats readStats(JsonValue stats) {
+  private static BaseStats readStats(String id, JsonValue stats) {
     if (stats == null) {
-      throw new IllegalArgumentException("Missing \"stats\" object");
+      throw new IllegalArgumentException(
+          "Enemy " + id + " has no \"stats\" object in the data file");
     }
     Map<Stat, Float> values = new EnumMap<>(Stat.class);
     for (Stat stat : Stat.values()) {

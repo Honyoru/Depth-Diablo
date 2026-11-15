@@ -23,11 +23,12 @@ public record EnemySpec(String id, String spriteId, BaseStats stats, float width
    * @throws IllegalArgumentException if a size is not positive
    */
   public EnemySpec {
-    Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(spriteId, "spriteId");
-    Objects.requireNonNull(stats, "stats");
+    Objects.requireNonNull(id, "The id of an enemy must not be null");
+    Objects.requireNonNull(spriteId, "The sprite id of enemy " + id + " must not be null");
+    Objects.requireNonNull(stats, "The stats of enemy " + id + " must not be null");
     if (width <= 0 || height <= 0) {
-      throw new IllegalArgumentException("width and height must be positive");
+      throw new IllegalArgumentException(
+          "The size of enemy " + id + " must be positive, was " + width + " x " + height);
     }
   }
 }

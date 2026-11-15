@@ -26,7 +26,7 @@ public final class World {
    * @throws NullPointerException if the entity is null
    */
   public void add(Entity entity) {
-    Objects.requireNonNull(entity, "entity");
+    Objects.requireNonNull(entity, "The entity to add to the world must not be null");
     if (ticking) {
       entitiesToAdd.add(entity);
     } else {
@@ -63,8 +63,8 @@ public final class World {
    * @throws NullPointerException if box or mover is null
    */
   public boolean isFree(Aabb box, Entity mover) {
-    Objects.requireNonNull(box, "box");
-    Objects.requireNonNull(mover, "mover");
+    Objects.requireNonNull(box, "The box to check for walls must not be null");
+    Objects.requireNonNull(mover, "The entity trying to move must not be null");
     for (Entity other : entities) {
       if (other.equals(mover) || other.isRemoved() || !other.blocks()) {
         continue;

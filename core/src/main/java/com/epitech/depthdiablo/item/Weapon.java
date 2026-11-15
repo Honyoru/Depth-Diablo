@@ -61,8 +61,8 @@ public abstract class Weapon extends Equipment implements Attack {
    */
   @Override
   public int hit(Character attacker, Character target) {
-    Objects.requireNonNull(attacker, "attacker");
-    Objects.requireNonNull(target, "target");
+    Objects.requireNonNull(attacker, "The character attacking must not be null");
+    Objects.requireNonNull(target, "The target of the attack must not be null");
     if (target.isDead() || target.isInvincible()) {
       return 0;
     }

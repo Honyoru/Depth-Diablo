@@ -40,7 +40,7 @@ public record Obb(float centreX, float centreY, float angleDegrees, float length
    * @throws IllegalArgumentException if the box has a width or a height of 0
    */
   public static Obb around(Aabb box) {
-    Objects.requireNonNull(box, "box is null");
+    Objects.requireNonNull(box, "The box to cover must not be null");
     return new Obb(
         box.x() + box.width() / 2, box.y() + box.height() / 2, 0, box.width(), box.height());
   }
@@ -81,7 +81,7 @@ public record Obb(float centreX, float centreY, float angleDegrees, float length
    * @throws NullPointerException if {@code other} is {@code null}
    */
   public boolean overlaps(Aabb other) {
-    Objects.requireNonNull(other, "other is null");
+    Objects.requireNonNull(other, "The box to check for overlap must not be null");
     Vector2[] mine = corners();
     Vector2[] theirs = {
       new Vector2(other.x(), other.y()),

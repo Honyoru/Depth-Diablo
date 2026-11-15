@@ -36,8 +36,8 @@ public final class DataRegistry {
    * @throws com.badlogic.gdx.utils.SerializationException if the text is not valid JSON
    */
   public DataRegistry(String category, Supplier<String> source) {
-    this.category = Objects.requireNonNull(category, "category is null");
-    this.source = Objects.requireNonNull(source, "source is null");
+    this.category = Objects.requireNonNull(category, "The data category must not be null");
+    this.source = Objects.requireNonNull(source, "The data source must not be null");
     reload();
   }
 

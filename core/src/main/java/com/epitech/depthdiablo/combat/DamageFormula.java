@@ -41,12 +41,14 @@ public final class DamageFormula {
           "Resistance bonus must not be negative: " + resistanceBonus);
     }
     if (attackBuff < 0 || Double.isNaN(attackBuff) || Double.isInfinite(attackBuff)) {
-      throw new IllegalArgumentException("Invalid attack buff: " + attackBuff);
+      throw new IllegalArgumentException(
+          "The attack buff must be a finite number of 0 or more, was " + attackBuff);
     }
     if ((resistanceBuff <= 0)
         || Double.isNaN(resistanceBuff)
         || Double.isInfinite(resistanceBuff)) {
-      throw new IllegalArgumentException("Invalid resistance buff: " + resistanceBuff);
+      throw new IllegalArgumentException(
+          "The resistance buff must be a finite number above 0, was " + resistanceBuff);
     }
 
     double damage =

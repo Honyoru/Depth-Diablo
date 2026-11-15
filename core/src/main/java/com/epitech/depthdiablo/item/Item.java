@@ -28,17 +28,19 @@ public abstract class Item {
     this.id = requireText(id, "id");
     this.nameKey = requireText(nameKey, "nameKey");
     this.spriteId = requireText(spriteId, "spriteId");
-    this.rarity = Objects.requireNonNull(rarity, "rarity");
+    this.rarity = Objects.requireNonNull(rarity, "The rarity of item " + id + " must not be null");
     if (price < 0) {
-      throw new IllegalArgumentException("price must not be negative");
+      throw new IllegalArgumentException(
+          "The price of item " + id + " must not be negative, was " + price);
     }
     this.price = price;
   }
 
   private static String requireText(String value, String name) {
-    Objects.requireNonNull(value, name);
+    Objects.requireNonNull(value, "The " + name + " of an item must not be null");
     if (value.isBlank()) {
-      throw new IllegalArgumentException(name + " must not be blank");
+      throw new IllegalArgumentException(
+          "The " + name + " of an item must not be blank, was \"" + value + "\"");
     }
     return value;
   }

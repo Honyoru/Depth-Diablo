@@ -126,7 +126,7 @@ class ObbTest {
 
     NullPointerException error = assertThrows(NullPointerException.class, () -> obb.overlaps(null));
 
-    assertEquals("other is null", error.getMessage());
+    assertEquals("The box to check for overlap must not be null", error.getMessage());
   }
 
   @Property
@@ -170,7 +170,7 @@ class ObbTest {
   void should_throw_when_the_box_to_cover_is_null() {
     NullPointerException error = assertThrows(NullPointerException.class, () -> Obb.around(null));
 
-    assertEquals("box is null", error.getMessage());
+    assertEquals("The box to cover must not be null", error.getMessage());
   }
 
   @Test

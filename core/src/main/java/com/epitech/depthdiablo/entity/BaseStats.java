@@ -20,13 +20,14 @@ public final class BaseStats implements StatSource {
    *     1 for MAX_HP and DEFENSE
    */
   public BaseStats(Map<Stat, Float> values) {
-    Objects.requireNonNull(values, "values");
+    Objects.requireNonNull(values, "The stat values must not be null");
     this.values = new EnumMap<>(Stat.class);
     for (Stat stat : Stat.values()) {
       if (!values.containsKey(stat)) {
         throw new IllegalArgumentException("Missing stat: " + stat);
       }
-      float value = Objects.requireNonNull(values.get(stat), stat.name());
+      float value =
+          Objects.requireNonNull(values.get(stat), "The value of " + stat + " must not be null");
       if (Float.isNaN(value) || Float.isInfinite(value) || value < minimum(stat)) {
         throw new IllegalArgumentException(
             stat + " must be a finite number of " + minimum(stat) + " or more: " + value);
@@ -37,7 +38,7 @@ public final class BaseStats implements StatSource {
 
   @Override
   public float get(Stat stat) {
-    return values.get(Objects.requireNonNull(stat, "stat"));
+    return values.get(Objects.requireNonNull(stat, "The stat to read must not be null"));
   }
 
   private static float minimum(Stat stat) {

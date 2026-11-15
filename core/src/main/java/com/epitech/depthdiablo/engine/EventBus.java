@@ -29,8 +29,8 @@ public final class EventBus {
    * @throws NullPointerException if the type or the listener is null
    */
   public void subscribe(Class<? extends GameEvent> type, EventListener listener) {
-    Objects.requireNonNull(type, "type");
-    Objects.requireNonNull(listener, "listener");
+    Objects.requireNonNull(type, "The event type to listen to must not be null");
+    Objects.requireNonNull(listener, "The listener to subscribe must not be null");
     listeners.computeIfAbsent(type, key -> new ArrayList<>()).add(listener);
   }
 
@@ -41,7 +41,7 @@ public final class EventBus {
    * @throws NullPointerException if the listener is null
    */
   public void subscribeAll(EventListener listener) {
-    everyEvent.add(Objects.requireNonNull(listener, "listener"));
+    everyEvent.add(Objects.requireNonNull(listener, "The listener to subscribe must not be null"));
   }
 
   /**
@@ -51,7 +51,7 @@ public final class EventBus {
    * @throws NullPointerException if the listener is null
    */
   public void unsubscribe(EventListener listener) {
-    Objects.requireNonNull(listener, "listener");
+    Objects.requireNonNull(listener, "The listener to unsubscribe must not be null");
     listeners.values().forEach(subscribers -> subscribers.removeIf(listener::equals));
     everyEvent.removeIf(listener::equals);
   }
@@ -63,7 +63,7 @@ public final class EventBus {
    * @throws NullPointerException if the event is null
    */
   public void publish(GameEvent event) {
-    queue.add(Objects.requireNonNull(event, "event"));
+    queue.add(Objects.requireNonNull(event, "The event to publish must not be null"));
   }
 
   /**

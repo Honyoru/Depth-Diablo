@@ -32,6 +32,6 @@ class FactionTest {
     NullPointerException error =
         assertThrows(NullPointerException.class, () -> Faction.PLAYER.canHurt(null));
 
-    assertEquals("target is null", error.getMessage());
+    assertEquals("The faction of the target must not be null", error.getMessage());
   }
 }

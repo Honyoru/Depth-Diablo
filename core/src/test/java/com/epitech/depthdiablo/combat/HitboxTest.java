@@ -34,7 +34,7 @@ class HitboxTest {
     NullPointerException error =
         assertThrows(NullPointerException.class, () -> new Hitbox(null, owner, 12));
 
-    assertEquals("shape is null", error.getMessage());
+    assertEquals("The shape of a hitbox must not be null", error.getMessage());
   }
 
   @Test
@@ -42,7 +42,7 @@ class HitboxTest {
     NullPointerException error =
         assertThrows(NullPointerException.class, () -> new Hitbox(SWING, null, 12));
 
-    assertEquals("owner is null", error.getMessage());
+    assertEquals("The owner of a hitbox must not be null", error.getMessage());
   }
 
   @ParameterizedTest

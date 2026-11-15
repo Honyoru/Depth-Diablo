@@ -27,8 +27,8 @@ public final class Hitbox implements Updatable {
    * @throws IllegalArgumentException if {@code lifetimeTicks} is 0 or less
    */
   public Hitbox(Obb shape, Entity owner, int lifetimeTicks) {
-    this.shape = Objects.requireNonNull(shape, "shape is null");
-    this.owner = Objects.requireNonNull(owner, "owner is null");
+    this.shape = Objects.requireNonNull(shape, "The shape of a hitbox must not be null");
+    this.owner = Objects.requireNonNull(owner, "The owner of a hitbox must not be null");
     if (lifetimeTicks <= 0) {
       throw new IllegalArgumentException("Lifetime must be above 0 ticks: " + lifetimeTicks);
     }

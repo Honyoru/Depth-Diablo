@@ -20,7 +20,7 @@ public final class ItemFactory {
    * @throws NullPointerException if {@code items} is null
    */
   public ItemFactory(DataRegistry items) {
-    this.items = Objects.requireNonNull(items, "items");
+    this.items = Objects.requireNonNull(items, "The item data registry must not be null");
   }
 
   /**

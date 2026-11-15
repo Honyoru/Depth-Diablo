@@ -34,13 +34,16 @@ public abstract class Character extends Entity implements Damageable {
       Aabb bodyBox, StatSource stats, Aabb hurtbox, int invincibilityTicksAfterHit) {
     super(bodyBox);
     if (invincibilityTicksAfterHit < 0) {
-      throw new IllegalArgumentException("invincibilityTicksAfterHit must not be negative");
+      throw new IllegalArgumentException(
+          "The invincibility after a hit must not be negative, was "
+              + invincibilityTicksAfterHit
+              + " ticks");
     }
-    Objects.requireNonNull(hurtbox, "hurtbox");
+    Objects.requireNonNull(hurtbox, "The hurtbox of a character must not be null");
     this.hurtboxFromBody = hurtbox.translated(-bodyBox.x(), -bodyBox.y());
-    this.stats = Objects.requireNonNull(stats, "stats");
+    this.stats = Objects.requireNonNull(stats, "The stats of a character must not be null");
     this.hp = (int) stats.get(Stat.MAX_HP);
-    this.hurtbox = Objects.requireNonNull(hurtbox, "hurtbox");
+    this.hurtbox = hurtbox;
     this.invincibilityTicksAfterHit = invincibilityTicksAfterHit;
   }
 
@@ -64,7 +67,7 @@ public abstract class Character extends Entity implements Damageable {
   @Override
   public void takeDamage(int amount) {
     if (amount < 1) {
-      throw new IllegalArgumentException("Damage amount must be at least 1");
+      throw new IllegalArgumentException("Damage amount must be at least 1, was " + amount);
     }
     if (isDead() || isInvincible()) {
       return;
@@ -81,7 +84,7 @@ public abstract class Character extends Entity implements Damageable {
    */
   public void heal(int amount) {
     if (amount < 1) {
-      throw new IllegalArgumentException("Heal amount must be at least 1");
+      throw new IllegalArgumentException("Heal amount must be at least 1, was " + amount);
     }
     if (isDead()) {
       return;
@@ -97,7 +100,7 @@ public abstract class Character extends Entity implements Damageable {
   /** Grants invincibility for at least the specified number of ticks. */
   public void grantInvincibility(int ticks) {
     if (ticks < 0) {
-      throw new IllegalArgumentException("ticks must not be negative");
+      throw new IllegalArgumentException("Invincibility ticks must not be negative, was " + ticks);
     }
     invincibilityTicksLeft = Math.max(invincibilityTicksLeft, ticks);
   }

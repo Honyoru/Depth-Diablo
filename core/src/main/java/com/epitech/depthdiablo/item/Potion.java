@@ -23,7 +23,8 @@ public final class Potion extends Consumable {
   public Potion(String id, String nameKey, String spriteId, int price, int healAmount) {
     super(id, nameKey, spriteId, price);
     if (healAmount < 1) {
-      throw new IllegalArgumentException("healAmount must be at least 1");
+      throw new IllegalArgumentException(
+          "The heal amount of a potion must be at least 1, was " + healAmount);
     }
     this.healAmount = healAmount;
   }
@@ -38,7 +39,7 @@ public final class Potion extends Consumable {
    */
   @Override
   public boolean use(Character user) {
-    Objects.requireNonNull(user, "user");
+    Objects.requireNonNull(user, "The character drinking the potion must not be null");
     user.heal(healAmount);
     return true;
   }

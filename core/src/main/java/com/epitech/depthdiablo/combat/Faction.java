@@ -24,7 +24,7 @@ public enum Faction {
    * @throws NullPointerException if {@code target} is {@code null}
    */
   public boolean canHurt(Faction target) {
-    Objects.requireNonNull(target, "target is null");
+    Objects.requireNonNull(target, "The faction of the target must not be null");
     return this == NEUTRAL || this != target;
   }
 }
