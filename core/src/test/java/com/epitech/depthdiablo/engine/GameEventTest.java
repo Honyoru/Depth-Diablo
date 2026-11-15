@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.engine;
 import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.entity.Character;
 import java.util.Optional;
@@ -24,6 +25,25 @@ class GameEventTest {
     GameEvent event = new EntityDied(character, Optional.empty());
 
     assertSame(character, event.source());
+  }
+
+  @Test
+  void should_return_the_hit_character_when_a_damage_event_gives_its_receiver() {
+    Character victim = aCharacter().build();
+    GameEvent event = new DamageDealt(character, victim, 1);
+
+    Optional<?> receiver = event.receiver();
+
+    assertEquals(Optional.of(victim), receiver);
+  }
+
+  @Test
+  void should_have_no_receiver_when_a_death_event_gives_it() {
+    GameEvent event = new EntityDied(character, Optional.of(aCharacter().build()));
+
+    Optional<?> receiver = event.receiver();
+
+    assertTrue(receiver.isEmpty());
   }
 
   @Test

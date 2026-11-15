@@ -1,6 +1,7 @@
 package com.epitech.depthdiablo.engine;
 
 import com.epitech.depthdiablo.entity.Entity;
+import java.util.Optional;
 
 /**
  * Something that happened in the game. Sealed, so a switch over events is checked by the compiler.
@@ -13,4 +14,13 @@ public sealed interface GameEvent permits DamageDealt, EntityDied {
    * @return the entity that emitted this event
    */
   Entity source();
+
+  /**
+   * Returns the receiver, where the event laser (F2) ends its line.
+   *
+   * @return the entity the event is aimed at, or empty when it has none
+   */
+  default Optional<Entity> receiver() {
+    throw new UnsupportedOperationException("receiver is not implemented yet");
+  }
 }
