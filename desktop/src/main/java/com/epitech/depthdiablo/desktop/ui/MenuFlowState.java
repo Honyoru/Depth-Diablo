@@ -59,6 +59,7 @@ public final class MenuFlowState {
   private ScreenStep currentStep = ScreenStep.MAIN_MENU;
   private GameMode selectedMode = GameMode.ARENA;
   private HeroType selectedHero = HeroType.WARRIOR;
+  private int lastScore;
 
   /** Advances from the main menu to the mode selection screen. */
   public void openModeSelection() {
@@ -115,12 +116,16 @@ public final class MenuFlowState {
    * @throws IllegalArgumentException if {@code score} is negative
    */
   public void showGameOver(int score) {
-    throw new UnsupportedOperationException("showGameOver is not implemented yet");
+    if (score < 0) {
+      throw new IllegalArgumentException("The score of a run must not be negative, was " + score);
+    }
+    this.lastScore = score;
+    this.currentStep = ScreenStep.GAME_OVER;
   }
 
   /** Starts a new run from the game over step: back to the character select, same mode (Q10). */
   public void rerun() {
-    throw new UnsupportedOperationException("rerun is not implemented yet");
+    currentStep = ScreenStep.CHARACTER_SELECTION;
   }
 
   /**
@@ -129,7 +134,7 @@ public final class MenuFlowState {
    * @return the score given to {@link #showGameOver(int)}, 0 before any game over
    */
   public int lastScore() {
-    throw new UnsupportedOperationException("lastScore is not implemented yet");
+    return lastScore;
   }
 
   /** Returns the current menu screen step. */
