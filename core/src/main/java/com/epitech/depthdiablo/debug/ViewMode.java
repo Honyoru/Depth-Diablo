@@ -15,6 +15,7 @@ public enum ViewMode {
    * @return the next view, back to the first after the last
    */
   public ViewMode next() {
-    throw new UnsupportedOperationException("next is not implemented yet");
+    ViewMode[] all = values();
+    return all[(ordinal() + 1) % all.length];
   }
 }

@@ -6,35 +6,39 @@ package com.epitech.depthdiablo.debug;
  * renderer that matches {@link #mode()}).
  */
 public final class ViewSwitcher implements DebugFeature {
+  private boolean enabled = true;
+  private ViewMode mode = ViewMode.SPRITES;
 
   @Override
   public String name() {
-    throw new UnsupportedOperationException("name is not implemented yet");
+    return "View switcher";
   }
 
   @Override
   public void enable() {
-    throw new UnsupportedOperationException("enable is not implemented yet");
+    enabled = true;
   }
 
   @Override
   public void disable() {
-    throw new UnsupportedOperationException("disable is not implemented yet");
+    enabled = false;
   }
 
   @Override
   public boolean isEnabled() {
-    throw new UnsupportedOperationException("isEnabled is not implemented yet");
+    return enabled;
   }
 
   @Override
   public void onTick(long tick) {
-    throw new UnsupportedOperationException("onTick is not implemented yet");
+    // Nothing to do per tick: the view only changes when F1 is pressed.
   }
 
   /** Shows the next view. Does nothing while the feature is disabled. */
   public void cycle() {
-    throw new UnsupportedOperationException("cycle is not implemented yet");
+    if (enabled) {
+      mode = mode.next();
+    }
   }
 
   /**
@@ -43,6 +47,6 @@ public final class ViewSwitcher implements DebugFeature {
    * @return the chosen view, or {@link ViewMode#SPRITES} while the feature is disabled
    */
   public ViewMode mode() {
-    throw new UnsupportedOperationException("mode is not implemented yet");
+    return enabled ? mode : ViewMode.SPRITES;
   }
 }
