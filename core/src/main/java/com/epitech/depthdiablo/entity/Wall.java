@@ -4,7 +4,7 @@ package com.epitech.depthdiablo.entity;
  * A solid tile of the map (GDD 1.5). It never moves and nothing can walk through it: movers ask the
  * world whether a box is free, and a wall makes it taken.
  */
-public class Wall extends Entity {
+public final class Wall extends Entity {
 
   /**
    * Creates a wall occupying the given box.
@@ -32,7 +32,7 @@ public class Wall extends Entity {
    * @param tick the number of the current logic tick
    */
   @Override
-  public void onUpdate(long tick) {
+  protected void onUpdate(long tick) {
     // A wall does nothing over time.
   }
 }
