@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.Entity;
+import com.epitech.depthdiablo.entity.Wall;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +35,8 @@ class WorldTest {
 
   @Test
   void should_update_every_entity_with_the_tick_number_when_ticked() {
-    FakeEntity first = new FakeEntity();
-    FakeEntity second = new FakeEntity();
+    RecordingEntity first = new RecordingEntity();
+    RecordingEntity second = new RecordingEntity();
     world.add(first);
     world.add(second);
 
@@ -47,7 +48,7 @@ class WorldTest {
 
   @Test
   void should_hold_an_entity_at_once_when_added_outside_a_tick() {
-    FakeEntity entity = new FakeEntity();
+    RecordingEntity entity = new RecordingEntity();
 
     world.add(entity);
 
@@ -56,8 +57,8 @@ class WorldTest {
 
   @Test
   void should_deliver_events_after_every_update_when_ticked() {
-    FakeEntity emitter = new FakeEntity();
-    FakeEntity last = new FakeEntity();
+    RecordingEntity emitter = new RecordingEntity();
+    RecordingEntity last = new RecordingEntity();
     List<Integer> updatesSeen = new ArrayList<>();
     emitter.onTick = () -> world.eventBus().publish(aDeathEvent());
     world.eventBus().subscribeAll(event -> updatesSeen.add(last.ticks.size()));
@@ -71,8 +72,8 @@ class WorldTest {
 
   @Test
   void should_add_a_spawned_entity_at_the_end_of_the_tick_when_added_during_one() {
-    FakeEntity spawner = new FakeEntity();
-    FakeEntity spawned = new FakeEntity();
+    RecordingEntity spawner = new RecordingEntity();
+    RecordingEntity spawned = new RecordingEntity();
     spawner.onTick = () -> world.add(spawned);
     world.add(spawner);
 
@@ -84,8 +85,8 @@ class WorldTest {
 
   @Test
   void should_add_a_spawned_entity_at_the_end_of_the_tick_when_a_listener_adds_it() {
-    FakeEntity emitter = new FakeEntity();
-    FakeEntity spawned = new FakeEntity();
+    RecordingEntity emitter = new RecordingEntity();
+    RecordingEntity spawned = new RecordingEntity();
     emitter.onTick = () -> world.eventBus().publish(aDeathEvent());
     world.eventBus().subscribeAll(event -> world.add(spawned));
     world.add(emitter);
@@ -98,7 +99,7 @@ class WorldTest {
 
   @Test
   void should_drop_a_removed_entity_at_the_end_of_the_tick() {
-    FakeEntity entity = new FakeEntity();
+    RecordingEntity entity = new RecordingEntity();
     world.add(entity);
     entity.remove();
 
@@ -109,8 +110,8 @@ class WorldTest {
 
   @Test
   void should_never_hold_an_entity_when_it_is_added_and_removed_in_the_same_tick() {
-    FakeEntity spawner = new FakeEntity();
-    FakeEntity ghost = new FakeEntity();
+    RecordingEntity spawner = new RecordingEntity();
+    RecordingEntity ghost = new RecordingEntity();
     spawner.onTick =
         () -> {
           world.add(ghost);
@@ -125,7 +126,7 @@ class WorldTest {
 
   @Test
   void should_add_at_once_again_when_the_tick_is_over() {
-    FakeEntity entity = new FakeEntity();
+    RecordingEntity entity = new RecordingEntity();
     world.tick();
 
     world.add(entity);
@@ -147,7 +148,7 @@ class WorldTest {
 
   @Test
   void should_find_a_box_free_when_no_blocking_entity_overlaps_it() {
-    FakeEntity mover = new FakeEntity();
+    RecordingEntity mover = new RecordingEntity();
     world.add(mover);
     world.add(aWallAt(100, 0));
 
@@ -158,7 +159,7 @@ class WorldTest {
 
   @Test
   void should_find_a_box_taken_when_a_wall_overlaps_it() {
-    FakeEntity mover = new FakeEntity();
+    RecordingEntity mover = new RecordingEntity();
     world.add(mover);
     world.add(aWallAt(20, 0));
 
@@ -169,7 +170,7 @@ class WorldTest {
 
   @Test
   void should_never_block_a_mover_with_itself() {
-    FakeEntity mover = aWallAt(0, 0);
+    Wall mover = aWallAt(0, 0);
     world.add(mover);
 
     boolean free = world.isFree(new Aabb(4, 0, 16, 16), mover);
@@ -179,7 +180,7 @@ class WorldTest {
 
   @Test
   void should_let_a_mover_through_an_entity_that_does_not_block() {
-    FakeEntity mover = new FakeEntity();
+    RecordingEntity mover = new RecordingEntity();
     world.add(mover);
     world.add(anEntityAt(20, 0));
 
@@ -190,8 +191,8 @@ class WorldTest {
 
   @Test
   void should_tell_both_entities_when_their_bodies_overlap() {
-    FakeEntity first = anEntityAt(0, 0);
-    FakeEntity second = anEntityAt(8, 0);
+    RecordingEntity first = anEntityAt(0, 0);
+    RecordingEntity second = anEntityAt(8, 0);
     world.add(first);
     world.add(second);
 
@@ -203,8 +204,8 @@ class WorldTest {
 
   @Test
   void should_tell_no_one_when_bodies_only_touch_on_an_edge() {
-    FakeEntity first = anEntityAt(0, 0);
-    FakeEntity second = anEntityAt(16, 0);
+    RecordingEntity first = anEntityAt(0, 0);
+    RecordingEntity second = anEntityAt(16, 0);
     world.add(first);
     world.add(second);
 
@@ -216,8 +217,8 @@ class WorldTest {
 
   @Test
   void should_skip_the_contact_when_an_entity_was_removed_during_the_tick() {
-    FakeEntity first = anEntityAt(0, 0);
-    FakeEntity second = anEntityAt(8, 0);
+    RecordingEntity first = anEntityAt(0, 0);
+    RecordingEntity second = anEntityAt(8, 0);
     second.onTick = second::remove;
     world.add(first);
     world.add(second);
@@ -229,7 +230,7 @@ class WorldTest {
 
   @Test
   void should_reject_a_missing_box_when_checking_if_it_is_free() {
-    FakeEntity mover = new FakeEntity();
+    RecordingEntity mover = new RecordingEntity();
 
     assertThrows(NullPointerException.class, () -> world.isFree(null, mover));
   }
@@ -238,36 +239,29 @@ class WorldTest {
     return new EntityDied(aCharacter().build(), Optional.empty());
   }
 
-  private static FakeEntity aWallAt(float x, float y) {
-    return new FakeEntity(new Aabb(x, y, 16, 16), true);
+  private static Wall aWallAt(float x, float y) {
+    return new Wall(new Aabb(x, y, 16, 16));
   }
 
-  private static FakeEntity anEntityAt(float x, float y) {
-    return new FakeEntity(new Aabb(x, y, 16, 16), false);
+  private static RecordingEntity anEntityAt(float x, float y) {
+    return new RecordingEntity(new Aabb(x, y, 16, 16));
   }
 
   /**
-   * Character don't exist yet. Create a fake entity to test (Q117) > records its tick and contact,
-   * and blocks only if asked to.
+   * Hand-written spy (Q117): a non-blocking entity that records the ticks it was updated on and the
+   * entities it touched. No real entity keeps this record, so the tests need their own.
    */
-  private static final class FakeEntity extends Entity {
+  private static final class RecordingEntity extends Entity {
     private final List<Long> ticks = new ArrayList<>();
     private final List<Entity> contacts = new ArrayList<>();
-    private final boolean blocking;
     private Runnable onTick = () -> {};
 
-    FakeEntity() {
-      this(new Aabb(0, 0, 16, 16), false);
+    RecordingEntity() {
+      this(new Aabb(0, 0, 16, 16));
     }
 
-    FakeEntity(Aabb bodyBox, boolean blocking) {
+    RecordingEntity(Aabb bodyBox) {
       super(bodyBox);
-      this.blocking = blocking;
-    }
-
-    @Override
-    public boolean blocks() {
-      return blocking;
     }
 
     @Override
