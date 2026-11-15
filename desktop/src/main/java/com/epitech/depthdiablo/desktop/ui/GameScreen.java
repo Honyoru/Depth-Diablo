@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.arena.ArenaCycle;
+import com.epitech.depthdiablo.debug.EventLaser;
 import com.epitech.depthdiablo.debug.ViewMode;
 import com.epitech.depthdiablo.debug.ViewSwitcher;
 import com.epitech.depthdiablo.engine.FixedTimestep;
@@ -75,6 +76,11 @@ public final class GameScreen extends ScreenAdapter {
 
   private final Map<ViewMode, Renderer> renderers = new EnumMap<>(ViewMode.class);
 
+  /** F2 debug feature (GDD 1.1.2): one line per event, drawn over any view. */
+  private final EventLaser eventLaser = new EventLaser();
+
+  private final EventLaserOverlay eventLaserOverlay = new EventLaserOverlay(eventLaser);
+
   /**
    * Creates the gameplay screen with the selected mode and hero.
    *
@@ -114,6 +120,7 @@ public final class GameScreen extends ScreenAdapter {
     renderers.put(ViewMode.SPRITES, new SpriteRenderer(mapRenderer, batch, playerView));
     renderers.put(ViewMode.XRAY, new XRayRenderer());
     renderers.put(ViewMode.HIGH_CONTRAST, new HighContrastRenderer());
+    world.eventBus().subscribeAll(eventLaser);
   }
 
   @Override
@@ -131,6 +138,9 @@ public final class GameScreen extends ScreenAdapter {
     if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
       viewSwitcher.cycle();
       LOG.info("View switched to {}", viewSwitcher.mode());
+    }
+    if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
+      toggleEventLaser();
     }
     playerView.lookTowards(input.moveDirection().x);
 
@@ -154,12 +164,22 @@ public final class GameScreen extends ScreenAdapter {
     renderers
         .get(viewSwitcher.mode())
         .render(new Frame(worldCamera, world, player, drawPosition, velocity, delta));
+    eventLaserOverlay.render(worldCamera);
 
     // 2. Render HUD overlay
     hud.render(delta);
 
     // 3. Render live minimap pass in bottom-right viewport
     renderMinimapPass();
+  }
+
+  private void toggleEventLaser() {
+    if (eventLaser.isEnabled()) {
+      eventLaser.disable();
+    } else {
+      eventLaser.enable();
+    }
+    LOG.info("Event laser {}", eventLaser.isEnabled() ? "on" : "off");
   }
 
   private void handleQuickSlotHotkeys() {
@@ -177,6 +197,9 @@ public final class GameScreen extends ScreenAdapter {
     for (int i = 0; i < ticks; i++) {
       previousPosition.set(player.position());
       world.tick();
+      if (eventLaser.isEnabled()) {
+        eventLaser.onTick(world.currentTick());
+      }
       if (arenaMode) {
         arenaCycle.update();
       }
@@ -220,6 +243,7 @@ public final class GameScreen extends ScreenAdapter {
     LOG.info("Game screen closed after {} ticks", world.currentTick());
     hud.dispose();
     renderers.values().forEach(Renderer::dispose);
+    eventLaserOverlay.dispose();
     playerView.dispose();
     mapRenderer.dispose();
     tiledMap.dispose();
