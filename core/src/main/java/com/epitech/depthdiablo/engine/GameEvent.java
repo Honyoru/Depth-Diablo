@@ -21,6 +21,6 @@ public sealed interface GameEvent permits DamageDealt, EntityDied {
    * @return the entity the event is aimed at, or empty when it has none
    */
   default Optional<Entity> receiver() {
-    throw new UnsupportedOperationException("receiver is not implemented yet");
+    return Optional.empty();
   }
 }

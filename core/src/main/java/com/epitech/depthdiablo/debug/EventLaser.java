@@ -2,6 +2,10 @@ package com.epitech.depthdiablo.debug;
 
 import com.epitech.depthdiablo.engine.EventListener;
 import com.epitech.depthdiablo.engine.GameEvent;
+import com.epitech.depthdiablo.entity.Aabb;
+import com.epitech.depthdiablo.entity.Entity;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,38 +37,54 @@ public final class EventLaser implements DebugFeature, EventListener {
      * @return true if the line goes from the emitter to a receiver
      */
     public boolean hasReceiver() {
-      throw new UnsupportedOperationException("hasReceiver is not implemented yet");
+      return event.receiver().isPresent();
+    }
+
+    private Line withTicksLeft(int ticks) {
+      return new Line(event, fromX, fromY, toX, toY, ticks);
     }
   }
 
+  private final List<Line> lines = new ArrayList<>();
+  private boolean enabled;
+
   @Override
   public String name() {
-    throw new UnsupportedOperationException("name is not implemented yet");
+    return "Event laser";
   }
 
   @Override
   public void enable() {
-    throw new UnsupportedOperationException("enable is not implemented yet");
+    enabled = true;
   }
 
   @Override
   public void disable() {
-    throw new UnsupportedOperationException("disable is not implemented yet");
+    enabled = false;
+    lines.clear();
   }
 
   @Override
   public boolean isEnabled() {
-    throw new UnsupportedOperationException("isEnabled is not implemented yet");
+    return enabled;
   }
 
   @Override
   public void onTick(long tick) {
-    throw new UnsupportedOperationException("onTick is not implemented yet");
+    lines.replaceAll(line -> line.withTicksLeft(line.ticksLeft() - 1));
+    lines.removeIf(line -> line.ticksLeft() <= 0);
   }
 
   @Override
   public void onEvent(GameEvent event) {
-    throw new UnsupportedOperationException("onEvent is not implemented yet");
+    if (!enabled) {
+      return;
+    }
+    Aabb from = event.source().bodyBox();
+    Aabb to = event.receiver().map(Entity::bodyBox).orElse(from);
+    lines.add(
+        new Line(
+            event, centreX(from), centreY(from), centreX(to), centreY(to), LINE_LIFETIME_TICKS));
   }
 
   /**
@@ -73,6 +93,14 @@ public final class EventLaser implements DebugFeature, EventListener {
    * @return a read-only view of the lines on screen
    */
   public List<Line> lines() {
-    throw new UnsupportedOperationException("lines is not implemented yet");
+    return Collections.unmodifiableList(lines);
+  }
+
+  private static float centreX(Aabb box) {
+    return box.x() + box.width() / 2f;
+  }
+
+  private static float centreY(Aabb box) {
+    return box.y() + box.height() / 2f;
   }
 }
