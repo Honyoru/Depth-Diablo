@@ -14,6 +14,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.arena.ArenaCycle;
+import com.epitech.depthdiablo.debug.ViewMode;
+import com.epitech.depthdiablo.debug.ViewSwitcher;
 import com.epitech.depthdiablo.engine.FixedTimestep;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
@@ -66,6 +68,12 @@ public final class GameScreen extends ScreenAdapter {
 
   private final Vector2 previousPosition = new Vector2();
   private final Vector2 drawPosition = new Vector2();
+  private final Vector2 velocity = new Vector2();
+
+  /** F1 debug feature (GDD 1.1.2): which renderer draws the world. */
+  private final ViewSwitcher viewSwitcher = new ViewSwitcher();
+
+  private final Map<ViewMode, Renderer> renderers = new EnumMap<>(ViewMode.class);
 
   /**
    * Creates the gameplay screen with the selected mode and hero.
@@ -103,6 +111,9 @@ public final class GameScreen extends ScreenAdapter {
     this.world.add(player);
     this.playerView = new PlayerView();
     this.previousPosition.set(player.position());
+    renderers.put(ViewMode.SPRITES, new SpriteRenderer(mapRenderer, batch, playerView));
+    renderers.put(ViewMode.XRAY, new XRayRenderer());
+    renderers.put(ViewMode.HIGH_CONTRAST, new HighContrastRenderer());
   }
 
   @Override
@@ -117,6 +128,10 @@ public final class GameScreen extends ScreenAdapter {
       return; // this screen is disposed now
     }
     handleQuickSlotHotkeys();
+    if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+      viewSwitcher.cycle();
+      LOG.info("View switched to {}", viewSwitcher.mode());
+    }
     playerView.lookTowards(input.moveDirection().x);
 
     runLogic(delta);
@@ -133,15 +148,12 @@ public final class GameScreen extends ScreenAdapter {
     Gdx.gl.glClearColor(0.05f, 0.05f, 0.07f, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-    // 1. Map, then the player on top of it
+    // 1. The world, drawn by the renderer of the current F1 view
     followPlayer();
-    mapRenderer.setView(worldCamera);
-    mapRenderer.render();
-
-    batch.setProjectionMatrix(worldCamera.combined);
-    batch.begin();
-    playerView.draw(batch, player, drawPosition, delta);
-    batch.end();
+    velocity.set(player.position()).sub(previousPosition);
+    renderers
+        .get(viewSwitcher.mode())
+        .render(new Frame(worldCamera, world, player, drawPosition, velocity, delta));
 
     // 2. Render HUD overlay
     hud.render(delta);
@@ -207,6 +219,7 @@ public final class GameScreen extends ScreenAdapter {
   public void dispose() {
     LOG.info("Game screen closed after {} ticks", world.currentTick());
     hud.dispose();
+    renderers.values().forEach(Renderer::dispose);
     playerView.dispose();
     mapRenderer.dispose();
     tiledMap.dispose();
