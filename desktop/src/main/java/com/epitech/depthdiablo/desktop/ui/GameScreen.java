@@ -120,6 +120,14 @@ public final class GameScreen extends ScreenAdapter {
     playerView.lookTowards(input.moveDirection().x);
 
     runLogic(delta);
+
+    // HP at 0 ends the run (GDD 1.1 step 5): show the game over menu.
+    if (player.isDead()) {
+      int score = arenaMode ? arenaCycle.getScore() : 0; // Endless has no depth score yet
+      app.showGameOver(score);
+      return;
+    }
+
     hudState.syncFromCharacter(player);
 
     Gdx.gl.glClearColor(0.05f, 0.05f, 0.07f, 1f);
@@ -140,6 +148,7 @@ public final class GameScreen extends ScreenAdapter {
 
     // 3. Render live minimap pass in bottom-right viewport
     renderMinimapPass();
+
   }
 
   private void handleQuickSlotHotkeys() {

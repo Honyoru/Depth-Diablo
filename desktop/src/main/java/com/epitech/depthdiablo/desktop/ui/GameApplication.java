@@ -30,6 +30,19 @@ public final class GameApplication extends Game {
   }
 
   /**
+   * Leaves the gameplay screen because the run ended and shows the game over menu.
+   *
+   * @param score the run's score, 0 or more
+   */
+  public void showGameOver(int score) {
+    if (getScreen() != null) {
+      getScreen().dispose();
+    }
+    menuFlowState.showGameOver(score);
+    setScreen(new MenuScreen(this, menuFlowState, hudSkin));
+  }
+
+  /**
    * Transitions from the character selection screen into the active gameplay screen.
    *
    * @param mode the chosen game mode

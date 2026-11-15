@@ -57,7 +57,37 @@ public final class MenuScreen extends ScreenAdapter {
       case IN_GAME ->
           Gdx.app.postRunnable(
               () -> app.startGameScreen(flowState.selectedMode(), flowState.selectedHero()));
+      case GAME_OVER -> buildGameOver();
     }
+  }
+
+  /** Game over (DECISIONS: "game over (rerun or quit)"): the score, then Rerun or Quit. */
+  private void buildGameOver() {
+    rootTable.add(new Label("GAME OVER", skin)).padBottom(30f).row();
+
+    rootTable.add(new Label("Waves defeated: " + flowState.lastScore(), skin)).padBottom(24f).row();
+
+    TextButton rerunBtn = new TextButton("Rerun", skin);
+    rerunBtn.addListener(
+        new ClickListener() {
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            flowState.rerun();
+            rebuildUi();
+          }
+        });
+    rootTable.add(rerunBtn).width(220f).height(48f).pad(8f).row();
+
+    TextButton mainMenuBtn = new TextButton("Main menu", skin);
+    mainMenuBtn.addListener(
+        new ClickListener() {
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            flowState.backToMainMenu();
+            rebuildUi();
+          }
+        });
+    rootTable.add(mainMenuBtn).width(220f).height(48f).pad(8f).row();
   }
 
   private void buildMainMenu() {
