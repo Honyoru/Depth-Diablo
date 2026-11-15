@@ -10,7 +10,8 @@ public final class MenuFlowState {
     MAIN_MENU,
     MODE_SELECTION,
     CHARACTER_SELECTION,
-    IN_GAME
+    IN_GAME,
+    GAME_OVER
   }
 
   /** Available game modes. */
@@ -105,6 +106,30 @@ public final class MenuFlowState {
     }
     currentStep = ScreenStep.IN_GAME;
     return true;
+  }
+
+  /**
+   * Ends the run: HP reached 0 (GDD 1.1 step 5). Opens the game over step with the run's score.
+   *
+   * @param score waves defeated in Arena mode, depth reached in a dungeon run; 0 or more
+   * @throws IllegalArgumentException if {@code score} is negative
+   */
+  public void showGameOver(int score) {
+    throw new UnsupportedOperationException("showGameOver is not implemented yet");
+  }
+
+  /** Starts a new run from the game over step: back to the character select, same mode (Q10). */
+  public void rerun() {
+    throw new UnsupportedOperationException("rerun is not implemented yet");
+  }
+
+  /**
+   * Returns the score of the last finished run.
+   *
+   * @return the score given to {@link #showGameOver(int)}, 0 before any game over
+   */
+  public int lastScore() {
+    throw new UnsupportedOperationException("lastScore is not implemented yet");
   }
 
   /** Returns the current menu screen step. */

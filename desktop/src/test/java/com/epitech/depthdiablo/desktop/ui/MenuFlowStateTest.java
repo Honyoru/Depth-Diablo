@@ -53,4 +53,61 @@ class MenuFlowStateTest {
     assertThrows(NullPointerException.class, () -> state.selectMode(null));
     assertThrows(NullPointerException.class, () -> state.trySelectHero(null));
   }
+
+  // ---- Game over (GDD 1.1 step 5, Q10): HP at 0 ends the run, then rerun or quit.
+
+  @Test
+  void showGameOverStoresTheScoreAndOpensTheGameOverStep() {
+    MenuFlowState state = aStateInGame(MenuFlowState.GameMode.ARENA);
+
+    state.showGameOver(7);
+
+    assertEquals(MenuFlowState.ScreenStep.GAME_OVER, state.currentStep());
+    assertEquals(7, state.lastScore());
+  }
+
+  @Test
+  void rerunGoesBackToCharacterSelectionWithTheSameMode() {
+    MenuFlowState state = aStateInGame(MenuFlowState.GameMode.ENDLESS);
+    state.showGameOver(3);
+
+    state.rerun();
+
+    assertEquals(MenuFlowState.ScreenStep.CHARACTER_SELECTION, state.currentStep());
+    assertEquals(MenuFlowState.GameMode.ENDLESS, state.selectedMode());
+  }
+
+  @Test
+  void showGameOverRejectsANegativeScore() {
+    MenuFlowState state = aStateInGame(MenuFlowState.GameMode.ARENA);
+
+    assertThrows(IllegalArgumentException.class, () -> state.showGameOver(-1));
+  }
+
+  @Test
+  void quittingTheGameOverScreenGoesBackToTheMainMenu() {
+    MenuFlowState state = aStateInGame(MenuFlowState.GameMode.ARENA);
+    state.showGameOver(0);
+
+    state.backToMainMenu();
+
+    assertEquals(MenuFlowState.ScreenStep.MAIN_MENU, state.currentStep());
+  }
+
+  @Test
+  void lastScoreIsZeroBeforeAnyGameOver() {
+    MenuFlowState state = new MenuFlowState();
+
+    int score = state.lastScore();
+
+    assertEquals(0, score);
+  }
+
+  private static MenuFlowState aStateInGame(MenuFlowState.GameMode mode) {
+    MenuFlowState state = new MenuFlowState();
+    state.openModeSelection();
+    state.selectMode(mode);
+    state.startGame();
+    return state;
+  }
 }
