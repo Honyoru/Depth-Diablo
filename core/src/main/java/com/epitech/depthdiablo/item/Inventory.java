@@ -1,7 +1,8 @@
 package com.epitech.depthdiablo.item;
 
+import com.epitech.depthdiablo.entity.Character;
+import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * The player's bag (GDD 1.4): 3 hotbar slots that take only consumables, and the equipped weapon.
@@ -10,6 +11,18 @@ import java.util.Optional;
 public final class Inventory {
   /** The number of hotbar slots; they take only consumables. */
   public static final int HOTBAR_SIZE = 3;
+
+  /**
+   * What a free hotbar slot holds (Null Object): it is drawn as an empty picture and using it does
+   * nothing.
+   */
+  public static final Consumable EMPTY =
+      new Consumable("empty", "item.empty.name", "items/empty", 0) {
+        @Override
+        public boolean use(Character user) {
+          return false;
+        }
+      };
 
   private final Consumable[] hotbar = new Consumable[HOTBAR_SIZE];
   private Weapon weapon;
@@ -22,6 +35,7 @@ public final class Inventory {
    */
   public Inventory(Weapon startingWeapon) {
     this.weapon = Objects.requireNonNull(startingWeapon, "startingWeapon is null");
+    Arrays.fill(hotbar, EMPTY);
   }
 
   /**
@@ -30,11 +44,15 @@ public final class Inventory {
    * @param consumable the consumable picked up
    * @return true if it was put in a slot; false if the hotbar is full, so it stays on the ground
    * @throws NullPointerException if {@code consumable} is {@code null}
+   * @throws IllegalArgumentException if {@code consumable} is {@link #EMPTY}
    */
   public boolean add(Consumable consumable) {
     Objects.requireNonNull(consumable, "consumable is null");
+    if (EMPTY.equals(consumable)) {
+      throw new IllegalArgumentException("EMPTY marks a free slot; it cannot be added");
+    }
     for (int i = 0; i < HOTBAR_SIZE; i++) {
-      if (hotbar[i] == null) {
+      if (EMPTY.equals(hotbar[i])) {
         hotbar[i] = consumable;
         return true;
       }
@@ -46,12 +64,33 @@ public final class Inventory {
    * Returns what a hotbar slot holds.
    *
    * @param index the slot, from 0 to {@link #HOTBAR_SIZE} - 1
-   * @return the consumable in that slot, or empty if the slot is free
+   * @return the consumable in that slot, or {@link #EMPTY} if the slot is free
    * @throws IndexOutOfBoundsException if {@code index} is outside 0 to {@link #HOTBAR_SIZE} - 1
    */
-  public Optional<Consumable> hotbarSlot(int index) {
+  public Consumable hotbarSlot(int index) {
     Objects.checkIndex(index, HOTBAR_SIZE);
-    return Optional.ofNullable(hotbar[index]);
+    return hotbar[index];
+  }
+
+  /**
+   * Uses the consumable of a hotbar slot (GDD 1.4, Q37). If it is spent, its slot is emptied; using
+   * an empty slot does nothing.
+   *
+   * @param hotbarIndex the slot, from 0 to {@link #HOTBAR_SIZE} - 1
+   * @param user the character who uses it
+   * @return true if a consumable was spent; false if the slot was empty or the consumable was kept
+   * @throws NullPointerException if {@code user} is {@code null}
+   * @throws IndexOutOfBoundsException if {@code hotbarIndex} is outside 0 to {@link #HOTBAR_SIZE} -
+   *     1
+   */
+  public boolean use(int hotbarIndex, Character user) {
+    Objects.checkIndex(hotbarIndex, HOTBAR_SIZE);
+    Objects.requireNonNull(user, "user is null");
+    if (!hotbar[hotbarIndex].use(user)) {
+      return false;
+    }
+    hotbar[hotbarIndex] = EMPTY;
+    return true;
   }
 
   /**
