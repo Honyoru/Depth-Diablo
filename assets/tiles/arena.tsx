@@ -791,6 +791,7 @@
   <properties>
    <property name="collides" type="bool" value="false"/>
    <property name="name" value="floor_inner_top_left"/>
+   <property name="spawn" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="151" type="floor">
@@ -959,6 +960,7 @@
   <properties>
    <property name="collides" type="bool" value="false"/>
    <property name="name" value="stone_slab_hollow"/>
+   <property name="spawn" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="200" type="stone">

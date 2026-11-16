@@ -57,7 +57,7 @@ public final class GameScreen extends ScreenAdapter {
   private final boolean arenaMode;
 
   /** Below 1 the camera shows less of the world, so everything looks bigger. */
-  private static final float CAMERA_ZOOM = 0.5f;
+  private static final float CAMERA_ZOOM = 0.8f;
 
   private final KeyboardPlayerInput input = new KeyboardPlayerInput();
   private final SpriteBatch batch;
