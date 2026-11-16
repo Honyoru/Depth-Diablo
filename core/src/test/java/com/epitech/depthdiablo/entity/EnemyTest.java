@@ -47,7 +47,7 @@ class EnemyTest {
     assertFalse(rat.canSee(aZombie().build()));
   }
 
-   @Test
+  @Test
   void should_take_the_player_as_its_target_when_alerted() {
     Enemy zombie = aZombie().build();
     Character player = aPlayer();
@@ -87,20 +87,20 @@ class EnemyTest {
   }
 
   @Test
-   void should_remember_whether_it_was_summoned() {
+  void should_remember_whether_it_was_summoned() {
     assertTrue(aRat().summoned().build().isSummoned());
     assertFalse(aRat().build().isSummoned());
-   }
+  }
 
-   @Test
-   void should_reject_a_missing_target() {
+  @Test
+  void should_reject_a_missing_target() {
     Enemy rat = aRat().build();
 
     assertThrows(NullPointerException.class, () -> rat.canSee(null));
     assertThrows(NullPointerException.class, () -> rat.alert(null));
-   }
+  }
 
-   private static Character aPlayer(){
+  private static Character aPlayer() {
     return aCharacter().withFaction(Faction.PLAYER).build();
-   }
+  }
 }

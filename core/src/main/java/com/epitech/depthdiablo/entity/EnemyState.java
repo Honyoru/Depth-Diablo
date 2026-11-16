@@ -20,7 +20,7 @@ public enum EnemyState implements State<Enemy> {
   FLEE,
   /** Hits, shoots or casts at its target. */
   ATTACK,
-   /** Spawns other enemies (summoners). */
+  /** Spawns other enemies (summoners). */
   SUMMON,
   /** Has just been hit. */
   HIT,
@@ -29,22 +29,21 @@ public enum EnemyState implements State<Enemy> {
 
   @Override
   public void enter(Enemy enemy) {
-    //Enemy AI fill his State
+    // Enemy AI fill his State
   }
 
   @Override
   public void update(Enemy enemy) {
-    //Enemy AI fill his State
+    // Enemy AI fill his State
   }
 
   @Override
   public void exit(Enemy enemy) {
-    //Enemy AI fill his State
+    // Enemy AI fill his State
   }
 
   @Override
-  public boolean onMessage(Enemy enemy, Telegram telegram){
+  public boolean onMessage(Enemy enemy, Telegram telegram) {
     return false;
   }
-
 }

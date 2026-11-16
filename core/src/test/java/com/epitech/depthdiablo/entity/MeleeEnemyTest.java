@@ -12,7 +12,6 @@ import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.testdata.EnemyBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -38,9 +37,9 @@ class MeleeEnemyTest {
   }
 
   @Test
-  void should_publish_the_damage_it_deals(){
+  void should_publish_the_damage_it_deals() {
     MeleeEnemy rat = aRat().build();
-    Character player = aPlayerAt(18,0);
+    Character player = aPlayerAt(18, 0);
     rat.alert(player);
 
     rat.attackTarget(world);
@@ -50,20 +49,20 @@ class MeleeEnemyTest {
   }
 
   @Test
-  void should_hit_with_its_own_attack_stat(){
+  void should_hit_with_its_own_attack_stat() {
     MeleeEnemy zombie = aZombie().build();
-    Character player = aPlayerAt(18,0);
+    Character player = aPlayerAt(18, 0);
     zombie.alert(player);
 
     zombie.attackTarget(world);
 
-    assertEquals(7,player.hp());
+    assertEquals(7, player.hp());
   }
 
   @Test
-  void should_not_hit_a_target_beyond_its_reach(){
+  void should_not_hit_a_target_beyond_its_reach() {
     MeleeEnemy rat = aRat().build();
-    Character player = aPlayerAt(21,0);
+    Character player = aPlayerAt(21, 0);
     rat.alert(player);
 
     rat.attackTarget(world);
@@ -72,7 +71,7 @@ class MeleeEnemyTest {
   }
 
   @Test
-  void should_not_hit_when_it_has_no_target(){
+  void should_not_hit_when_it_has_no_target() {
     MeleeEnemy rat = aRat().build();
 
     rat.attackTarget(world);
@@ -82,7 +81,7 @@ class MeleeEnemyTest {
   }
 
   @Test
-  void should_not_hit_an_invincible_target(){
+  void should_not_hit_an_invincible_target() {
     MeleeEnemy rat = aRat().build();
     Character player = aPlayerAt(18, 0);
     player.grantInvincibility(10);
@@ -96,7 +95,7 @@ class MeleeEnemyTest {
   }
 
   @Test
-  void should_not_hit_a_target_that_died_since_the_alert(){
+  void should_not_hit_a_target_that_died_since_the_alert() {
     MeleeEnemy rat = aRat().build();
     Character player = aPlayerAt(18, 0);
     rat.alert(player);
@@ -123,7 +122,7 @@ class MeleeEnemyTest {
   }
 
   private static Character aPlayerAt(float x, float y) {
-    Aabb box = new Aabb(x,y,16,16);
+    Aabb box = new Aabb(x, y, 16, 16);
     return aCharacter().withFaction(Faction.PLAYER).withBodyBox(box).withHurtbox(box).build();
   }
 }

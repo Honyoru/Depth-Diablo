@@ -17,12 +17,12 @@ public final class Rat extends MeleeEnemy {
    * @param reach how far its attack goes past its body box, in pixels; 0 or more
    */
   public Rat(
-    Aabb bodyBox,
-    StatSource stats,
-    Aabb hurtbox,
-    int invincibilityTicksAfterHit,
-    boolean summoned,
-    float reach) {
-      super(bodyBox,stats,hurtbox,invincibilityTicksAfterHit,summoned,reach);
-    }
+      Aabb bodyBox,
+      StatSource stats,
+      Aabb hurtbox,
+      int invincibilityTicksAfterHit,
+      boolean summoned,
+      float reach) {
+    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, summoned, reach);
+  }
 }

@@ -7,17 +7,15 @@ import com.epitech.depthdiablo.entity.Rat;
 import com.epitech.depthdiablo.entity.Stat;
 import com.epitech.depthdiablo.entity.StatSource;
 import com.epitech.depthdiablo.entity.Zombie;
-
 import java.util.EnumMap;
 import java.util.Map;
 
 /** Test data builder (Q116) for real enemies: a rat or a zombie, changed one value at a time. */
-
 public final class EnemyBuilder {
   private final Kind kind;
   private final Map<Stat, Float> stats = new EnumMap<>(Stat.class);
-  private  Aabb bodyBox = new Aabb(0, 0, 16, 16);
-  private float reach =4;
+  private Aabb bodyBox = new Aabb(0, 0, 16, 16);
+  private float reach = 4;
   private boolean summoned;
 
   private EnemyBuilder(Kind kind, float maxHp, float attack) {
@@ -36,7 +34,7 @@ public final class EnemyBuilder {
    *
    * @return a new builder
    */
-  public static EnemyBuilder aRat(){
+  public static EnemyBuilder aRat() {
     return new EnemyBuilder(Rat::new, 3f, 2f);
   }
 
@@ -45,7 +43,7 @@ public final class EnemyBuilder {
    *
    * @return a new builder
    */
-  public static EnemyBuilder aZombie(){
+  public static EnemyBuilder aZombie() {
     return new EnemyBuilder(Zombie::new, 8f, 3f);
   }
 
@@ -102,5 +100,4 @@ public final class EnemyBuilder {
         boolean summoned,
         float reach);
   }
-
 }

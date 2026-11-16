@@ -15,14 +15,12 @@ import java.util.Optional;
  * <p>Pattern: State ({@link EnemyState} on the gdx-ai state machine) and Template Method ({@link
  * #attackTarget} is the hook each family fills).
  */
-
 public abstract class Enemy extends Character {
-    private StateMachine<Enemy, EnemyState> ai;
-    private Optional<Character> target = Optional.empty();
-    private final boolean summoned;
+  private StateMachine<Enemy, EnemyState> ai;
+  private Optional<Character> target = Optional.empty();
+  private final boolean summoned;
 
-
-    /**
+  /**
    * Creates an enemy. It starts {@link EnemyState#IDLE}, with no target.
    *
    * @param bodyBox the box the enemy occupies in the world; must not be {@code null}
@@ -35,14 +33,14 @@ public abstract class Enemy extends Character {
    * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} is negative
    */
   protected Enemy(
-    Aabb bodyBox,
-    StatSource stats,
-    Aabb hurtbox,
-    int invincibilityTicksAfterHit,
-    boolean summoned){
-      super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit);
-      this.summoned = summoned;
-    }
+      Aabb bodyBox,
+      StatSource stats,
+      Aabb hurtbox,
+      int invincibilityTicksAfterHit,
+      boolean summoned) {
+    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit);
+    this.summoned = summoned;
+  }
 
   /**
    * Runs one step of the enemy's state machine (GDD 1.7).
@@ -50,8 +48,8 @@ public abstract class Enemy extends Character {
    * @param tick the number of current logic tick
    */
   @Override
-  protected void think(long tick){
-    if(ai == null){
+  protected void think(long tick) {
+    if (ai == null) {
       ai = new DefaultStateMachine<>(this, EnemyState.IDLE);
     }
     ai.update();
@@ -94,7 +92,7 @@ public abstract class Enemy extends Character {
   /**
    * Returns the side every enemy fight fo (GDD 1.5).
    *
-   * @return {@Link Faction#ENEMY}
+   * @return {@link Faction#ENEMY}
    */
   @Override
   public Faction faction() {
@@ -124,7 +122,7 @@ public abstract class Enemy extends Character {
    *
    * @return true if it was summoned
    */
-  public boolean isSummoned(){
+  public boolean isSummoned() {
     return summoned;
   }
 }
