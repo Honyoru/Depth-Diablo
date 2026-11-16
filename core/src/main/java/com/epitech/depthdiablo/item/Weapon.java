@@ -15,6 +15,7 @@ import java.util.Objects;
  */
 public abstract class Weapon extends Equipment implements Attack {
   private final int attackBonus;
+  private final float attackSpeed;
   private final float range;
 
   /**
@@ -26,10 +27,12 @@ public abstract class Weapon extends Equipment implements Attack {
    * @param rarity its loot tier; never {@link Rarity#CONSUMABLE}
    * @param price its shop price in coins; 0 means free
    * @param attackBonus the flat bonus added to the attack in the damage formula; 0 or more
+   * @param attackSpeed its base attack speed; the holder's ATTACK_SPEED stat multiplies it (GDD
+   *     1.6); above 0 and finite
    * @param range how far its hit reaches, in pixels; above 0 and finite
    * @throws NullPointerException if a text or the rarity is {@code null}
    * @throws IllegalArgumentException if a text is blank, the price or the attack bonus is negative,
-   *     the rarity is CONSUMABLE, or the range is not a finite number above 0
+   *     the rarity is CONSUMABLE, or the attack speed or the range is not a finite number above 0
    */
   protected Weapon(
       String id,
@@ -38,15 +41,21 @@ public abstract class Weapon extends Equipment implements Attack {
       Rarity rarity,
       int price,
       int attackBonus,
+      float attackSpeed,
       float range) {
     super(id, nameKey, spriteId, rarity, price);
     if (attackBonus < 0) {
       throw new IllegalArgumentException("Attack bonus must not be negative: " + attackBonus);
     }
+    if (attackSpeed <= 0 || Float.isNaN(attackSpeed) || Float.isInfinite(attackSpeed)) {
+      throw new IllegalArgumentException(
+          "Attack speed must be a finite number above 0: " + attackSpeed);
+    }
     if ((range <= 0) || Float.isNaN(range) || Float.isInfinite(range)) {
       throw new IllegalArgumentException("Range must be a finite number above 0: " + range);
     }
     this.attackBonus = attackBonus;
+    this.attackSpeed = attackSpeed;
     this.range = range;
   }
 
@@ -81,6 +90,15 @@ public abstract class Weapon extends Equipment implements Attack {
    */
   public final int attackBonus() {
     return attackBonus;
+  }
+
+  /**
+   * Returns the base attack speed of this weapon. The holder's ATTACK_SPEED stat multiplies it.
+   *
+   * @return the attack speed, above 0
+   */
+  public final float attackSpeed() {
+    return attackSpeed;
   }
 
   /**

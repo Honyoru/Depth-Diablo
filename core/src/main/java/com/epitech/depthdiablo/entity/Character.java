@@ -201,24 +201,33 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
-   * Starts an attack: the swing runs first, then the character waits {@code 60 / attack speed}
-   * ticks, rounded and at least 1, before the next one. The cooldown only counts down once the
-   * swing is over, so two swings never overlap. Players and enemies share it (DECISIONS §5).
+   * Starts an attack: the swing runs first, then the character waits {@code 60 / (weapon attack
+   * speed × its own attack speed)} ticks, rounded and at least 1, before the next one. The cooldown
+   * only counts down once the swing is over, so two swings never overlap (DECISIONS §5).
    *
    * @param swingTicks how many ticks the swing of the weapon lasts; 0 for an attack with no swing
-   * @throws IllegalArgumentException if {@code swingTicks} is negative
+   * @param weaponAttackSpeed the base attack speed of the weapon; above 0 and finite
+   * @throws IllegalArgumentException if {@code swingTicks} is negative or {@code weaponAttackSpeed}
+   *     is not a finite number above 0
    * @throws IllegalStateException if the character cannot attack now (see {@link #canAttack})
    */
-  public void startAttackCooldown(int swingTicks) {
+  public void startAttackCooldown(int swingTicks, float weaponAttackSpeed) {
     if (swingTicks < 0) {
       throw new IllegalArgumentException("Swing ticks must not be negative: " + swingTicks);
+    }
+    if ((weaponAttackSpeed <= 0)
+        || Float.isNaN(weaponAttackSpeed)
+        || Float.isInfinite(weaponAttackSpeed)) {
+      throw new IllegalArgumentException(
+          "Weapon attack speed must be a finite number above 0: " + weaponAttackSpeed);
     }
     if (!canAttack()) {
       throw new IllegalStateException("Cannot attack now");
     }
     swingTicksLeft = swingTicks;
     attackCooldownTicksLeft =
-        Math.max(1, Math.round(GameConstants.TICKS_PER_SECOND / attackSpeed()));
+        Math.max(
+            1, Math.round(GameConstants.TICKS_PER_SECOND / (weaponAttackSpeed * attackSpeed())));
   }
 
   /**

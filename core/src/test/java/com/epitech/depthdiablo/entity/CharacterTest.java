@@ -421,8 +421,23 @@ class CharacterTest {
   void should_throw_when_the_weapon_attack_speed_is_not_a_number() {
     Character character = aCharacter().build();
 
-    assertThrows(
-        IllegalArgumentException.class, () -> character.startAttackCooldown(0, Float.NaN));
+    assertThrows(IllegalArgumentException.class, () -> character.startAttackCooldown(0, Float.NaN));
+  }
+
+  @Test
+  void should_keep_its_cooldown_when_an_attack_is_refused() {
+    Character character = aCharacter().withAttackSpeed(1f).build();
+    character.startAttackCooldown(0, 1f);
+    for (long tick = 1; tick <= 30; tick++) {
+      character.update(tick);
+    }
+
+    assertThrows(IllegalStateException.class, () -> character.startAttackCooldown(0, 1f));
+
+    for (long tick = 31; tick <= 60; tick++) {
+      character.update(tick);
+    }
+    assertTrue(character.canAttack()); // still ready at tick 60, not at 90
   }
 
   @Test

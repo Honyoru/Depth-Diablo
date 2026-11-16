@@ -33,6 +33,7 @@ public final class ItemFactory {
                   Rarity.valueOf(entry.getString("rarity")),
                   entry.getInt("price"),
                   entry.getInt("attackBonus"),
+                  entry.getFloat("attackSpeed"),
                   entry.getFloat("range"),
                   entry.getFloat("width"),
                   entry.getFloat("arcDegrees"),

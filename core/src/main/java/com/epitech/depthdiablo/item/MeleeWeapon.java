@@ -29,6 +29,8 @@ public abstract class MeleeWeapon extends Weapon {
    * @param rarity its loot tier; never {@link Rarity#CONSUMABLE}
    * @param price its shop price in coins; 0 means free
    * @param attackBonus the flat bonus added to the attack in the damage formula; 0 or more
+   * @param attackSpeed its base attack speed; the holder's ATTACK_SPEED stat multiplies it; above 0
+   *     and finite
    * @param range the length of the blade, in pixels; above 0 and finite
    * @param width the width of the blade, in pixels; above 0 and finite
    * @param arcDegrees the angle the blade sweeps, centred on the aim; from 0 (a straight thrust) to
@@ -45,11 +47,12 @@ public abstract class MeleeWeapon extends Weapon {
       Rarity rarity,
       int price,
       int attackBonus,
+      float attackSpeed,
       float range,
       float width,
       float arcDegrees,
       int swingTicks) {
-    super(id, nameKey, spriteId, rarity, price, attackBonus, range);
+    super(id, nameKey, spriteId, rarity, price, attackBonus, attackSpeed, range);
     if (width <= 0 || Float.isNaN(width) || Float.isInfinite(width)) {
       throw new IllegalArgumentException("Width must be a finite number above 0: " + width);
     }
@@ -105,7 +108,7 @@ public abstract class MeleeWeapon extends Weapon {
   public final Swing attack(
       Character holder, float aimDegrees, Supplier<List<Entity>> targets, EventBus events) {
     Swing swing = new Swing(this, holder, aimDegrees, targets, events);
-    holder.startAttackCooldown(swingTicks());
+    holder.startAttackCooldown(swingTicks(), attackSpeed());
     return swing;
   }
 

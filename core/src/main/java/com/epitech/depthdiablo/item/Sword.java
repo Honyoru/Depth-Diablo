@@ -16,6 +16,8 @@ public final class Sword extends MeleeWeapon {
    * @param rarity its loot tier; never {@link Rarity#CONSUMABLE}
    * @param price its shop price in coins; 0 means free
    * @param attackBonus the flat bonus added to the attack in the damage formula; 0 or more
+   * @param attackSpeed its base attack speed; the holder's ATTACK_SPEED stat multiplies it; above 0
+   *     and finite
    * @param range the length of the blade, in pixels; above 0 and finite
    * @param width the width of the blade, in pixels; above 0 and finite
    * @param arcDegrees the angle the blade sweeps, centred on the aim; from 0 to 360
@@ -30,10 +32,22 @@ public final class Sword extends MeleeWeapon {
       Rarity rarity,
       int price,
       int attackBonus,
+      float attackSpeed,
       float range,
       float width,
       float arcDegrees,
       int swingTicks) {
-    super(id, nameKey, spriteId, rarity, price, attackBonus, range, width, arcDegrees, swingTicks);
+    super(
+        id,
+        nameKey,
+        spriteId,
+        rarity,
+        price,
+        attackBonus,
+        attackSpeed,
+        range,
+        width,
+        arcDegrees,
+        swingTicks);
   }
 }
