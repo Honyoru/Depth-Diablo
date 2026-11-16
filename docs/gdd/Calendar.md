@@ -165,6 +165,6 @@ gantt
 - 2 of the 3 kings and boss phases: a single king with a simple attack
 - Alchemist, Necromancer and poison: burn is enough to show the Decorator
 - Key remapping: Options keep aim mode and FR / EN
-- Music and secondary sounds: only the POC's basic sounds
+- Music and secondary sounds: only the POC's basic sounds.
 
 If we fall behind, cut the BSP generator first (loop over the 3 Tiled floors), then Orc + Dark Mage, then F2.
