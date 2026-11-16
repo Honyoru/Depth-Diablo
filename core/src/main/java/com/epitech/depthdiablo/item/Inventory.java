@@ -1,7 +1,9 @@
 package com.epitech.depthdiablo.item;
 
+import com.epitech.depthdiablo.entity.BuildModifier;
 import com.epitech.depthdiablo.entity.Character;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -115,5 +117,16 @@ public final class Inventory {
     Weapon old = weapon;
     weapon = newWeapon;
     return old;
+  }
+
+  /**
+   * Returns what changes the holder's build, in the order the character applies them (GDD 1.3.1):
+   * the weapon, then the armor, then the passive items in pickup order. Armor and passive items
+   * join this list when they exist.
+   *
+   * @return the modifiers in order; the list cannot be changed
+   */
+  public List<BuildModifier> modifiers() {
+    return List.of(weapon);
   }
 }

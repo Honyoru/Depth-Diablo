@@ -7,8 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.epitech.depthdiablo.entity.BuildModifier;
 import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.testdata.Items;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.4: the 3 hotbar slots take only consumables, one per slot; a weapon is always held. */
@@ -183,6 +185,32 @@ class InventoryTest {
 
     assertThrows(IndexOutOfBoundsException.class, () -> inventory.use(-1, user));
     assertThrows(IndexOutOfBoundsException.class, () -> inventory.use(Inventory.HOTBAR_SIZE, user));
+  }
+
+  @Test
+  void should_give_its_weapon_as_the_only_modifier_for_now() {
+    Sword sword = Items.sword();
+
+    assertEquals(List.of(sword), new Inventory(sword).modifiers());
+  }
+
+  @Test
+  void should_give_the_new_weapon_as_modifier_once_equipped() {
+    Inventory inventory = anInventory();
+    Sword newSword = Items.sword();
+
+    inventory.equip(newSword);
+
+    assertEquals(List.of(newSword), inventory.modifiers());
+  }
+
+  @Test
+  void should_not_let_the_modifiers_be_changed_from_outside() {
+    Inventory inventory = anInventory();
+    List<BuildModifier> modifiers = inventory.modifiers();
+    Sword other = Items.sword();
+
+    assertThrows(UnsupportedOperationException.class, () -> modifiers.add(other));
   }
 
   private static Inventory anInventory() {
