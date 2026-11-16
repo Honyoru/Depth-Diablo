@@ -21,7 +21,7 @@
  </tile>
  <tile id="3">
   <properties>
-   <property name="collides" type="bool" value="false"/>
+   <property name="collides" type="bool" value="true"/>
    <property name="name" value="floor_variant_1"/>
   </properties>
  </tile>
@@ -72,6 +72,7 @@
   <properties>
    <property name="collides" type="bool" value="false"/>
    <property name="name" value="floor_variant_3"/>
+   <property name="spawn_monster" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="12">
