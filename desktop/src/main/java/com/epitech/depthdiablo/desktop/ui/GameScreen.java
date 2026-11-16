@@ -257,12 +257,15 @@ public final class GameScreen extends ScreenAdapter {
     stats.put(Stat.SPEED, 120f);
     stats.put(Stat.ATTACK_SPEED, 1f);
     stats.put(Stat.LUCK, 0f);
-    Aabb body = new Aabb(spawn.x + 2f, spawn.y + 2f, 28f, 28f); // 28 px knight centred in a 32 px tile
+    Aabb body =
+        new Aabb(spawn.x + 2f, spawn.y + 2f, 28f, 28f); // 28 px knight centred in a 32 px tile
     return new Knight(
         body, new BaseStats(stats), body, GameConstants.TICKS_PER_SECOND / 2, input, world);
   }
 
-  /** Returns the bottom-left corner, in pixels, of the first tile whose "spawn" property is true. */
+  /**
+   * Returns the bottom-left corner, in pixels, of the first tile whose "spawn" property is true.
+   */
   private Vector2 findSpawn() {
     TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
     float tile = GameConstants.TILE_SIZE;
