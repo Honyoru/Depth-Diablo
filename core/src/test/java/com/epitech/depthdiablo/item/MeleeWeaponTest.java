@@ -204,23 +204,17 @@ class MeleeWeaponTest {
   }
 
   private static MeleeWeapon aMeleeWeapon(float width, float arcDegrees, int swingTicks) {
-    return new FakeMeleeWeapon(width, arcDegrees, swingTicks);
-  }
-
-  /** Hand-written fake (Q117): a melee weapon with only the shared MeleeWeapon behaviour. */
-  private static final class FakeMeleeWeapon extends MeleeWeapon {
-    FakeMeleeWeapon(float width, float arcDegrees, int swingTicks) {
-      super(
-          "sword_iron",
-          "item.sword_iron.name",
-          "sword",
-          Rarity.COMMON,
-          30,
-          2,
-          24f,
-          width,
-          arcDegrees,
-          swingTicks);
-    }
+    return new Sword(
+        "sword",
+        "item.sword.name",
+        "items/sword",
+        Rarity.COMMON,
+        30,
+        2,
+        1f,
+        24f,
+        width,
+        arcDegrees,
+        swingTicks);
   }
 }

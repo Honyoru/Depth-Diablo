@@ -19,7 +19,7 @@ class WeaponTest {
   void should_keep_its_values_when_created() {
     Weapon weapon = aWeapon(Rarity.RARE, 4, 24f);
 
-    assertEquals("sword_iron", weapon.id());
+    assertEquals("sword", weapon.id());
     assertEquals(Rarity.RARE, weapon.rarity());
     assertEquals(4, weapon.attackBonus());
     assertEquals(24f, weapon.range());
@@ -132,22 +132,44 @@ class WeaponTest {
     assertThrows(NullPointerException.class, () -> weapon.hit(attacker, null));
   }
 
-  private static Weapon aWeapon(Rarity rarity, int attackBonus, float range) {
-    return new FakeWeapon(
-        "sword_iron", "item.sword_iron.name", "sword", rarity, 30, attackBonus, range);
+  @Test
+  void should_keep_its_attack_speed() {
+    assertEquals(1.5f, aWeapon(Rarity.RARE, 4, 1.5f, 24f).attackSpeed());
   }
 
-  /** Hand-written fake (Q117): a weapon with only the shared Weapon behaviour. */
-  private static final class FakeWeapon extends Weapon {
-    FakeWeapon(
-        String id,
-        String nameKey,
-        String spriteId,
-        Rarity rarity,
-        int price,
-        int attackBonus,
-        float range) {
-      super(id, nameKey, spriteId, rarity, price, attackBonus, range);
-    }
+  @Test
+  void should_throw_when_the_attack_speed_is_0() {
+    assertThrows(IllegalArgumentException.class, () -> aWeapon(Rarity.RARE, 4, 0f, 24f));
+  }
+
+  @Test
+  void should_throw_when_the_attack_speed_is_not_a_number() {
+    assertThrows(IllegalArgumentException.class, () -> aWeapon(Rarity.RARE, 4, Float.NaN, 24f));
+  }
+
+  @Test
+  void should_throw_when_the_attack_speed_is_infinite() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> aWeapon(Rarity.RARE, 4, Float.POSITIVE_INFINITY, 24f));
+  }
+
+  private static Weapon aWeapon(Rarity rarity, int attackBonus, float range) {
+    return aWeapon(rarity, attackBonus, 1f, range);
+  }
+
+  private static Weapon aWeapon(Rarity rarity, int attackBonus, float attackSpeed, float range) {
+    return new Sword(
+        "sword",
+        "item.sword.name",
+        "items/sword",
+        rarity,
+        30,
+        attackBonus,
+        attackSpeed,
+        range,
+        8f,
+        90f,
+        12);
   }
 }

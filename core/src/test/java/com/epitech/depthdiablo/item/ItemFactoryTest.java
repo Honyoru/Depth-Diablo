@@ -46,6 +46,7 @@ class ItemFactoryTest {
     assertEquals(Rarity.valueOf(entry.getString("rarity")), sword.rarity());
     assertEquals(entry.getInt("price"), sword.price());
     assertEquals(entry.getInt("attackBonus"), sword.attackBonus());
+    assertEquals(entry.getFloat("attackSpeed"), sword.attackSpeed());
     assertEquals(entry.getFloat("range"), sword.range());
     assertEquals(entry.getFloat("width"), sword.width());
     assertEquals(entry.getFloat("arcDegrees"), sword.arcDegrees());

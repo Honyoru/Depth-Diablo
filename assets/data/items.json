@@ -16,6 +16,7 @@
       "rarity": "COMMON",
       "price": 30,
       "attackBonus": 2,
+      "attackSpeed": 1,
       "range": 24,
       "width": 8,
       "arcDegrees": 90,
