@@ -91,6 +91,15 @@ public final class Swing implements Updatable {
   }
 
   /**
+   * Returns the character who swings.
+   *
+   * @return the holder
+   */
+  public Character holder() {
+    return holder;
+  }
+
+  /**
    * Returns the direction of the attack, chosen when the swing started.
    *
    * @return the aim in degrees

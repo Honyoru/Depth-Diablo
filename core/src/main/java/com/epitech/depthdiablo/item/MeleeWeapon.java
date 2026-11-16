@@ -2,11 +2,9 @@ package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.combat.Obb;
 import com.epitech.depthdiablo.combat.Swing;
-import com.epitech.depthdiablo.engine.EventBus;
+import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Character;
-import com.epitech.depthdiablo.entity.Entity;
-import java.util.List;
-import java.util.function.Supplier;
+import java.util.Objects;
 
 /**
  * A weapon that hits up close with a blade (GDD 1.6). Its swing is a rotated rectangle (an Obb) as
@@ -92,24 +90,24 @@ public abstract class MeleeWeapon extends Weapon {
   }
 
   /**
-   * Starts an attack with this weapon: a swing begins, and the holder cannot attack again until the
-   * swing and then its cooldown are over (DECISIONS §5). Either both happen or neither does: a
-   * wrong argument leaves the holder's cooldown untouched.
+   * Starts a swing of this weapon: the owner holds it and runs it during its next updates, and
+   * cannot attack again until the swing and then its cooldown are over (DECISIONS §5). Either all
+   * of it happens or nothing does: a wrong argument leaves the owner's cooldown untouched.
    *
-   * @param holder the character who swings; it must be able to attack now
+   * @param owner the character who swings; it must be able to attack now
    * @param aimDegrees the direction of the attack, in degrees (0 = right, 90 = up)
-   * @param targets gives the entities the blade may hit, read again at each tick
-   * @param events where the swing publishes the damage it deals and the deaths it causes
-   * @return the swing that just started; the holder updates it each tick
+   * @param world its entities are the targets of the blade, its event bus gets the damage and
+   *     deaths
    * @throws NullPointerException if an argument is {@code null}
    * @throws IllegalArgumentException if the aim is not a finite number
-   * @throws IllegalStateException if the holder cannot attack now (see {@link Character#canAttack})
+   * @throws IllegalStateException if the owner cannot attack now (see {@link Character#canAttack})
    */
-  public final Swing attack(
-      Character holder, float aimDegrees, Supplier<List<Entity>> targets, EventBus events) {
-    Swing swing = new Swing(this, holder, aimDegrees, targets, events);
-    holder.startAttackCooldown(swingTicks(), attackSpeed());
-    return swing;
+  @Override
+  public final void attack(Character owner, float aimDegrees, World world) {
+    Objects.requireNonNull(world, "world is null");
+    Swing swing = new Swing(this, owner, aimDegrees, world::entities, world.eventBus());
+    owner.startAttackCooldown(swingTicks(), attackSpeed());
+    owner.holdSwing(swing);
   }
 
   /**

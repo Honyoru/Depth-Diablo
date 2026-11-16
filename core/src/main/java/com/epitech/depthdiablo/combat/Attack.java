@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.combat;
 
+import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Character;
 
 /**
@@ -7,7 +8,7 @@ import com.epitech.depthdiablo.entity.Character;
  * items wrap it to add effects, such as a burn on every hit (Decorator).
  *
  * <p>Pattern: Strategy. The character holds an Attack and never knows which weapon is behind it.
- * {@code attack(owner, aim, world)} comes with hitboxes (UML, items.drawio).
+ * {@link #attack} starts an attack (a swing, an arrow) and {@link #hit} applies one of its hits.
  */
 public interface Attack {
 
@@ -20,4 +21,18 @@ public interface Attack {
    * @throws NullPointerException if {@code attacker} or {@code target} is {@code null}
    */
   HitResult hit(Character attacker, Character target);
+
+  /**
+   * Starts one attack of the owner towards the aim: a sword starts a swing, a bow will shoot an
+   * arrow. Only the owner's {@code think} calls it, once {@link Character#canAttack()} is true.
+   *
+   * @param owner the character who attacks
+   * @param aimDegrees the direction of the attack, in degrees (0 = right, 90 = up)
+   * @param world the world the attack happens in: its entities are the targets, its event bus gets
+   *     the damage and deaths
+   * @throws NullPointerException if an argument is {@code null}
+   * @throws IllegalArgumentException if the aim is not a finite number
+   * @throws IllegalStateException if the owner cannot attack now
+   */
+  void attack(Character owner, float aimDegrees, World world);
 }

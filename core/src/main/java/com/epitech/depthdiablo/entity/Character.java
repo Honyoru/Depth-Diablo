@@ -1,14 +1,12 @@
 package com.epitech.depthdiablo.entity;
 
 import com.epitech.depthdiablo.GameConstants;
+import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.Damageable;
 import com.epitech.depthdiablo.combat.Swing;
-import com.epitech.depthdiablo.engine.EventBus;
-import com.epitech.depthdiablo.item.MeleeWeapon;
-import java.util.List;
+import com.epitech.depthdiablo.engine.World;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Base class for player and enemy entities, with shared health and damage handling. The final
@@ -232,21 +230,40 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
-   * Swings a melee weapon towards the aim. The swing runs on the next ticks, during this
-   * character's update; a player or an enemy calls it from {@link #think(long)}.
+   * Attacks towards the aim with a weapon, whatever its kind: a sword starts a swing, a bow will
+   * shoot an arrow. A player or an enemy calls it from {@link #think(long)}, once {@link
+   * #canAttack()} is true.
    *
-   * @param weapon the weapon to swing
+   * @param weapon the attack to start, usually the equipped weapon
    * @param aimDegrees the direction of the attack, in degrees (0 = right, 90 = up)
-   * @param targets gives the entities the blade may hit, read again at each tick
-   * @param events where the swing publishes the damage it deals and the deaths it causes
+   * @param world the world the attack happens in
    * @throws NullPointerException if an argument is {@code null}
    * @throws IllegalArgumentException if the aim is not a finite number
    * @throws IllegalStateException if this character cannot attack now (see {@link #canAttack})
    */
-  protected final void startSwing(
-      MeleeWeapon weapon, float aimDegrees, Supplier<List<Entity>> targets, EventBus events) {
+  protected final void startAttack(Attack weapon, float aimDegrees, World world) {
     Objects.requireNonNull(weapon, "weapon is null");
-    currentSwing = weapon.attack(this, aimDegrees, targets, events);
+    weapon.attack(this, aimDegrees, world);
+  }
+
+  /**
+   * Takes a swing that a melee weapon just started for this character. The swing then runs during
+   * this character's next updates.
+   *
+   * @param swing the swing to run; its holder must be this character
+   * @throws NullPointerException if {@code swing} is {@code null}
+   * @throws IllegalArgumentException if the swing belongs to another character
+   * @throws IllegalStateException if this character is still swinging
+   */
+  public final void holdSwing(Swing swing) {
+    Objects.requireNonNull(swing, "swing is null");
+    if (!equals(swing.holder())) {
+      throw new IllegalArgumentException("The swing belongs to another character");
+    }
+    if (currentSwing().isPresent()) {
+      throw new IllegalStateException("Still swinging");
+    }
+    currentSwing = swing;
   }
 
   /**
