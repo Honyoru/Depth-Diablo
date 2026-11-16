@@ -207,10 +207,10 @@ Testable rules (1.4.1): removing a passive item restores the holder's stats and 
 
 - Every Character holds a CharacterBuild record (attack, stats, hurtbox, hitbox, movement). Equipment and PassiveItem implement BuildModifier: modify(build) returns a new build. After every inventory change the character rebuilds: base build (class stats from JSON, Unarmed attack) → weapon → armor → passive items in pickup order. "Removing an item restores stats exactly" and "same order, same result" then hold by construction.
 - Attack speed: the weapon has a base attack speed (`attackSpeed` in items.json) and the ATTACK\_SPEED stat multiplies it, so passive items can change it; the Character tracks the swing and the cooldown, and weapons stay stateless.
-- equip() / unequip() live in Inventory, which owns the 2 portrait slots. Slots 0–2 are the hotbar (consumables only), 3–19 take any item. Proposal: drop(slot), so a full inventory can free a slot.
+- equip() lives in Inventory, which owns the weapon and armor slots: equipping swaps and gives the old one back for the world to drop. There is no unequip: the player always holds a weapon and an armor. Slots 0–2 are the hotbar (consumables only), the 18 others take only passive items. A free hotbar slot holds Inventory.EMPTY (Null Object), never null.
 - Hitboxes and projectiles call owner.hit(target); the Player sends it through its Attack chain, so a fire item also burns through arrows and fireballs.
 - A LootTable (weighted entries, a no-drop weight, the seeded RandomSource) serves enemies, bosses, chests and the roulette. The roulette screen spends the RouletteTicket; using it from the hotbar does nothing.
-- Coins and keys are pickups, not Items: they are counters on the Player (keys: proposal).
+- Coins are pickups, not Items: a counter on the Player. There is a single key, for the boss door: a boolean on the Player, not an Item, so a full bag can never block it.
 
 Testable rules (1.4.1): every Character dies at HP ≤ 0; a non-Damageable entity never loses HP; a summoned enemy never drops loot (Q16).
 
@@ -250,7 +250,7 @@ Open: coin drop rates, prices, the roulette's outcomes and odds, all TBD during 
 
 **Combat (from the answers):** weapons are melee (Knight), magic (Mage) or ranged (Archer's bow) (Q25), aimed with the mouse or the keyboard, chosen in Options (Q39). No crits, no chance-based dodge, no block (Q27). After a hit, the target gets invincibility frames (0.3–0.8 s, placeholder, Q28) and knockback for feedback (Q29). Status effects: burn (Dark Mage, fire passive items), lingering poison zone (Alchemist).
 
-**Inventory (decided, Ange, 4 Nov; replaces the Q31 layout):** 20 slots. 3 of them form the hotbar and are reserved for consumables; the other 17 take any item, consumables included. 2 more slots on the character portrait are reserved for the equipped weapon and armor (2.3); an unequipped weapon or armor goes in the 20 like any other item. Items never stack: each item takes one slot. Picking up an item needs a key press (2.4). When all slots are full, the player cannot pick anything up and the item stays on the ground (like Minecraft). Two copies of the same passive item still combine their effects by each item's rule (Q32). No crafting (Q33).
+**Inventory (decided, Ange, 4 Nov; changed by Romain, 16 Nov):** 21 slots. 3 of them form the hotbar and take only consumables; the other 18 take only passive items. The equipped weapon and armor are not in these slots: they sit on the character portrait (2.3), and the player always has one of each (a starting weapon and a starting armor). Picking up a weapon or an armor swaps it with the equipped one, and the old one drops on the ground. Items never stack: each item takes one slot. Picking up an item needs a key press (2.4). When no free slot accepts an item, the player cannot pick it up and it stays on the ground (like Minecraft). Two copies of the same passive item still combine their effects by each item's rule (Q32). No crafting (Q33).
 
 **World elements:** keyless chests that hold passive items; keys that open locked doors (Q80); spike traps with a delay before they activate (Q36); arena-locked areas (Q13); the teleport zone after each boss (Q11).
 
@@ -279,9 +279,9 @@ Every rule below becomes a unit test, written first (Q121), in the rules/ test p
 - Two copies of the same item stack by their own rule; the same pickup order always gives the same result (1.3.1).
 - A fire-effect item applies burn on every hit and on nothing else (1.3.1).
 - Two items never share a slot (1.4).
-- With all 20 slots full, a pickup fails and the item stays on the ground (1.4).
+- When no free slot accepts the item (the 3 hotbar slots for a consumable, the 18 passive slots for a passive item), a pickup fails and the item stays on the ground (1.4).
 - An item on the ground is picked up only when the player presses the pickup key in range; walking over it does nothing (1.4).
-- The 3 hotbar slots accept only consumables; the 17 other slots accept any item (1.4).
+- The 3 hotbar slots accept only consumables, the 18 other slots only passive items; a weapon or an armor only goes in its portrait slot (1.4).
 
 **Shop**
 
@@ -349,7 +349,7 @@ Open: a cap on summoned enemies; detection range; what enemies do after losing s
 
 ## 2. User Interface
 
-**HUD (decided, 4 Nov):** minimal, in the corners, like the pixel dungeon reference: HP bar, the 3 hotbar slots, coin counter, current floor (Q54, Q55). No minimap (Q56), no floating damage numbers (Q57). The inventory (20 slots: 3 hotbar + 17 storage, 1.4) opens as an overlay that pauses the game (Q58).
+**HUD (decided, 4 Nov):** minimal, in the corners, like the pixel dungeon reference: HP bar, the 3 hotbar slots, coin counter, current floor (Q54, Q55). No minimap (Q56), no floating damage numbers (Q57). The inventory (21 slots: 3 hotbar + 18 passive, 1.4) opens as an overlay that pauses the game (Q58).
 
 **Built so far (Ange, 12 Nov, PR #33 and #34):** the title screen has Play and Quit; Play opens a mode select (Arena Mode, Endless Mode), then the character select (Knight playable, Mage and Archer locked), then the game screen, and Escape goes back to the title. The HUD shows the HP bar (top-left), the coin counter (top-right), the 3 hotbar slots (bottom-centre, keys 1–3) and a minimap (bottom-right). Differences with the decisions above, for the team to settle \[OPEN\]: there is a minimap although Q56 says none; the current floor is not shown yet; Arena is reached through a mode select, not a title button, and the other mode is named Endless; the Options, pause and game over screens are to do.
 
@@ -377,7 +377,7 @@ There is no victory screen (Q2).
 | Character select | pick Knight, Mage or Archer (stats differ) | Q10, Q15 |
 | Options | remap keys, aim mode (mouse / keyboard), switch FR / EN | Q43, Q59 |
 | HUD | see HP, the hotbar, coins, current floor | Q54, Q55 |
-| Inventory overlay | see and manage the 20 slots (3-slot hotbar + 17 storage) and the weapon and armor slots on the portrait; the game is paused | Q31, Q58 |
+| Inventory overlay | see and manage the 21 slots (3-slot hotbar + 18 passive) and the weapon and armor slots on the portrait; the game is paused | Q31, Q58 |
 | Shop | buy from 2 vending slots, spin the roulette with coins or a ticket | 1.4 |
 | Pause | resume, options, quit | Q10 |
 | Game over | see depth reached; rerun or quit | Q2, Q10 |
@@ -402,13 +402,13 @@ HUD at the 960 × 540 virtual resolution, after the pixel dungeon reference (HP 
   HP bar, hotbar (3 consumables)       coins, floor
 ```
 
-Inventory overlay (decided, 4 Nov; 1.4): the character portrait with its weapon and armor slots on the left, the 17 storage slots and the 3-slot hotbar on the right. The shop and menu mock-ups go in draw.io (Q84).
+Inventory overlay (decided, 4 Nov; 1.4): the character portrait with its weapon and armor slots on the left, the 18 passive slots and the 3-slot hotbar on the right. The shop and menu mock-ups go in draw.io (Q84).
 
 ```
 ┌──────────── Inventory (game paused) ─────────────┐
 │  ┌───────┐   [ ][ ][ ][ ][ ][ ]                  │
-│  │  (o)  │   [ ][ ][ ][ ][ ][ ]   17 storage     │
-│  │  /|\  │   [ ][ ][ ][ ][ ]                     │
+│  │  (o)  │   [ ][ ][ ][ ][ ][ ]   18 passive     │
+│  │  /|\  │   [ ][ ][ ][ ][ ][ ]                  │
 │  │  / \  │                                       │
 │  └───────┘   [1][2][3]            3 hotbar       │
 │  [Weapon] [Armor]                                │
