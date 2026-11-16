@@ -173,4 +173,51 @@ class PlayerTest {
       return new Vector2(direction);
     }
   }
+
+  @Test
+  void should_stop_against_a_wall_when_steered_into_it() {
+    world.add(new Wall(new Aabb(20f, 0f, 32f, 32f)));
+    Player player = aKnight();
+    input.point(1f, 0f);
+
+    tick(player, ONE_SECOND);
+
+    assertEquals(4f, player.position().x, TOLERANCE); // right20
+    assertEquals(0f, player.position().y, TOLERANCE);
+  }
+
+  @Test
+  void should_slide_along_a_wall_when_steered_diagonally_into_it() {
+    world.add(new Wall(new Aabb(20f, -100f, 32f, 300f)));
+    Player player = aKnight();
+    input.point(1f, 1f);
+
+    tick(player, ONE_SECOND);
+
+    assertTrue(player.position().x <= 4f);
+    assertEquals(SPEED / (float) Math.sqrt(2), player.position().y, TOLERANCE);
+  }
+
+  @Test
+  void should_walk_away_from_a_wall_it_touches() {
+    world.add(new Wall(new Aabb(16f, 0f, 32f, 32f)));
+    Player player = aKnight();
+    input.point(-1f, 0f);
+
+    tick(player, 1);
+
+    assertEquals(-2f, player.position().x, TOLERANCE);
+  }
+
+  @Test
+  void should_carry_its_hurtbox_when_it_walks() {
+    Aabb body = new Aabb(0f, 0f, 16f, 16f);
+    Aabb hurtbox = new Aabb(4f, 8f, 8f, 8f);
+    Player player = new Knight(body, stats(), hurtbox, 0, input, world);
+    input.point(1f, 0f);
+
+    tick(player, 10);
+
+    assertEquals(new Aabb(24f, 8f, 8f, 8f), player.hurtbox());
+  }
 }

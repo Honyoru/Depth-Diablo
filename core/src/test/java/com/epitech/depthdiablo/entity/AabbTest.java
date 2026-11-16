@@ -112,4 +112,22 @@ class AabbTest {
 
     assertEquals(0, point.width());
   }
+
+  @Test
+  void should_shift_its_position_when_translated() {
+    Aabb box = new Aabb(10, 20, 16, 8);
+
+    Aabb moved = box.translated(5, -3);
+
+    assertEquals(new Aabb(15, 17, 16, 8), moved);
+  }
+
+  @Test
+  void should_leave_the_original_unchanged_when_translated() {
+    Aabb box = new Aabb(10, 20, 16, 8);
+
+    box.translated(5, -3);
+
+    assertEquals(new Aabb(10, 20, 16, 8), box);
+  }
 }
