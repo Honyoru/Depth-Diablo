@@ -148,7 +148,6 @@ public final class GameScreen extends ScreenAdapter {
 
     // 3. Render live minimap pass in bottom-right viewport
     renderMinimapPass();
-
   }
 
   private void handleQuickSlotHotkeys() {
