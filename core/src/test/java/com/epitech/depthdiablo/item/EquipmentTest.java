@@ -10,29 +10,22 @@ class EquipmentTest {
 
   @Test
   void should_keep_its_values_when_created() {
-    Equipment equipment =
-        new FakeEquipment("sword_iron", "item.sword_iron.name", "sword", Rarity.RARE, 30);
+    Equipment equipment = anEquipment(Rarity.RARE);
 
-    assertEquals("sword_iron", equipment.id());
-    assertEquals("item.sword_iron.name", equipment.nameKey());
-    assertEquals("sword", equipment.spriteId());
+    assertEquals("sword", equipment.id());
+    assertEquals("item.sword.name", equipment.nameKey());
+    assertEquals("items/sword", equipment.spriteId());
     assertEquals(Rarity.RARE, equipment.rarity());
     assertEquals(30, equipment.price());
   }
 
   @Test
   void should_throw_when_the_rarity_is_consumable() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () ->
-            new FakeEquipment(
-                "sword_iron", "item.sword_iron.name", "sword", Rarity.CONSUMABLE, 30));
+    assertThrows(IllegalArgumentException.class, () -> anEquipment(Rarity.CONSUMABLE));
   }
 
-  /** Hand-written fake (Q117): equipment with nothing of its own. */
-  private static final class FakeEquipment extends Equipment {
-    FakeEquipment(String id, String nameKey, String spriteId, Rarity rarity, int price) {
-      super(id, nameKey, spriteId, rarity, price);
-    }
+  private static Equipment anEquipment(Rarity rarity) {
+    return new Sword(
+        "sword", "item.sword.name", "items/sword", rarity, 30, 2, 1f, 24f, 8f, 90f, 12);
   }
 }

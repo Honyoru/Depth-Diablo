@@ -4,12 +4,20 @@ import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.HitResult;
+import com.epitech.depthdiablo.entity.BaseStats;
 import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.CharacterBuild;
+import com.epitech.depthdiablo.entity.Stat;
+import com.epitech.depthdiablo.entity.StatSource;
+import com.epitech.depthdiablo.testdata.Items;
+import java.util.EnumMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1, 1.6, Q37: a weapon adds an attack bonus and hits within its range. */
@@ -152,6 +160,63 @@ class WeaponTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> aWeapon(Rarity.RARE, 4, Float.POSITIVE_INFINITY, 24f));
+  }
+
+  @Test
+  void should_become_the_attack_of_the_build() {
+    Weapon weapon = Items.sword();
+
+    CharacterBuild built = weapon.modify(aBuild(5f, 2f));
+
+    assertSame(weapon, built.attack());
+  }
+
+  @Test
+  void should_multiply_the_attack_speed_of_the_build_by_its_own() {
+    Weapon weapon = aWeapon(Rarity.COMMON, 0, 1.5f, 24f);
+
+    CharacterBuild built = weapon.modify(aBuild(5f, 2f));
+
+    assertEquals(3f, built.stats().get(Stat.ATTACK_SPEED));
+  }
+
+  @Test
+  void should_keep_the_other_stats_of_the_build() {
+    Weapon weapon = aWeapon(Rarity.COMMON, 0, 1.5f, 24f);
+
+    CharacterBuild built = weapon.modify(aBuild(5f, 2f));
+
+    assertEquals(5f, built.stats().get(Stat.ATTACK));
+  }
+
+  @Test
+  void should_leave_the_given_build_unchanged() {
+    CharacterBuild build = aBuild(5f, 2f);
+    Attack attackBefore = build.attack();
+    StatSource statsBefore = build.stats();
+
+    aWeapon(Rarity.COMMON, 0, 1.5f, 24f).modify(build);
+
+    assertSame(attackBefore, build.attack());
+    assertSame(statsBefore, build.stats());
+    assertEquals(2f, build.stats().get(Stat.ATTACK_SPEED));
+  }
+
+  @Test
+  void should_throw_when_the_build_is_null() {
+    Weapon weapon = Items.sword();
+
+    assertThrows(NullPointerException.class, () -> weapon.modify(null));
+  }
+
+  private static CharacterBuild aBuild(float attack, float attackSpeed) {
+    Map<Stat, Float> values = new EnumMap<>(Stat.class);
+    for (Stat stat : Stat.values()) {
+      values.put(stat, 1f);
+    }
+    values.put(Stat.ATTACK, attack);
+    values.put(Stat.ATTACK_SPEED, attackSpeed);
+    return new CharacterBuild(Items.sword(), new BaseStats(values));
   }
 
   private static Weapon aWeapon(Rarity rarity, int attackBonus, float range) {

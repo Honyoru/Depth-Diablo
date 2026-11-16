@@ -4,6 +4,9 @@ import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.DamageFormula;
 import com.epitech.depthdiablo.combat.HitResult;
 import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.CharacterBuild;
+import com.epitech.depthdiablo.entity.Stat;
+import com.epitech.depthdiablo.entity.StatSource;
 import java.util.Objects;
 
 /**
@@ -81,6 +84,23 @@ public abstract class Weapon extends Equipment implements Attack {
         DamageFormula.compute(attacker.attack(), attackBonus, 1.0, target.defense(), 0, 1.0);
     target.takeDamage(damage);
     return new HitResult(damage, target.isDead());
+  }
+
+  /**
+   * Makes this weapon the attack of the build and multiplies the build's ATTACK_SPEED by this
+   * weapon's attack speed (GDD 1.3.1); the other stats stay the same.
+   *
+   * @param build the build so far; it is not changed
+   * @return a new build whose attack is this weapon
+   * @throws NullPointerException if {@code build} is {@code null}
+   */
+  @Override
+  public final CharacterBuild modify(CharacterBuild build) {
+    Objects.requireNonNull(build, "build is null");
+    StatSource base = build.stats();
+    StatSource withWeaponSpeed =
+        stat -> stat == Stat.ATTACK_SPEED ? base.get(stat) * attackSpeed : base.get(stat);
+    return build.withAttack(this).withStats(withWeaponSpeed);
   }
 
   /**

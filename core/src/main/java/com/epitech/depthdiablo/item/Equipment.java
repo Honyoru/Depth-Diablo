@@ -1,11 +1,13 @@
 package com.epitech.depthdiablo.item;
 
+import com.epitech.depthdiablo.entity.BuildModifier;
+
 /**
  * An item the player equips in a portrait slot: a weapon or an armor (GDD 1.3.1, 2.2).
  *
- * <p>Pattern: it will implement BuildModifier once CharacterBuild exists (UML, items.drawio).
+ * <p>Each equipment is a {@link BuildModifier}: it changes the build of the character who holds it.
  */
-public abstract class Equipment extends Item {
+public abstract class Equipment extends Item implements BuildModifier {
 
   /**
    * Creates an equipment.
