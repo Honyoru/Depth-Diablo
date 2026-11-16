@@ -37,7 +37,7 @@ class EnemyTest {
     Character player = aPlayer();
     player.takeDamage(player.hp());
 
-    assertFalse(ret.canSee(player));
+    assertFalse(rat.canSee(player));
   }
 
   @Test
@@ -47,11 +47,39 @@ class EnemyTest {
     assertFalse(rat.canSee(aZombie().build()));
   }
 
+   @Test
+  void should_take_the_player_as_its_target_when_alerted() {
+    Enemy zombie = aZombie().build();
+    Character player = aPlayer();
+
+    zombie.alert(player);
+
+    assertEquals(Optional.of(player), zombie.target());
+  }
+
+  @Test
+  void should_ignore_an_alert_about_its_own_side() {
+    Enemy rat = aRat().build();
+
+    rat.alert(aZombie().build());
+
+    assertEquals(Optional.empty(), rat.target());
+  }
+
   @Test
   void should_ignore_an_alert_about_a_dead_player() {
     Enemy rat = aRat().build();
     Character player = aPlayer();
     player.takeDamage(player.hp());
+
+    rat.alert(player);
+
+    assertEquals(Optional.empty(), rat.target());
+  }
+
+  @Test
+  void should_stay_idle_when_updated_while_its_states_do_nothing() {
+    Enemy rat = aRat().build();
 
     rat.update(1);
 

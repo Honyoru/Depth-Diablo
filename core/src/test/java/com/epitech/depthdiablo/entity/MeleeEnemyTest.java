@@ -13,7 +13,6 @@ import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.testdata.EnemyBuilder;
 
-import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -51,7 +50,7 @@ class MeleeEnemyTest {
   }
 
   @Test
-  void should_hit_with_its_own_attak_stat(){
+  void should_hit_with_its_own_attack_stat(){
     MeleeEnemy zombie = aZombie().build();
     Character player = aPlayerAt(18,0);
     zombie.alert(player);
@@ -62,7 +61,7 @@ class MeleeEnemyTest {
   }
 
   @Test
-  void should_not_hit_a_target_its_reach(){
+  void should_not_hit_a_target_beyond_its_reach(){
     MeleeEnemy rat = aRat().build();
     Character player = aPlayerAt(21,0);
     rat.alert(player);
@@ -92,6 +91,7 @@ class MeleeEnemyTest {
     rat.attackTarget(world);
     world.eventBus().flush();
 
+    assertEquals(10, player.hp());
     assertTrue(events.isEmpty());
   }
 
@@ -112,7 +112,7 @@ class MeleeEnemyTest {
   void should_give_its_reach() {
     MeleeEnemy zombie = aZombie().withReach(8).build();
 
-    assertEquals(18, zombie.reach());
+    assertEquals(8, zombie.reach());
   }
 
   @Test
