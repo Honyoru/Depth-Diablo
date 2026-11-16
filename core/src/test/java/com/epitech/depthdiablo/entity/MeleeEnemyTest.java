@@ -9,11 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.DamageDealt;
+import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.testdata.EnemyBuilder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 /** The contact attack of rats and zombies (GDD 1.3.1, 1.6, DECISIONS §5). */
@@ -46,6 +48,26 @@ class MeleeEnemyTest {
     world.eventBus().flush();
 
     assertEquals(List.of(new DamageDealt(rat, player, 2)), events);
+  }
+
+  @Test
+  void should_publish_the_death_when_its_hit_kills() {
+    MeleeEnemy rat = aRat().build();
+    Aabb box = new Aabb(18, 0, 16, 16);
+    Character player =
+        aCharacter()
+            .withFaction(Faction.PLAYER)
+            .withBodyBox(box)
+            .withHurtbox(box)
+            .withHp(2)
+            .build();
+    rat.alert(player);
+
+    rat.attackTarget(world);
+    world.eventBus().flush();
+
+    assertEquals(
+        List.of(new DamageDealt(rat, player, 2), new EntityDied(player, Optional.of(rat))), events);
   }
 
   @Test

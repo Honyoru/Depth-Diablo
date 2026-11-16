@@ -3,7 +3,9 @@ package com.epitech.depthdiablo.entity;
 import com.epitech.depthdiablo.combat.DamageFormula;
 import com.epitech.depthdiablo.combat.Obb;
 import com.epitech.depthdiablo.engine.DamageDealt;
+import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.World;
+import java.util.Optional;
 
 /**
  * The enemies that hit at contact: Rat, Zombie, Orc (GDD 1.3.1). Its attack covers its body box
@@ -42,7 +44,8 @@ public abstract class MeleeEnemy extends Enemy {
   }
 
   /**
-   * Hits the target if its hurtbox is in reach and it can be hurt, then publishes the damage dealt.
+   * Hits the target if its hurtbox is in reach and it can be hurt, then publishes the damage dealt,
+   * and the death if the hit kills it.
    *
    * @param world the world the enemy lives in
    */
@@ -59,6 +62,9 @@ public abstract class MeleeEnemy extends Enemy {
     int damage = DamageFormula.compute(attack(), 0, 1.0, target.defense(), 0, 1.0);
     target.takeDamage(damage);
     world.eventBus().publish(new DamageDealt(this, target, damage));
+    if (target.isDead()) {
+      world.eventBus().publish(new EntityDied(target, Optional.of(this)));
+    }
   }
 
   /**
