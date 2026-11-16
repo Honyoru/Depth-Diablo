@@ -53,6 +53,8 @@ Status note (Ange, 4 Nov): the team reviewed the whole draft orally, and every "
 - Melee swing (12 Nov): the hitbox is a rectangle (weapon reach x width) that turns towards the aim and sweeps from `aim - arc / 2` to `aim + arc / 2` during the swing. One swing hits each target at most once; a new swing can hit it again.
 - Factions (12 Nov): every Damageable fights for a side (`PLAYER`, `ENEMY` or `NEUTRAL`). An attack never hurts its own side, so enemies never hit each other; a `NEUTRAL` attack (trap) hurts everyone. An attack keeps the faction it was launched with; a charm can change a character's faction for its next attacks.
 - Hit result (13 Nov): a hit returns what it did, its damage and whether it killed the target (`HitResult`, named in the item UML). A hit lands only if it deals damage; a dead or invincible target takes none, so it is not touched: the same attack can still hit it once its invincibility ends.
+- Attack cooldown (16 Nov): an attack runs its swing (the weapon's `swingTicks`), then waits `60 / (weapon attack speed x character attack speed)` ticks, rounded, at least 1. The cooldown only counts down once the swing is over, so two swings never overlap: the rhythm is swing + cooldown. The character's ATTACK_SPEED stat is a multiplier (1 = the weapon's speed). An attack refused during the swing or the cooldown changes nothing. Players and enemies share this rule.
+- Swing direction and visuals (13 Nov): a swing always turns counter-clockwise (the angle grows). Planned visuals: fading afterimages of the blade, rebuilt from `MeleeWeapon.swingShape`, so they fit any arc.
 - Traps: spikes with an activation delay (Q36).
 
 ## 6. Items, inventory and shop
@@ -63,6 +65,7 @@ Status note (Ange, 4 Nov): the team reviewed the whole draft orally, and every "
 - Inventory: 20 slots, 3 of them the hotbar (consumables only), 17 take any item. 2 extra portrait slots hold the equipped weapon and armor. Items never stack, one item per slot. When full, the item stays on the ground. Two copies of a passive item combine by that item's own rule (additive or multiplicative) (Q31, Q32).
 - Shop: coins from enemies. Shopkeeper has 2 vending slots (weapon or armor; consumable) plus a roulette. A spin costs coins; a roulette ticket gives a free spin (Q14, Q34).
 - Coin drop rates, prices and roulette odds are TBD during balancing.
+- Weapons (16 Nov): a weapon's values come only from `data/items.json`; `Sword` has a package-private constructor that only `ItemFactory` calls. `ItemFactory` maps each `"class"` to a builder instead of a switch, so a new item type is one more line. Placeholder sword: COMMON, 30 coins, +2 attack, attack speed 1, reach 24, width 8, arc 90°, 12 ticks. The player gets its sword through the inventory's weapon slot.
 
 ## 7. AI
 

@@ -182,9 +182,10 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
-   * Returns how often this character can attack. The weapon and passive items will change it later.
+   * Returns this character's attack speed multiplier. The weapon gives the base attack speed and
+   * this stat multiplies it; passive items will change it later.
    *
-   * @return the attacks per second
+   * @return the multiplier; 0 means it never attacks
    */
   public float attackSpeed() {
     return stats.get(Stat.ATTACK_SPEED);

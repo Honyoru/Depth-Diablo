@@ -206,7 +206,7 @@ Testable rules (1.4.1): removing a passive item restores the holder's stats and 
 **Item UML (proposal, Ange's Claude, 5 Nov; local file uml/items.drawio):**
 
 - Every Character holds a CharacterBuild record (attack, stats, hurtbox, hitbox, movement). Equipment and PassiveItem implement BuildModifier: modify(build) returns a new build. After every inventory change the character rebuilds: base build (class stats from JSON, Unarmed attack) → weapon → armor → passive items in pickup order. "Removing an item restores stats exactly" and "same order, same result" then hold by construction.
-- Attack speed is a stat (ATTACK\_SPEED, set by the weapon), so passive items can change it; the Player tracks the cooldown and weapons stay stateless.
+- Attack speed: the weapon has a base attack speed (`attackSpeed` in items.json) and the ATTACK\_SPEED stat multiplies it, so passive items can change it; the Character tracks the swing and the cooldown, and weapons stay stateless.
 - equip() / unequip() live in Inventory, which owns the 2 portrait slots. Slots 0–2 are the hotbar (consumables only), 3–19 take any item. Proposal: drop(slot), so a full inventory can free a slot.
 - Hitboxes and projectiles call owner.hit(target); the Player sends it through its Attack chain, so a fire item also burns through arrows and fireballs.
 - A LootTable (weighted entries, a no-drop weight, the seeded RandomSource) serves enemies, bosses, chests and the roulette. The roulette screen spends the RouletteTicket; using it from the hotbar does nothing.
@@ -332,7 +332,7 @@ Decided (Ange, 4 Nov): enemies hit the player with the same formula; enemies hav
 | Attack | base damage; the weapon adds the attack bonus |
 | Defense | the "resistance" in the damage formula; armor adds the resistance bonus |
 | Speed | movement speed |
-| Attack Speed | attacks per second, from the weapon |
+| Attack Speed | multiplier of the weapon's base attack speed; after a swing, the wait is 60 / (weapon × character) ticks |
 | Luck | TBD: proposal, drop chances and roulette odds |
 
 Scaling (Q47): every floor adds enemies and raises their stats: the EnemyFactory applies floorMultiplier to their base stats at spawn. Progression inside a run comes from items only (Q46); nothing carries over between runs (1.1). Base values: TBD, in JSON.

@@ -13,7 +13,10 @@ public enum Stat {
   DEFENSE,
   /** Movement speed in pixels per second; 0 or more. */
   SPEED,
-  /** Attacks per second; 0 or more. */
+  /**
+   * Multiplier of the equipped weapon's attack speed: 1 keeps it, 1.5 makes it 50 % faster; 0 or
+   * more, and 0 never attacks.
+   */
   ATTACK_SPEED,
   /** Drop chances and roulette odds (GDD 1.6, TBD); 0 or more. */
   LUCK
