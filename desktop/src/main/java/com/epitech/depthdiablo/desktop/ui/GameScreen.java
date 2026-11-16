@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 /** Main gameplay screen rendering the TiledMap arena, minimap pass, and the Scene2D {@link Hud}. */
 public final class GameScreen extends ScreenAdapter {
 
-  private static final String DEFAULT_MAP_PATH = "arena_mapV1.tmx";
+  private static final String DEFAULT_MAP_PATH = "Floor1.tmx";
 
   private final HudState hudState;
   private final Hud hud;
@@ -113,7 +113,7 @@ public final class GameScreen extends ScreenAdapter {
     this.batch = app.batch();
     this.worldCamera.zoom = CAMERA_ZOOM;
     addWalls();
-    this.player = spawnKnight(input, world);
+    this.player = spawnKnight(input, world, findSpawn());
     this.world.add(player);
     this.playerView = new PlayerView();
     this.previousPosition.set(player.position());
@@ -249,7 +249,7 @@ public final class GameScreen extends ScreenAdapter {
     tiledMap.dispose();
   }
 
-  private static Player spawnKnight(KeyboardPlayerInput input, World world) {
+  private static Player spawnKnight(KeyboardPlayerInput input, World world, Vector2 spawn) {
     Map<Stat, Float> stats = new EnumMap<>(Stat.class);
     stats.put(Stat.MAX_HP, 100f);
     stats.put(Stat.ATTACK, 10f);
@@ -257,9 +257,26 @@ public final class GameScreen extends ScreenAdapter {
     stats.put(Stat.SPEED, 120f);
     stats.put(Stat.ATTACK_SPEED, 1f);
     stats.put(Stat.LUCK, 0f);
-    Aabb body = new Aabb(466f, 306f, 28f, 28f); // centre of the 960 x 640 map, size of the art
+    Aabb body = new Aabb(spawn.x + 2f, spawn.y + 2f, 28f, 28f); // 28 px knight centred in a 32 px tile
     return new Knight(
         body, new BaseStats(stats), body, GameConstants.TICKS_PER_SECOND / 2, input, world);
+  }
+
+  /** Returns the bottom-left corner, in pixels, of the first tile whose "spawn" property is true. */
+  private Vector2 findSpawn() {
+    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+    float tile = GameConstants.TILE_SIZE;
+    for (int x = 0; x < layer.getWidth(); x++) {
+      for (int y = 0; y < layer.getHeight(); y++) {
+        TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+        if (cell != null
+            && cell.getTile() != null
+            && cell.getTile().getProperties().get("spawn", false, Boolean.class)) {
+          return new Vector2(x * tile, y * tile);
+        }
+      }
+    }
+    throw new IllegalStateException("No tile with spawn=true in " + DEFAULT_MAP_PATH);
   }
 
   /** Adds one blocking {@link Wall} per map tile whose "collides" property is true. */

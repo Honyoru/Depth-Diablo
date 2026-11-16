@@ -47,6 +47,7 @@
   <properties>
    <property name="collides" type="bool" value="false"/>
    <property name="name" value="floor_variant_2"/>
+   <property name="spawn" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="8">
