@@ -181,12 +181,21 @@ class WeaponTest {
   }
 
   @Test
-  void should_keep_the_other_stats_of_the_build() {
-    Weapon weapon = aWeapon(Rarity.COMMON, 0, 1.5f, 24f);
+  void should_add_its_attack_bonus_to_the_attack_of_the_build() {
+    Weapon weapon = aWeapon(Rarity.COMMON, 4, 1.5f, 24f);
 
     CharacterBuild built = weapon.modify(aBuild(5f, 2f));
 
-    assertEquals(5f, built.stats().get(Stat.ATTACK));
+    assertEquals(9f, built.stats().get(Stat.ATTACK));
+  }
+
+  @Test
+  void should_keep_the_other_stats_of_the_build() {
+    Weapon weapon = aWeapon(Rarity.COMMON, 4, 1.5f, 24f);
+
+    CharacterBuild built = weapon.modify(aBuild(5f, 2f));
+
+    assertEquals(1f, built.stats().get(Stat.DEFENSE));
   }
 
   @Test

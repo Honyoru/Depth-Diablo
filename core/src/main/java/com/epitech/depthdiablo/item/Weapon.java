@@ -5,7 +5,6 @@ import com.epitech.depthdiablo.combat.DamageFormula;
 import com.epitech.depthdiablo.combat.HitResult;
 import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.entity.CharacterBuild;
-import com.epitech.depthdiablo.entity.Stat;
 import com.epitech.depthdiablo.entity.StatSource;
 import java.util.Objects;
 
@@ -32,7 +31,7 @@ public abstract class Weapon extends Equipment implements Attack {
    * @param spriteId the picture the renderer draws for it
    * @param rarity its loot tier; never {@link Rarity#CONSUMABLE}
    * @param price its shop price in coins; 0 means free
-   * @param attackBonus the flat bonus added to the attack in the damage formula; 0 or more
+   * @param attackBonus the flat bonus added to the holder's ATTACK when it builds; 0 or more
    * @param attackSpeed its base attack speed; the holder's ATTACK_SPEED stat multiplies it (GDD
    *     1.6); above 0 and finite
    * @param range how far its hit reaches, in pixels; above 0 and finite
@@ -66,7 +65,7 @@ public abstract class Weapon extends Equipment implements Attack {
   }
 
   /**
-   * Returns the flat bonus this weapon adds to the attack in the damage formula.
+   * Returns the flat bonus this weapon adds to the holder's ATTACK when it builds.
    *
    * @return the attack bonus, 0 or more
    */
@@ -117,8 +116,9 @@ public abstract class Weapon extends Equipment implements Attack {
   }
 
   /**
-   * Makes this weapon the attack of the build and multiplies the build's ATTACK_SPEED by this
-   * weapon's attack speed (GDD 1.3.1); the other stats stay the same.
+   * Makes this weapon the attack of the build, adds its attack bonus to the build's ATTACK and
+   * multiplies the build's ATTACK_SPEED by its attack speed (GDD 1.3.1, 1.6); the other stats stay
+   * the same.
    *
    * @param build the build so far; it is not changed
    * @return a new build whose attack is this weapon
@@ -128,8 +128,13 @@ public abstract class Weapon extends Equipment implements Attack {
   public final CharacterBuild modify(CharacterBuild build) {
     Objects.requireNonNull(build, "build is null");
     StatSource base = build.stats();
-    StatSource withWeaponSpeed =
-        stat -> stat == Stat.ATTACK_SPEED ? base.get(stat) * attackSpeed : base.get(stat);
-    return build.withAttack(this).withStats(withWeaponSpeed);
+    StatSource withWeapon =
+        stat ->
+            switch (stat) {
+              case ATTACK -> base.get(stat) + attackBonus;
+              case ATTACK_SPEED -> base.get(stat) * attackSpeed;
+              default -> base.get(stat);
+            };
+    return build.withAttack(this).withStats(withWeapon);
   }
 }
