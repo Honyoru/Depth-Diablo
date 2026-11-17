@@ -8,10 +8,14 @@ import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.HitResult;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.CharacterBuild;
 import com.epitech.depthdiablo.entity.StatSource;
 import org.junit.jupiter.api.Test;
 
-/** GDD 1.3.1 and 1.4: every passive has the PASSIVE rarity and changes nothing by default. */
+/**
+ * GDD 1.3.1 and 1.4: every passive has the PASSIVE rarity, modifies the build, and changes nothing
+ * by default.
+ */
 class PassiveItemTest {
 
   @Test
@@ -83,6 +87,25 @@ class PassiveItemTest {
     PassiveItem passive = new PlainPassive("ring", "item.ring.name", "items/ring", 10);
 
     assertThrows(NullPointerException.class, () -> passive.decorateAttack(null));
+  }
+
+  @Test
+  void should_keep_the_attack_and_the_stats_of_the_build_by_default() {
+    PassiveItem passive = new PlainPassive("ring", "item.ring.name", "items/ring", 10);
+    Attack attack = new NoAttack();
+    StatSource stats = stat -> 1f;
+
+    CharacterBuild modified = passive.modify(new CharacterBuild(attack, stats));
+
+    assertSame(attack, modified.attack());
+    assertSame(stats, modified.stats());
+  }
+
+  @Test
+  void should_throw_when_the_build_is_null() {
+    PassiveItem passive = new PlainPassive("ring", "item.ring.name", "items/ring", 10);
+
+    assertThrows(NullPointerException.class, () -> passive.modify(null));
   }
 
   /** Hand-written fake (Q117): a passive item with no effect of its own. */
