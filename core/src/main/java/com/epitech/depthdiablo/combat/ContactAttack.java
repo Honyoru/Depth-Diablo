@@ -11,11 +11,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * The attack of an enemy that hits at contact, such as a rat or a zombie (GDD 1.3.1). It hits every
- * hostile character whose hurtbox is within its reach of the owner's body box, on every side
- * (DECISIONS §5). It replaces the code of {@code MeleeEnemy.attackTarget}.
+ * The attack of an enemy that hits at contact, such as a rat or a zombie (GDD 1.3.1): every hostile
+ * character whose hurtbox touches its area gets hit. It replaces the code of {@code
+ * MeleeEnemy.attackTarget}.
+ *
+ * <p>Pattern: Template Method. {@link #attack} always checks, starts the cooldown, hits and
+ * publishes the same way; each subclass only gives the {@link #area} it covers.
  */
-public final class ContactAttack implements Attack {
+public abstract class ContactAttack implements Attack {
   private final float reach;
 
   /**
@@ -24,7 +27,7 @@ public final class ContactAttack implements Attack {
    * @param reach how far the attack goes past the owner's body box, in pixels; 0 means touching
    * @throws IllegalArgumentException if {@code reach} is negative or not a finite number
    */
-  public ContactAttack(float reach) {
+  protected ContactAttack(float reach) {
     if (reach < 0 || Float.isNaN(reach) || Float.isInfinite(reach)) {
       throw new IllegalArgumentException("Reach must be a finite number of 0 or more: " + reach);
     }
@@ -36,7 +39,7 @@ public final class ContactAttack implements Attack {
    *
    * @return the reach in pixels, 0 or more
    */
-  public float reach() {
+  public final float reach() {
     return reach;
   }
 
@@ -51,7 +54,7 @@ public final class ContactAttack implements Attack {
    * @throws NullPointerException if {@code attacker} or {@code target} is {@code null}
    */
   @Override
-  public HitResult hit(Character attacker, Character target) {
+  public final HitResult hit(Character attacker, Character target) {
     Objects.requireNonNull(attacker, "attacker is null");
     Objects.requireNonNull(target, "target is null");
     if (target.isDead() || target.isInvincible()) {
@@ -63,27 +66,26 @@ public final class ContactAttack implements Attack {
   }
 
   /**
-   * Hits every hostile character whose hurtbox is within the reach of the owner's body box, on
-   * every side (DECISIONS §5), then starts the owner's cooldown. The aim is not used: a contact
-   * attack hits all around. Each hit that lands publishes a DamageDealt event, and an EntityDied
-   * event if it kills.
+   * Starts the owner's cooldown, then hits every hostile character whose hurtbox touches the area
+   * of this attack (see {@link #area}), never the owner itself. Each hit that lands publishes a
+   * DamageDealt event, and an EntityDied event if it kills.
    *
    * @param owner the character who attacks; it must be able to attack now
-   * @param aimDegrees not used, but it must be a finite number, as for every attack
+   * @param aimDegrees the direction of the attack, in degrees (0 = right, 90 = up); a finite number
    * @param world its entities are the targets, its event bus gets the damage and deaths
    * @throws NullPointerException if {@code owner} or {@code world} is {@code null}
    * @throws IllegalArgumentException if the aim is not a finite number
    * @throws IllegalStateException if the owner cannot attack now (see {@link Character#canAttack})
    */
   @Override
-  public void attack(Character owner, float aimDegrees, World world) {
+  public final void attack(Character owner, float aimDegrees, World world) {
     Objects.requireNonNull(owner, "owner is null");
     Objects.requireNonNull(world, "world is null");
     if (!Float.isFinite(aimDegrees)) {
       throw new IllegalArgumentException("Aim must be a finite number: " + aimDegrees);
     }
     owner.startAttackCooldown(0, 1f);
-    Obb area = areaAround(owner);
+    Obb area = area(owner.bodyBox(), aimDegrees);
     for (Entity entity : world.entities()) {
       if (entity instanceof Character target
           && !owner.equals(target)
@@ -94,15 +96,14 @@ public final class ContactAttack implements Attack {
     }
   }
 
-  private Obb areaAround(Character owner) {
-    Aabb body = owner.bodyBox();
-    return Obb.around(
-        new Aabb(
-            body.x() - reach,
-            body.y() - reach,
-            body.width() + 2 * reach,
-            body.height() + 2 * reach));
-  }
+  /**
+   * Builds the zone this attack covers for a body and an aim.
+   *
+   * @param body the owner's body box
+   * @param aimDegrees the direction of the attack, in degrees (0 = right, 90 = up); finite
+   * @return the area as a rotated rectangle
+   */
+  protected abstract Obb area(Aabb body, float aimDegrees);
 
   private void strike(Character owner, Character target, EventBus events) {
     HitResult result = hit(owner, target);
