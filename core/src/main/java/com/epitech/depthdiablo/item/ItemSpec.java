@@ -25,7 +25,7 @@ public sealed interface ItemSpec {
   String nameKey();
 
   /**
-   * Returns the picture the renderer draws for the item.
+   * Returns the picture the renderer draws for the item
    *
    * @return the sprite id
    */
