@@ -36,8 +36,9 @@ public abstract class MeleeEnemy extends Enemy {
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
       boolean summoned,
-      float reach) {
-    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, summoned);
+      float reach,
+      World world) {
+    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, summoned, world);
     if (!(reach >= 0) || Float.isInfinite(reach)) {
       throw new IllegalArgumentException("reach must be a finite number of 0 or more: " + reach);
     }

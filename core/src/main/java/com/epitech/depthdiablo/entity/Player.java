@@ -14,9 +14,6 @@ import java.util.Objects;
 public abstract class Player extends Character {
 
   private final PlayerInput input;
-
-  private final World world;
-
   private boolean moving;
 
   /**
@@ -36,9 +33,8 @@ public abstract class Player extends Character {
       int invincibilityTicksAfterHit,
       PlayerInput input,
       World world) {
-    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit);
+    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, world);
     this.input = Objects.requireNonNull(input, "The input of a player must not be null");
-    this.world = Objects.requireNonNull(world, "The world of a player must not be null");
   }
 
   /**
@@ -82,7 +78,7 @@ public abstract class Player extends Character {
   /** Tells whether the player's body fits at the given bottom-left corner. */
   private boolean canStandAt(Vector2 corner) {
     Aabb body = getBodyBox();
-    return world.isFree(new Aabb(corner.x, corner.y, body.width(), body.height()), this);
+    return world().isFree(new Aabb(corner.x, corner.y, body.width(), body.height()), this);
   }
 
   /**

@@ -1,5 +1,7 @@
 package com.epitech.depthdiablo.entity;
 
+import com.epitech.depthdiablo.engine.World;
+
 /**
  * The rat (fast, weak; bites at contact; GDD 1.3). It has no code of its own: its values come from
  * {@code data/enemies.json} (GDD 1.3.1).
@@ -22,7 +24,8 @@ public final class Rat extends MeleeEnemy {
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
       boolean summoned,
-      float reach) {
-    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, summoned, reach);
+      float reach,
+      World world) {
+    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, summoned, reach, world);
   }
 }

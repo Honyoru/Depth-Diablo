@@ -40,8 +40,9 @@ public abstract class Enemy extends Character {
       StatSource stats,
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
-      boolean summoned) {
-    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit);
+      boolean summoned,
+      World world) {
+    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, world);
     this.summoned = summoned;
   }
 

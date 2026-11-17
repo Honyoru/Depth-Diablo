@@ -3,8 +3,13 @@ package com.epitech.depthdiablo.entity;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.Damageable;
+import com.epitech.depthdiablo.combat.StatusEffect;
 import com.epitech.depthdiablo.combat.Swing;
+import com.epitech.depthdiablo.engine.DamageDealt;
+import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.World;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -30,6 +35,8 @@ public abstract class Character extends Entity implements Damageable {
   private int attackCooldownTicksLeft;
 
   private Swing currentSwing;
+  private final List<StatusEffect> statuses = new ArrayList<>();
+  private final World world;
 
   /**
    * Creates a character with the specified body box, stats, hurtbox, and post-hit invincibility
@@ -46,7 +53,7 @@ public abstract class Character extends Entity implements Damageable {
    *     null}
    */
   protected Character(
-      Aabb bodyBox, StatSource stats, Aabb hurtbox, int invincibilityTicksAfterHit) {
+      Aabb bodyBox, StatSource stats, Aabb hurtbox, int invincibilityTicksAfterHit, World world) {
     super(bodyBox);
     if (invincibilityTicksAfterHit < 0) {
       throw new IllegalArgumentException(
@@ -59,6 +66,7 @@ public abstract class Character extends Entity implements Damageable {
     this.stats = Objects.requireNonNull(stats, "The stats of a character must not be null");
     this.hp = (int) stats.get(Stat.MAX_HP);
     this.invincibilityTicksAfterHit = invincibilityTicksAfterHit;
+    this.world = Objects.requireNonNull(world, "...");
   }
 
   @Override
@@ -123,21 +131,19 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
-   * Returns the character's maximum health.
-   *
-   * @return the maximum HP, rounded down
-   */
-  public int getMaxHp() {
-    return (int) stats.get(Stat.MAX_HP);
-  }
-
-  /**
    * Counts the invincibility down, runs the current swing, counts the swing of the current attack
    * down, then its cooldown once the swing is over, and performs character-specific behavior for
    * the tick.
    */
   @Override
   protected final void onUpdate(long tick) {
+    for (StatusEffect effect : List.copyOf(statuses)) {
+      effect.tick(this);
+    }
+    statuses.removeIf(StatusEffect::isOver);
+    if (isDead()) {
+      statuses.clear();
+    }
     if (invincibilityTicksLeft > 0) {
       invincibilityTicksLeft--;
     }
@@ -290,5 +296,51 @@ public abstract class Character extends Entity implements Damageable {
       throw new IllegalStateException("Still swinging");
     }
     currentSwing = swing;
+  }
+
+  /**
+   * Returns the swing running now, for the renderer.
+   *
+   * @return the current swing, or empty if this character is not swinging or its swing is over
+   */
+  public Optional<Swing> currentSwing() {
+    return Optional.ofNullable(currentSwing).filter(swing -> !swing.isOver());
+  }
+
+  /**
+   * Returns the character's maximum health.
+   *
+   * @return the maximum HP, rounded down
+   */
+  public int getMaxHp() {
+    return (int) stats.get(Stat.MAX_HP);
+  }
+
+  public void applyStatus(StatusEffect effect) {
+    Objects.requireNonNull(effect, "status effect is null");
+    if (isDead()) {
+      return;
+    }
+    statuses.add(effect);
+  }
+
+  // Character
+  public void takeStatusDamage(int amount, Character source) {
+    if (amount < 1) {
+      throw new IllegalArgumentException("Status damage amount must be at least 1, was " + amount);
+    }
+    Objects.requireNonNull(source, "The source of status damage must not be null");
+    if (isDead()) {
+      return;
+    }
+    hp = amount >= hp ? 0 : hp - amount;
+    world.getEventBus().publish(new DamageDealt(source, this, amount));
+    if (isDead()) {
+      world.getEventBus().publish(new EntityDied(this, Optional.of(source)));
+    }
+  }
+
+  protected World world() {
+    return world;
   }
 }
