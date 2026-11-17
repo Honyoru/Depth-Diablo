@@ -60,7 +60,7 @@ Loïc's day-by-day plan, for the team to validate. Two points conflict with earl
 | Mon 16 Nov | C | Floor 3 + chests, doors, keys | To do |
 | Sun 15 Nov | All | Janitor pass (Ange, `fix/janitor`): test fakes written before the real classes replaced by `Wall` and `Potion`; every null and argument check gets a full-sentence message with the bad value; `Wall` made `final`; `resume.md` no longer tracked | Done |
 | Tue 17 → Wed 18 Nov | A | R rewind (SnapshotRing) | To do (Ange, next) |
-| Tue 17 Nov | B | Passive items (Decorator) + burn | To do |
+| Tue 17 Nov | B | Passive items (Decorator) + burn | Done (Ange, 17 Nov, PR #61): `PassiveItem` (rarity `PASSIVE`, refused by equipment) is a `BuildModifier` with two hooks, `decorateStats` and `decorateAttack`. `FireRing` wraps the holder's attack in a `FireTouch` (`AttackDecorator`), so every hit that lands burns the target. Status effects: `StatusEffect` (Template Method) and `Burn`, built from a `BurnSpec` (damage, interval, duration in ticks); characters tick them on each update. `Character.takeStatusDamage` ignores i-frames and publishes `DamageDealt` / `EntityDied` credited to the source. `ItemSpecReader` / `EnemySpecReader` turn the JSON entries into typed specs, and `fire_ring` is in `items.json`. Javadoc and UML updated; 591 tests. To do: the passive slots in the inventory, and hooking the ring to the player once the player attacks (`Swing` still calls `weapon.hit` directly) |
 | Tue 17 → Wed 18 Nov | C | BSP generator + loops | To do |
 | Wed 18 Nov | B | Shop, roulette, coins, loot | To do |
 | Thu 19 Nov | A | F5 JSON hot reload | To do |
