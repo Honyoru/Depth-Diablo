@@ -26,10 +26,10 @@ class CharacterTest {
   void should_start_with_full_hp_when_created() {
     Character character = aCharacter().withHp(12).build();
 
-    int hp = character.hp();
+    int hp = character.getHp();
 
     assertEquals(12, hp);
-    assertEquals(12, character.maxHp());
+    assertEquals(12, character.getMaxHp());
   }
 
   @Test
@@ -38,7 +38,7 @@ class CharacterTest {
 
     character.takeDamage(3);
 
-    assertEquals(7, character.hp());
+    assertEquals(7, character.getHp());
   }
 
   @Test
@@ -65,7 +65,7 @@ class CharacterTest {
 
     character.takeDamage(50);
 
-    assertEquals(0, character.hp());
+    assertEquals(0, character.getHp());
   }
 
   @Test
@@ -75,7 +75,7 @@ class CharacterTest {
 
     character.takeDamage(1);
 
-    assertEquals(0, character.hp());
+    assertEquals(0, character.getHp());
   }
 
   @Test
@@ -94,7 +94,7 @@ class CharacterTest {
 
     character.takeDamage(3);
 
-    assertEquals(10, character.hp());
+    assertEquals(10, character.getHp());
   }
 
   @Test
@@ -104,7 +104,7 @@ class CharacterTest {
 
     character.takeDamage(3);
 
-    assertEquals(7, character.hp());
+    assertEquals(7, character.getHp());
   }
 
   @Test
@@ -116,7 +116,7 @@ class CharacterTest {
 
     character.takeDamage(3);
 
-    assertEquals(4, character.hp());
+    assertEquals(4, character.getHp());
   }
 
   @Test
@@ -176,7 +176,7 @@ class CharacterTest {
     Aabb box = new Aabb(4, 8, 16, 16);
     Character character = aCharacter().withBodyBox(box).build();
 
-    Aabb bodyBox = character.bodyBox();
+    Aabb bodyBox = character.getBodyBox();
 
     assertSame(box, bodyBox);
   }
@@ -186,7 +186,7 @@ class CharacterTest {
     Aabb box = new Aabb(4, 8, 16, 16);
     Character character = aCharacter().withHurtbox(box).build();
 
-    Aabb hurtbox = character.hurtbox();
+    Aabb hurtbox = character.getHurtbox();
 
     assertEquals(box, hurtbox);
   }
@@ -231,7 +231,7 @@ class CharacterTest {
 
     character.heal(4);
 
-    assertEquals(8, character.hp());
+    assertEquals(8, character.getHp());
   }
 
   @Test
@@ -241,7 +241,7 @@ class CharacterTest {
 
     character.heal(50);
 
-    assertEquals(10, character.hp());
+    assertEquals(10, character.getHp());
   }
 
   @Test
@@ -265,31 +265,31 @@ class CharacterTest {
   void should_keep_its_attack_and_defense_when_created() {
     Character character = aCharacter().withAttack(7).withDefense(3).build();
 
-    assertEquals(7, character.attack());
-    assertEquals(3, character.defense());
+    assertEquals(7, character.getAttack());
+    assertEquals(3, character.getDefense());
   }
 
   @Test
   void should_accept_an_attack_of_0() {
     Character character = aCharacter().withAttack(0).build();
 
-    assertEquals(0, character.attack());
+    assertEquals(0, character.getAttack());
   }
 
   @Test
   void should_keep_its_speed_and_attack_speed_when_created() {
     Character character = aCharacter().withSpeed(120f).withAttackSpeed(1.5f).build();
 
-    assertEquals(120f, character.speed());
-    assertEquals(1.5f, character.attackSpeed());
+    assertEquals(120f, character.getSpeed());
+    assertEquals(1.5f, character.getAttackSpeed());
   }
 
   @Test
   void should_accept_a_speed_and_attack_speed_of_0() {
     Character character = aCharacter().withSpeed(0f).withAttackSpeed(0f).build();
 
-    assertEquals(0f, character.speed());
-    assertEquals(0f, character.attackSpeed());
+    assertEquals(0f, character.getSpeed());
+    assertEquals(0f, character.getAttackSpeed());
   }
 
   @Test
@@ -298,9 +298,9 @@ class CharacterTest {
 
     Character character = new CountingCharacter(stats);
 
-    assertEquals(3, character.maxHp());
-    assertEquals(3, character.attack());
-    assertEquals(3, character.defense());
+    assertEquals(3, character.getMaxHp());
+    assertEquals(3, character.getAttack());
+    assertEquals(3, character.getDefense());
   }
 
   @Test
@@ -443,7 +443,7 @@ class CharacterTest {
 
   @Test
   void should_not_swing_when_created() {
-    assertTrue(new CountingCharacter().currentSwing().isEmpty());
+    assertTrue(new CountingCharacter().getCurrentSwing().isEmpty());
   }
 
   @Test
@@ -452,19 +452,19 @@ class CharacterTest {
 
     character.startAttack(Items.sword(), 30f, new World());
 
-    assertEquals(30f, character.currentSwing().orElseThrow().aimDegrees());
+    assertEquals(30f, character.getCurrentSwing().orElseThrow().getAimDegrees());
   }
 
   @Test
   void should_run_its_swing_once_per_update() {
     CountingCharacter character = new CountingCharacter();
     character.startAttack(Items.sword(), 0f, new World());
-    Swing swing = character.currentSwing().orElseThrow();
+    Swing swing = character.getCurrentSwing().orElseThrow();
 
     character.update(1);
     character.update(2);
 
-    assertEquals(2, swing.ticksElapsed());
+    assertEquals(2, swing.getTicksElapsed());
   }
 
   @Test
@@ -473,11 +473,11 @@ class CharacterTest {
     Sword sword = Items.sword();
     character.startAttack(sword, 0f, new World());
 
-    for (long tick = 1; tick <= sword.swingTicks(); tick++) {
+    for (long tick = 1; tick <= sword.getSwingTicks(); tick++) {
       character.update(tick);
     }
 
-    assertTrue(character.currentSwing().isEmpty());
+    assertTrue(character.getCurrentSwing().isEmpty());
   }
 
   @Test
@@ -487,7 +487,7 @@ class CharacterTest {
     character.startAttack(sword, 30f, new World());
 
     assertThrows(IllegalStateException.class, () -> character.startAttack(sword, 90f, new World()));
-    assertEquals(30f, character.currentSwing().orElseThrow().aimDegrees());
+    assertEquals(30f, character.getCurrentSwing().orElseThrow().getAimDegrees());
   }
 
   @Test
@@ -538,7 +538,7 @@ class CharacterTest {
     }
 
     @Override
-    public Faction faction() {
+    public Faction getFaction() {
       return Faction.ENEMY;
     }
   }

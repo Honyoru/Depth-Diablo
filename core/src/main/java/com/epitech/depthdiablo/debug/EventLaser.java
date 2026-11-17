@@ -46,11 +46,21 @@ public final class EventLaser implements DebugFeature, EventListener {
   }
 
   private final List<Line> lines = new ArrayList<>();
+
   private boolean enabled;
 
   @Override
-  public String name() {
+  public String getName() {
     return "Event laser";
+  }
+
+  /**
+   * Returns the lines to draw, oldest first.
+   *
+   * @return a read-only view of the lines on screen
+   */
+  public List<Line> getLines() {
+    return Collections.unmodifiableList(lines);
   }
 
   @Override
@@ -80,20 +90,11 @@ public final class EventLaser implements DebugFeature, EventListener {
     if (!enabled) {
       return;
     }
-    Aabb from = event.source().bodyBox();
-    Aabb to = event.receiver().map(Entity::bodyBox).orElse(from);
+    Aabb from = event.source().getBodyBox();
+    Aabb to = event.receiver().map(Entity::getBodyBox).orElse(from);
     lines.add(
         new Line(
             event, centreX(from), centreY(from), centreX(to), centreY(to), LINE_LIFETIME_TICKS));
-  }
-
-  /**
-   * Returns the lines to draw, oldest first.
-   *
-   * @return a read-only view of the lines on screen
-   */
-  public List<Line> lines() {
-    return Collections.unmodifiableList(lines);
   }
 
   private static float centreX(Aabb box) {

@@ -46,7 +46,7 @@ class SeededRandomSourceTest {
   void should_expose_its_seed_when_asked() {
     RandomSource source = new SeededRandomSource(42L);
 
-    assertEquals(42L, source.seed());
+    assertEquals(42L, source.getSeed());
   }
 
   @Test

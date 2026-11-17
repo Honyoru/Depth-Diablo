@@ -57,7 +57,7 @@ final class PlayerView implements Disposable {
   void draw(Batch batch, Player player, Vector2 position, float delta) {
     stateTime += delta;
     TextureRegion frame = (player.isMoving() ? move : idle).getKeyFrame(stateTime);
-    float left = position.x + (player.bodyBox().width() - FRAME_SIZE) / 2f;
+    float left = position.x + (player.getBodyBox().width() - FRAME_SIZE) / 2f;
     float bottom = position.y - FRAME_MARGIN;
     if (lookingLeft) {
       batch.draw(frame, left + FRAME_SIZE, bottom, -FRAME_SIZE, FRAME_SIZE);

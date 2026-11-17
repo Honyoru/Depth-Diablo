@@ -27,10 +27,10 @@ class WeaponTest {
   void should_keep_its_values_when_created() {
     Weapon weapon = aWeapon(Rarity.RARE, 4, 24f);
 
-    assertEquals("sword", weapon.id());
-    assertEquals(Rarity.RARE, weapon.rarity());
-    assertEquals(4, weapon.attackBonus());
-    assertEquals(24f, weapon.range());
+    assertEquals("sword", weapon.getId());
+    assertEquals(Rarity.RARE, weapon.getRarity());
+    assertEquals(4, weapon.getAttackBonus());
+    assertEquals(24f, weapon.getRange());
   }
 
   @Test
@@ -44,7 +44,7 @@ class WeaponTest {
   void should_accept_an_attack_bonus_of_0() {
     Weapon weapon = aWeapon(Rarity.COMMON, 0, 16f);
 
-    assertEquals(0, weapon.attackBonus());
+    assertEquals(0, weapon.getAttackBonus());
   }
 
   @Test
@@ -83,7 +83,7 @@ class WeaponTest {
 
     assertEquals(4, result.damage());
     assertFalse(result.killed());
-    assertEquals(16, target.hp());
+    assertEquals(16, target.getHp());
   }
 
   @Test
@@ -109,7 +109,7 @@ class WeaponTest {
     HitResult result = weapon.hit(attacker, target);
 
     assertEquals(HitResult.NONE, result);
-    assertEquals(20, target.hp());
+    assertEquals(20, target.getHp());
   }
 
   @Test
@@ -142,7 +142,7 @@ class WeaponTest {
 
   @Test
   void should_keep_its_attack_speed() {
-    assertEquals(1.5f, aWeapon(Rarity.RARE, 4, 1.5f, 24f).attackSpeed());
+    assertEquals(1.5f, aWeapon(Rarity.RARE, 4, 1.5f, 24f).getAttackSpeed());
   }
 
   @Test

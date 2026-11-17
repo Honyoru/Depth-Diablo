@@ -7,10 +7,15 @@ import java.util.Objects;
  * 1.3.1). Values come from {@code data/items.json} (Q93).
  */
 public abstract class Item {
+
   private final String id;
+
   private final String nameKey;
+
   private final String spriteId;
+
   private final Rarity rarity;
+
   private final int price;
 
   /**
@@ -36,21 +41,12 @@ public abstract class Item {
     this.price = price;
   }
 
-  private static String requireText(String value, String name) {
-    Objects.requireNonNull(value, "The " + name + " of an item must not be null");
-    if (value.isBlank()) {
-      throw new IllegalArgumentException(
-          "The " + name + " of an item must not be blank, was \"" + value + "\"");
-    }
-    return value;
-  }
-
   /**
    * Returns the item's key in the data files.
    *
    * @return the id
    */
-  public final String id() {
+  public final String getId() {
     return id;
   }
 
@@ -59,7 +55,7 @@ public abstract class Item {
    *
    * @return the name key
    */
-  public final String nameKey() {
+  public final String getNameKey() {
     return nameKey;
   }
 
@@ -68,7 +64,7 @@ public abstract class Item {
    *
    * @return the sprite id
    */
-  public final String spriteId() {
+  public final String getSpriteId() {
     return spriteId;
   }
 
@@ -77,7 +73,7 @@ public abstract class Item {
    *
    * @return the rarity
    */
-  public final Rarity rarity() {
+  public final Rarity getRarity() {
     return rarity;
   }
 
@@ -86,7 +82,16 @@ public abstract class Item {
    *
    * @return the price in coins, 0 or more
    */
-  public final int price() {
+  public final int getPrice() {
     return price;
+  }
+
+  private static String requireText(String value, String name) {
+    Objects.requireNonNull(value, "The " + name + " of an item must not be null");
+    if (value.isBlank()) {
+      throw new IllegalArgumentException(
+          "The " + name + " of an item must not be blank, was \"" + value + "\"");
+    }
+    return value;
   }
 }

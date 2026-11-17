@@ -4,7 +4,9 @@ import java.util.SplittableRandom;
 
 /** Deterministic {@link RandomSource}: the same seed always replays the same sequence. */
 public final class SeededRandomSource implements RandomSource {
+
   private final long initialSeed;
+
   private final SplittableRandom random;
 
   /**
@@ -18,6 +20,11 @@ public final class SeededRandomSource implements RandomSource {
   }
 
   @Override
+  public long getSeed() {
+    return initialSeed;
+  }
+
+  @Override
   public int nextInt(int bound) {
     return random.nextInt(bound);
   }
@@ -25,10 +32,5 @@ public final class SeededRandomSource implements RandomSource {
   @Override
   public double nextDouble() {
     return random.nextDouble();
-  }
-
-  @Override
-  public long seed() {
-    return initialSeed;
   }
 }

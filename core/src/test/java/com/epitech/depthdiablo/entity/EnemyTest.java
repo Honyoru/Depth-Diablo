@@ -19,9 +19,9 @@ class EnemyTest {
   void should_start_idle_on_the_enemy_side_with_no_target() {
     Enemy rat = aRat().build();
 
-    assertEquals(EnemyState.IDLE, rat.state());
-    assertEquals(Faction.ENEMY, rat.faction());
-    assertEquals(Optional.empty(), rat.target());
+    assertEquals(EnemyState.IDLE, rat.getState());
+    assertEquals(Faction.ENEMY, rat.getFaction());
+    assertEquals(Optional.empty(), rat.getTarget());
   }
 
   @Test
@@ -35,7 +35,7 @@ class EnemyTest {
   void should_not_see_a_dead_player() {
     Enemy rat = aRat().build();
     Character player = aPlayer();
-    player.takeDamage(player.hp());
+    player.takeDamage(player.getHp());
 
     assertFalse(rat.canSee(player));
   }
@@ -54,7 +54,7 @@ class EnemyTest {
 
     zombie.alert(player);
 
-    assertEquals(Optional.of(player), zombie.target());
+    assertEquals(Optional.of(player), zombie.getTarget());
   }
 
   @Test
@@ -63,18 +63,18 @@ class EnemyTest {
 
     rat.alert(aZombie().build());
 
-    assertEquals(Optional.empty(), rat.target());
+    assertEquals(Optional.empty(), rat.getTarget());
   }
 
   @Test
   void should_ignore_an_alert_about_a_dead_player() {
     Enemy rat = aRat().build();
     Character player = aPlayer();
-    player.takeDamage(player.hp());
+    player.takeDamage(player.getHp());
 
     rat.alert(player);
 
-    assertEquals(Optional.empty(), rat.target());
+    assertEquals(Optional.empty(), rat.getTarget());
   }
 
   @Test
@@ -83,7 +83,7 @@ class EnemyTest {
 
     rat.update(1);
 
-    assertEquals(EnemyState.IDLE, rat.state());
+    assertEquals(EnemyState.IDLE, rat.getState());
   }
 
   @Test

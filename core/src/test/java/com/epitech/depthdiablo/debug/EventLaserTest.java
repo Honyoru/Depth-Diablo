@@ -25,14 +25,14 @@ class EventLaserTest {
   @Test
   void should_start_disabled_with_no_line() {
     assertFalse(laser.isEnabled());
-    assertTrue(laser.lines().isEmpty());
+    assertTrue(laser.getLines().isEmpty());
   }
 
   @Test
   void should_ignore_events_while_disabled() {
     laser.onEvent(aHit());
 
-    assertTrue(laser.lines().isEmpty());
+    assertTrue(laser.getLines().isEmpty());
   }
 
   @Test
@@ -42,7 +42,7 @@ class EventLaserTest {
 
     laser.onEvent(hit);
 
-    EventLaser.Line line = laser.lines().get(0);
+    EventLaser.Line line = laser.getLines().get(0);
     assertSame(hit, line.event());
     assertEquals(8f, line.fromX());
     assertEquals(8f, line.fromY());
@@ -57,7 +57,7 @@ class EventLaserTest {
 
     laser.onEvent(new EntityDied(victim, Optional.empty()));
 
-    EventLaser.Line line = laser.lines().get(0);
+    EventLaser.Line line = laser.getLines().get(0);
     assertFalse(line.hasReceiver());
     assertEquals(line.fromX(), line.toX());
     assertEquals(line.fromY(), line.toY());
@@ -70,7 +70,7 @@ class EventLaserTest {
 
     tick(EventLaser.LINE_LIFETIME_TICKS - 1);
 
-    assertEquals(1, laser.lines().size());
+    assertEquals(1, laser.getLines().size());
   }
 
   @Test
@@ -80,7 +80,7 @@ class EventLaserTest {
 
     tick(EventLaser.LINE_LIFETIME_TICKS);
 
-    assertTrue(laser.lines().isEmpty());
+    assertTrue(laser.getLines().isEmpty());
   }
 
   @Test
@@ -90,7 +90,7 @@ class EventLaserTest {
 
     tick(1);
 
-    assertEquals(EventLaser.LINE_LIFETIME_TICKS - 1, laser.lines().get(0).ticksLeft());
+    assertEquals(EventLaser.LINE_LIFETIME_TICKS - 1, laser.getLines().get(0).ticksLeft());
   }
 
   @Test
@@ -100,19 +100,19 @@ class EventLaserTest {
 
     laser.disable();
 
-    assertTrue(laser.lines().isEmpty());
+    assertTrue(laser.getLines().isEmpty());
   }
 
   @Test
   void should_refuse_changes_through_the_line_list() {
-    List<EventLaser.Line> lines = laser.lines();
+    List<EventLaser.Line> lines = laser.getLines();
 
     assertThrows(UnsupportedOperationException.class, lines::clear);
   }
 
   @Test
   void should_have_a_name_for_logs() {
-    assertEquals("Event laser", laser.name());
+    assertEquals("Event laser", laser.getName());
   }
 
   private GameEvent aHit() {

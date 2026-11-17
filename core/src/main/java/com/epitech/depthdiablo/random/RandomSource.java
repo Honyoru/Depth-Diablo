@@ -23,5 +23,5 @@ public interface RandomSource {
    *
    * @return the seed
    */
-  long seed();
+  long getSeed();
 }

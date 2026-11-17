@@ -89,7 +89,7 @@ class InventoryTest {
   void should_hold_its_starting_weapon() {
     Sword sword = Items.sword();
 
-    assertSame(sword, new Inventory(sword).weapon());
+    assertSame(sword, new Inventory(sword).getWeapon());
   }
 
   @Test
@@ -104,7 +104,7 @@ class InventoryTest {
 
     inventory.equip(newSword);
 
-    assertSame(newSword, inventory.weapon());
+    assertSame(newSword, inventory.getWeapon());
   }
 
   @Test
@@ -121,7 +121,7 @@ class InventoryTest {
     Inventory inventory = new Inventory(sword);
 
     assertThrows(NullPointerException.class, () -> inventory.equip(null));
-    assertSame(sword, inventory.weapon());
+    assertSame(sword, inventory.getWeapon());
   }
 
   @Test
@@ -133,7 +133,7 @@ class InventoryTest {
     user.takeDamage(6);
 
     assertTrue(inventory.use(0, user));
-    assertEquals(4 + potion.healAmount(), user.hp());
+    assertEquals(4 + potion.getHealAmount(), user.getHp());
   }
 
   @Test
@@ -165,7 +165,7 @@ class InventoryTest {
     user.takeDamage(6);
 
     assertFalse(inventory.use(0, user));
-    assertEquals(4, user.hp());
+    assertEquals(4, user.getHp());
   }
 
   @Test
@@ -191,7 +191,7 @@ class InventoryTest {
   void should_give_its_weapon_as_the_only_modifier_for_now() {
     Sword sword = Items.sword();
 
-    assertEquals(List.of(sword), new Inventory(sword).modifiers());
+    assertEquals(List.of(sword), new Inventory(sword).getModifiers());
   }
 
   @Test
@@ -201,13 +201,13 @@ class InventoryTest {
 
     inventory.equip(newSword);
 
-    assertEquals(List.of(newSword), inventory.modifiers());
+    assertEquals(List.of(newSword), inventory.getModifiers());
   }
 
   @Test
   void should_not_let_the_modifiers_be_changed_from_outside() {
     Inventory inventory = anInventory();
-    List<BuildModifier> modifiers = inventory.modifiers();
+    List<BuildModifier> modifiers = inventory.getModifiers();
     Sword other = Items.sword();
 
     assertThrows(UnsupportedOperationException.class, () -> modifiers.add(other));

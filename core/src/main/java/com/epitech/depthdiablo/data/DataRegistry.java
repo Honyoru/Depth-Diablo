@@ -21,8 +21,11 @@ import java.util.function.Supplier;
  * <p>Pattern: Registry, read by the EnemyFactory and the ItemFactory (Simple Factory).
  */
 public final class DataRegistry {
+
   private final String category;
+
   private final Supplier<String> source;
+
   private Map<String, JsonValue> definitions = Map.of();
 
   /**
@@ -39,6 +42,15 @@ public final class DataRegistry {
     this.category = Objects.requireNonNull(category, "The data category must not be null");
     this.source = Objects.requireNonNull(source, "The data source must not be null");
     reload();
+  }
+
+  /**
+   * Returns the ids of every entry, in file order.
+   *
+   * @return the ids, read-only
+   */
+  public List<String> getIds() {
+    return List.copyOf(definitions.keySet());
   }
 
   /**
@@ -77,14 +89,5 @@ public final class DataRegistry {
       throw new IllegalArgumentException("Unknown id in " + category + ": " + id);
     }
     return entry;
-  }
-
-  /**
-   * Returns the ids of every entry, in file order.
-   *
-   * @return the ids, read-only
-   */
-  public List<String> ids() {
-    return List.copyOf(definitions.keySet());
   }
 }

@@ -11,7 +11,7 @@ class ConsumableTest {
   void should_have_the_consumable_rarity_when_created() {
     Consumable consumable = new Potion("potion_small", "item.potion_small.name", "potion", 10, 25);
 
-    Rarity rarity = consumable.rarity();
+    Rarity rarity = consumable.getRarity();
 
     assertEquals(Rarity.CONSUMABLE, rarity);
   }
@@ -20,9 +20,9 @@ class ConsumableTest {
   void should_keep_its_values_when_created() {
     Consumable consumable = new Potion("potion_small", "item.potion_small.name", "potion", 10, 25);
 
-    assertEquals("potion_small", consumable.id());
-    assertEquals("item.potion_small.name", consumable.nameKey());
-    assertEquals("potion", consumable.spriteId());
-    assertEquals(10, consumable.price());
+    assertEquals("potion_small", consumable.getId());
+    assertEquals("item.potion_small.name", consumable.getNameKey());
+    assertEquals("potion", consumable.getSpriteId());
+    assertEquals(10, consumable.getPrice());
   }
 }

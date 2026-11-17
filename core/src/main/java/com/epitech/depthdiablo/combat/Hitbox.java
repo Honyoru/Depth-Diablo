@@ -16,10 +16,15 @@ import java.util.Set;
  * for the attacks that never turn.
  */
 public final class Hitbox implements Updatable {
+
   private Obb shape;
+
   private final Entity owner;
+
   private final Faction faction;
+
   private int ticksLeft;
+
   private final Set<Damageable> alreadyHit = Collections.newSetFromMap(new IdentityHashMap<>());
 
   /**
@@ -41,6 +46,42 @@ public final class Hitbox implements Updatable {
       throw new IllegalArgumentException("Lifetime must be above 0 ticks: " + lifetimeTicks);
     }
     this.ticksLeft = lifetimeTicks;
+  }
+
+  /**
+   * Returns the area this hitbox covers now.
+   *
+   * @return its shape
+   */
+  public Obb getShape() {
+    return shape;
+  }
+
+  /**
+   * Returns the entity whose attack this is.
+   *
+   * @return its owner, never hit by this hitbox
+   */
+  public Entity getOwner() {
+    return owner;
+  }
+
+  /**
+   * Returns the side this attack fights for.
+   *
+   * @return its faction, fixed when the attack started
+   */
+  public Faction getFaction() {
+    return faction;
+  }
+
+  /**
+   * Returns how many logic ticks this hitbox still lasts.
+   *
+   * @return the ticks left; 0 once it is expired
+   */
+  public int getTicksLeft() {
+    return ticksLeft;
   }
 
   /**
@@ -79,10 +120,10 @@ public final class Hitbox implements Updatable {
     Objects.requireNonNull(target, "target is null");
     return !isExpired()
         && !owner.equals(target)
-        && faction.canHurt(target.faction())
+        && faction.canHurt(target.getFaction())
         && !alreadyHit.contains(target)
         && !target.isDead()
-        && shape.overlaps(target.hurtbox());
+        && shape.overlaps(target.getHurtbox());
   }
 
   /**
@@ -113,41 +154,5 @@ public final class Hitbox implements Updatable {
    */
   public void reshape(Obb newShape) {
     this.shape = Objects.requireNonNull(newShape, "newShape is null");
-  }
-
-  /**
-   * Returns the area this hitbox covers now.
-   *
-   * @return its shape
-   */
-  public Obb shape() {
-    return shape;
-  }
-
-  /**
-   * Returns the entity whose attack this is.
-   *
-   * @return its owner, never hit by this hitbox
-   */
-  public Entity owner() {
-    return owner;
-  }
-
-  /**
-   * Returns the side this attack fights for.
-   *
-   * @return its faction, fixed when the attack started
-   */
-  public Faction faction() {
-    return faction;
-  }
-
-  /**
-   * Returns how many logic ticks this hitbox still lasts.
-   *
-   * @return the ticks left; 0 once it is expired
-   */
-  public int ticksLeft() {
-    return ticksLeft;
   }
 }

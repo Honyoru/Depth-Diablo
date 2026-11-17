@@ -17,8 +17,11 @@ import java.util.Objects;
  * which weapon it is, and equipping another weapon swaps the strategy.
  */
 public abstract class Weapon extends Equipment implements Attack {
+
   private final int attackBonus;
+
   private final float attackSpeed;
+
   private final float range;
 
   /**
@@ -63,6 +66,33 @@ public abstract class Weapon extends Equipment implements Attack {
   }
 
   /**
+   * Returns the flat bonus this weapon adds to the attack in the damage formula.
+   *
+   * @return the attack bonus, 0 or more
+   */
+  public final int getAttackBonus() {
+    return attackBonus;
+  }
+
+  /**
+   * Returns the base attack speed of this weapon. The holder's ATTACK_SPEED stat multiplies it.
+   *
+   * @return the attack speed, above 0
+   */
+  public final float getAttackSpeed() {
+    return attackSpeed;
+  }
+
+  /**
+   * Returns how far this weapon's hit reaches.
+   *
+   * @return the range in pixels, above 0
+   */
+  public final float getRange() {
+    return range;
+  }
+
+  /**
    * Hits the target with the damage formula (GDD 1.6): the attacker's attack plus this weapon's
    * bonus, against the target's defense. The attack buff stays at 1 and the defense bonus at 0
    * until buffs and armor exist.
@@ -81,7 +111,7 @@ public abstract class Weapon extends Equipment implements Attack {
       return HitResult.NONE;
     }
     int damage =
-        DamageFormula.compute(attacker.attack(), attackBonus, 1.0, target.defense(), 0, 1.0);
+        DamageFormula.compute(attacker.getAttack(), attackBonus, 1.0, target.getDefense(), 0, 1.0);
     target.takeDamage(damage);
     return new HitResult(damage, target.isDead());
   }
@@ -101,32 +131,5 @@ public abstract class Weapon extends Equipment implements Attack {
     StatSource withWeaponSpeed =
         stat -> stat == Stat.ATTACK_SPEED ? base.get(stat) * attackSpeed : base.get(stat);
     return build.withAttack(this).withStats(withWeaponSpeed);
-  }
-
-  /**
-   * Returns the flat bonus this weapon adds to the attack in the damage formula.
-   *
-   * @return the attack bonus, 0 or more
-   */
-  public final int attackBonus() {
-    return attackBonus;
-  }
-
-  /**
-   * Returns the base attack speed of this weapon. The holder's ATTACK_SPEED stat multiplies it.
-   *
-   * @return the attack speed, above 0
-   */
-  public final float attackSpeed() {
-    return attackSpeed;
-  }
-
-  /**
-   * Returns how far this weapon's hit reaches.
-   *
-   * @return the range in pixels, above 0
-   */
-  public final float range() {
-    return range;
   }
 }

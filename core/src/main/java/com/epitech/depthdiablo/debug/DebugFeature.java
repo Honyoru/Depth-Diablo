@@ -7,7 +7,7 @@ public interface DebugFeature {
    *
    * @return a short name for logs and menus
    */
-  String name();
+  String getName();
 
   /** Switches the feature on. */
   void enable();

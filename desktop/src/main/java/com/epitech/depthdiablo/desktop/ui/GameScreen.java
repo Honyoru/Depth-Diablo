@@ -37,12 +37,19 @@ public final class GameScreen extends ScreenAdapter {
   private static final String DEFAULT_MAP_PATH = "Floor1.tmx";
 
   private final HudState hudState;
+
   private final Hud hud;
+
   private final OrthographicCamera worldCamera;
+
   private final OrthographicCamera minimapCamera;
+
   private final TiledMap tiledMap;
+
   private final OrthogonalTiledMapRenderer mapRenderer;
+
   private final GameApplication app;
+
   private static final Logger LOG = LoggerFactory.getLogger(GameScreen.class);
 
   /** The boss comes every 5th wave. */
@@ -52,23 +59,31 @@ public final class GameScreen extends ScreenAdapter {
   private static final int BREAK_TICKS = 15 * GameConstants.TICKS_PER_SECOND;
 
   private final World world = new World();
+
   private final FixedTimestep timestep = new FixedTimestep();
+
   private final ArenaCycle arenaCycle = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS);
+
   private final boolean arenaMode;
 
   /** Below 1 the camera shows less of the world, so everything looks bigger. */
   private static final float CAMERA_ZOOM = 0.8f;
 
   private final KeyboardPlayerInput input = new KeyboardPlayerInput();
+
   private final SpriteBatch batch;
+
   private final Player player;
+
   private final PlayerView playerView;
 
   /** The size of the minimap world in pixels. */
   private static final float MINIMAP_WORLD_SIZE = 480f;
 
   private final Vector2 previousPosition = new Vector2();
+
   private final Vector2 drawPosition = new Vector2();
+
   private final Vector2 velocity = new Vector2();
 
   /** F1 debug feature (GDD 1.1.2): which renderer draws the world. */
@@ -100,7 +115,7 @@ public final class GameScreen extends ScreenAdapter {
 
     this.app = Objects.requireNonNull(app, "The game application must not be null");
     this.hudState = new HudState();
-    this.hud = new Hud(skin, hudState, app.batch());
+    this.hud = new Hud(skin, hudState, app.getBatch());
 
     this.worldCamera = new OrthographicCamera();
     this.worldCamera.setToOrtho(false, GameConstants.VIRTUAL_WIDTH, GameConstants.VIRTUAL_HEIGHT);
@@ -109,8 +124,8 @@ public final class GameScreen extends ScreenAdapter {
     this.minimapCamera.setToOrtho(false, MINIMAP_WORLD_SIZE, MINIMAP_WORLD_SIZE);
 
     this.tiledMap = new TmxMapLoader().load(DEFAULT_MAP_PATH);
-    this.mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, app.batch());
-    this.batch = app.batch();
+    this.mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, app.getBatch());
+    this.batch = app.getBatch();
     this.worldCamera.zoom = CAMERA_ZOOM;
     addWalls();
     this.player = spawnKnight(input, world, findSpawn());
@@ -120,12 +135,17 @@ public final class GameScreen extends ScreenAdapter {
     renderers.put(ViewMode.SPRITES, new SpriteRenderer(mapRenderer, batch, playerView));
     renderers.put(ViewMode.XRAY, new XRayRenderer());
     renderers.put(ViewMode.HIGH_CONTRAST, new HighContrastRenderer());
-    world.eventBus().subscribeAll(eventLaser);
+    world.getEventBus().subscribeAll(eventLaser);
+  }
+
+  /** Returns the mutable HUD state so the game loop can sync HP and coins. */
+  public HudState getHudState() {
+    return hudState;
   }
 
   @Override
   public void show() {
-    Gdx.input.setInputProcessor(hud.stage());
+    Gdx.input.setInputProcessor(hud.getStage());
   }
 
   @Override
@@ -137,7 +157,7 @@ public final class GameScreen extends ScreenAdapter {
     handleQuickSlotHotkeys();
     if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
       viewSwitcher.cycle();
-      LOG.info("View switched to {}", viewSwitcher.mode());
+      LOG.info("View switched to {}", viewSwitcher.getMode());
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
       toggleEventLaser();
@@ -162,7 +182,7 @@ public final class GameScreen extends ScreenAdapter {
     followPlayer();
     velocity.set(player.position()).sub(previousPosition);
     renderers
-        .get(viewSwitcher.mode())
+        .get(viewSwitcher.getMode())
         .render(new Frame(worldCamera, world, player, drawPosition, velocity, delta));
     eventLaserOverlay.render(worldCamera);
 
@@ -198,13 +218,13 @@ public final class GameScreen extends ScreenAdapter {
       previousPosition.set(player.position());
       world.tick();
       if (eventLaser.isEnabled()) {
-        eventLaser.onTick(world.currentTick());
+        eventLaser.onTick(world.getCurrentTick());
       }
       if (arenaMode) {
         arenaCycle.update();
       }
     }
-    drawPosition.set(previousPosition).lerp(player.position(), timestep.alpha());
+    drawPosition.set(previousPosition).lerp(player.position(), timestep.getAlpha());
   }
 
   private void renderMinimapPass() {
@@ -228,11 +248,6 @@ public final class GameScreen extends ScreenAdapter {
     Gdx.gl.glViewport(0, 0, screenW, screenH);
   }
 
-  /** Returns the mutable HUD state so the game loop can sync HP and coins. */
-  public HudState hudState() {
-    return hudState;
-  }
-
   @Override
   public void resize(int width, int height) {
     hud.resize(width, height);
@@ -240,7 +255,7 @@ public final class GameScreen extends ScreenAdapter {
 
   @Override
   public void dispose() {
-    LOG.info("Game screen closed after {} ticks", world.currentTick());
+    LOG.info("Game screen closed after {} ticks", world.getCurrentTick());
     hud.dispose();
     renderers.values().forEach(Renderer::dispose);
     eventLaserOverlay.dispose();
@@ -301,7 +316,7 @@ public final class GameScreen extends ScreenAdapter {
   }
 
   private void followPlayer() {
-    Aabb body = player.bodyBox();
+    Aabb body = player.getBodyBox();
     worldCamera.position.set(
         drawPosition.x + body.width() / 2f, drawPosition.y + body.height() / 2f, 0f);
     worldCamera.update();

@@ -14,13 +14,21 @@ import java.util.Optional;
  * character-specific behavior to {@link #think(long)}.
  */
 public abstract class Character extends Entity implements Damageable {
+
   private final StatSource stats;
+
   private int hp;
+
   private final int invincibilityTicksAfterHit;
+
   private int invincibilityTicksLeft;
+
   private final Aabb hurtboxFromBody;
+
   private int swingTicksLeft;
+
   private int attackCooldownTicksLeft;
+
   private Swing currentSwing;
 
   /**
@@ -53,6 +61,76 @@ public abstract class Character extends Entity implements Damageable {
     this.invincibilityTicksAfterHit = invincibilityTicksAfterHit;
   }
 
+  @Override
+  public Aabb getHurtbox() {
+    return hurtboxFromBody.translated(getBodyBox().x(), getBodyBox().y());
+  }
+
+  /**
+   * Returns the character's current health.
+   *
+   * @return the current HP; 0 once dead
+   */
+  public int getHp() {
+    return hp;
+  }
+
+  /**
+   * Returns the base damage of this character's hits, used as the attack in the damage formula.
+   *
+   * @return the attack, rounded down
+   */
+  public int getAttack() {
+    return (int) stats.get(Stat.ATTACK);
+  }
+
+  /**
+   * Returns the defense this character opposes to hits, used as the resistance (the divisor) in the
+   * damage formula.
+   *
+   * @return the defense, rounded down
+   */
+  public int getDefense() {
+    return (int) stats.get(Stat.DEFENSE);
+  }
+
+  /**
+   * Returns how fast this character moves.
+   *
+   * @return the speed in pixels per second
+   */
+  public float getSpeed() {
+    return stats.get(Stat.SPEED);
+  }
+
+  /**
+   * Returns this character's attack speed multiplier. The weapon gives the base attack speed and
+   * this stat multiplies it; passive items will change it later.
+   *
+   * @return the multiplier; 0 means it never attacks
+   */
+  public float getAttackSpeed() {
+    return stats.get(Stat.ATTACK_SPEED);
+  }
+
+  /**
+   * Returns the swing running now, for the renderer.
+   *
+   * @return the current swing, or empty if this character is not swinging or its swing is over
+   */
+  public Optional<Swing> getCurrentSwing() {
+    return Optional.ofNullable(currentSwing).filter(swing -> !swing.isOver());
+  }
+
+  /**
+   * Returns the character's maximum health.
+   *
+   * @return the maximum HP, rounded down
+   */
+  public int getMaxHp() {
+    return (int) stats.get(Stat.MAX_HP);
+  }
+
   /**
    * Counts the invincibility down, runs the current swing, counts the swing of the current attack
    * down, then its cooldown once the swing is over, and performs character-specific behavior for
@@ -82,11 +160,6 @@ public abstract class Character extends Entity implements Damageable {
   protected abstract void think(long tick);
 
   @Override
-  public Aabb hurtbox() {
-    return hurtboxFromBody.translated(bodyBox().x(), bodyBox().y());
-  }
-
-  @Override
   public void takeDamage(int amount) {
     if (amount < 1) {
       throw new IllegalArgumentException("Damage amount must be at least 1, was " + amount);
@@ -111,7 +184,7 @@ public abstract class Character extends Entity implements Damageable {
     if (isDead()) {
       return;
     }
-    hp = Math.min(maxHp(), hp + amount);
+    hp = Math.min(getMaxHp(), hp + amount);
   }
 
   @Override
@@ -143,60 +216,13 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
-   * Returns the character's current health.
-   *
-   * @return the current HP; 0 once dead
-   */
-  public int hp() {
-    return hp;
-  }
-
-  /**
-   * Returns the base damage of this character's hits, used as the attack in the damage formula.
-   *
-   * @return the attack, rounded down
-   */
-  public int attack() {
-    return (int) stats.get(Stat.ATTACK);
-  }
-
-  /**
-   * Returns the defense this character opposes to hits, used as the resistance (the divisor) in the
-   * damage formula.
-   *
-   * @return the defense, rounded down
-   */
-  public int defense() {
-    return (int) stats.get(Stat.DEFENSE);
-  }
-
-  /**
-   * Returns how fast this character moves.
-   *
-   * @return the speed in pixels per second
-   */
-  public float speed() {
-    return stats.get(Stat.SPEED);
-  }
-
-  /**
-   * Returns this character's attack speed multiplier. The weapon gives the base attack speed and
-   * this stat multiplies it; passive items will change it later.
-   *
-   * @return the multiplier; 0 means it never attacks
-   */
-  public float attackSpeed() {
-    return stats.get(Stat.ATTACK_SPEED);
-  }
-
-  /**
    * Tells whether this character can start an attack now: it is alive, its attack speed is above 0,
    * and its last attack's swing and cooldown are over.
    *
    * @return true if it can attack
    */
   public boolean canAttack() {
-    return !isDead() && attackSpeed() > 0 && swingTicksLeft == 0 && attackCooldownTicksLeft == 0;
+    return !isDead() && getAttackSpeed() > 0 && swingTicksLeft == 0 && attackCooldownTicksLeft == 0;
   }
 
   /**
@@ -226,7 +252,7 @@ public abstract class Character extends Entity implements Damageable {
     swingTicksLeft = swingTicks;
     attackCooldownTicksLeft =
         Math.max(
-            1, Math.round(GameConstants.TICKS_PER_SECOND / (weaponAttackSpeed * attackSpeed())));
+            1, Math.round(GameConstants.TICKS_PER_SECOND / (weaponAttackSpeed * getAttackSpeed())));
   }
 
   /**
@@ -257,30 +283,12 @@ public abstract class Character extends Entity implements Damageable {
    */
   public final void holdSwing(Swing swing) {
     Objects.requireNonNull(swing, "swing is null");
-    if (!equals(swing.holder())) {
+    if (!equals(swing.getHolder())) {
       throw new IllegalArgumentException("The swing belongs to another character");
     }
-    if (currentSwing().isPresent()) {
+    if (getCurrentSwing().isPresent()) {
       throw new IllegalStateException("Still swinging");
     }
     currentSwing = swing;
-  }
-
-  /**
-   * Returns the swing running now, for the renderer.
-   *
-   * @return the current swing, or empty if this character is not swinging or its swing is over
-   */
-  public Optional<Swing> currentSwing() {
-    return Optional.ofNullable(currentSwing).filter(swing -> !swing.isOver());
-  }
-
-  /**
-   * Returns the character's maximum health.
-   *
-   * @return the maximum HP, rounded down
-   */
-  public int maxHp() {
-    return (int) stats.get(Stat.MAX_HP);
   }
 }

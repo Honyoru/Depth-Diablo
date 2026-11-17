@@ -20,7 +20,7 @@ class WorldTest {
 
   @Test
   void should_start_at_tick_0_when_created() {
-    long tick = world.currentTick();
+    long tick = world.getCurrentTick();
 
     assertEquals(0, tick);
   }
@@ -30,7 +30,7 @@ class WorldTest {
     world.tick();
     world.tick();
 
-    assertEquals(2, world.currentTick());
+    assertEquals(2, world.getCurrentTick());
   }
 
   @Test
@@ -52,7 +52,7 @@ class WorldTest {
 
     world.add(entity);
 
-    assertEquals(List.of(entity), world.entities());
+    assertEquals(List.of(entity), world.getEntities());
   }
 
   @Test
@@ -60,8 +60,8 @@ class WorldTest {
     RecordingEntity emitter = new RecordingEntity();
     RecordingEntity last = new RecordingEntity();
     List<Integer> updatesSeen = new ArrayList<>();
-    emitter.onTick = () -> world.eventBus().publish(aDeathEvent());
-    world.eventBus().subscribeAll(event -> updatesSeen.add(last.ticks.size()));
+    emitter.onTick = () -> world.getEventBus().publish(aDeathEvent());
+    world.getEventBus().subscribeAll(event -> updatesSeen.add(last.ticks.size()));
     world.add(emitter);
     world.add(last);
 
@@ -80,21 +80,21 @@ class WorldTest {
     world.tick();
 
     assertTrue(spawned.ticks.isEmpty());
-    assertEquals(List.of(spawner, spawned), world.entities());
+    assertEquals(List.of(spawner, spawned), world.getEntities());
   }
 
   @Test
   void should_add_a_spawned_entity_at_the_end_of_the_tick_when_a_listener_adds_it() {
     RecordingEntity emitter = new RecordingEntity();
     RecordingEntity spawned = new RecordingEntity();
-    emitter.onTick = () -> world.eventBus().publish(aDeathEvent());
-    world.eventBus().subscribeAll(event -> world.add(spawned));
+    emitter.onTick = () -> world.getEventBus().publish(aDeathEvent());
+    world.getEventBus().subscribeAll(event -> world.add(spawned));
     world.add(emitter);
 
     world.tick();
 
     assertTrue(spawned.ticks.isEmpty());
-    assertEquals(List.of(emitter, spawned), world.entities());
+    assertEquals(List.of(emitter, spawned), world.getEntities());
   }
 
   @Test
@@ -105,7 +105,7 @@ class WorldTest {
 
     world.tick();
 
-    assertTrue(world.entities().isEmpty());
+    assertTrue(world.getEntities().isEmpty());
   }
 
   @Test
@@ -121,7 +121,7 @@ class WorldTest {
 
     world.tick();
 
-    assertEquals(List.of(spawner), world.entities());
+    assertEquals(List.of(spawner), world.getEntities());
   }
 
   @Test
@@ -131,12 +131,12 @@ class WorldTest {
 
     world.add(entity);
 
-    assertEquals(List.of(entity), world.entities());
+    assertEquals(List.of(entity), world.getEntities());
   }
 
   @Test
   void should_refuse_changes_through_the_entity_list() {
-    List<Entity> entities = world.entities();
+    List<Entity> entities = world.getEntities();
 
     assertThrows(UnsupportedOperationException.class, entities::clear);
   }

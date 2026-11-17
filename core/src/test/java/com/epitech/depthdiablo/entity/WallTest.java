@@ -25,7 +25,7 @@ class WallTest {
 
     wall.update(1);
 
-    assertSame(box, wall.bodyBox());
+    assertSame(box, wall.getBodyBox());
   }
 
   @Test

@@ -50,13 +50,13 @@ public final class MenuScreen extends ScreenAdapter {
 
   private void rebuildUi() {
     rootTable.clearChildren();
-    switch (flowState.currentStep()) {
+    switch (flowState.getCurrentStep()) {
       case MAIN_MENU -> buildMainMenu();
       case MODE_SELECTION -> buildModeSelection();
       case CHARACTER_SELECTION -> buildCharacterSelection();
       case IN_GAME ->
           Gdx.app.postRunnable(
-              () -> app.startGameScreen(flowState.selectedMode(), flowState.selectedHero()));
+              () -> app.startGameScreen(flowState.getSelectedMode(), flowState.getSelectedHero()));
       case GAME_OVER -> buildGameOver();
     }
   }
@@ -65,7 +65,10 @@ public final class MenuScreen extends ScreenAdapter {
   private void buildGameOver() {
     rootTable.add(new Label("GAME OVER", skin)).padBottom(30f).row();
 
-    rootTable.add(new Label("Waves defeated: " + flowState.lastScore(), skin)).padBottom(24f).row();
+    rootTable
+        .add(new Label("Waves defeated: " + flowState.getLastScore(), skin))
+        .padBottom(24f)
+        .row();
 
     TextButton rerunBtn = new TextButton("Rerun", skin);
     rerunBtn.addListener(
@@ -119,7 +122,7 @@ public final class MenuScreen extends ScreenAdapter {
     rootTable.add(new Label("SELECT MODE", skin)).padBottom(24f).row();
 
     for (MenuFlowState.GameMode mode : MenuFlowState.GameMode.values()) {
-      TextButton modeBtn = new TextButton(mode.displayName(), skin);
+      TextButton modeBtn = new TextButton(mode.getDisplayName(), skin);
       modeBtn.addListener(
           new ClickListener() {
             @Override
@@ -145,13 +148,13 @@ public final class MenuScreen extends ScreenAdapter {
 
   private void buildCharacterSelection() {
     rootTable
-        .add(new Label("SELECT HERO (" + flowState.selectedMode().displayName() + ")", skin))
+        .add(new Label("SELECT HERO (" + flowState.getSelectedMode().getDisplayName() + ")", skin))
         .colspan(3)
         .padBottom(24f)
         .row();
 
     for (MenuFlowState.HeroType hero : MenuFlowState.HeroType.values()) {
-      TextButton heroBtn = new TextButton(hero.displayName(), skin);
+      TextButton heroBtn = new TextButton(hero.getDisplayName(), skin);
       heroBtn.setDisabled(!hero.isPlayable());
       if (hero.isPlayable()) {
         heroBtn.addListener(

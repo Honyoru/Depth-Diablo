@@ -17,10 +17,15 @@ public final class ArenaCycle {
   }
 
   private final int wavesPerCycle;
+
   private final int breakTicks;
+
   private int wave;
+
   private Phase phase;
+
   private int breakTicksLeft;
+
   private int score;
 
   /**
@@ -43,6 +48,33 @@ public final class ArenaCycle {
     this.phase = Phase.WAVE;
     this.breakTicksLeft = 0;
     this.score = 0;
+  }
+
+  /**
+   * Gets the current wave number.
+   *
+   * @return the current wave number
+   */
+  public int getWaveNumber() {
+    return wave;
+  }
+
+  /**
+   * Gets the current arena phase.
+   *
+   * @return the current phase
+   */
+  public Phase getPhase() {
+    return phase;
+  }
+
+  /**
+   * Gets the number of waves defeated.
+   *
+   * @return the score
+   */
+  public int getScore() {
+    return score;
   }
 
   /** Advances the logic by one tick while the arena is in a break. */
@@ -100,32 +132,5 @@ public final class ArenaCycle {
    */
   public boolean isBossWave() {
     return wave % wavesPerCycle == 0;
-  }
-
-  /**
-   * Gets the current wave number.
-   *
-   * @return the current wave number
-   */
-  public int getWaveNumber() {
-    return wave;
-  }
-
-  /**
-   * Gets the current arena phase.
-   *
-   * @return the current phase
-   */
-  public Phase getPhase() {
-    return phase;
-  }
-
-  /**
-   * Gets the number of waves defeated.
-   *
-   * @return the score
-   */
-  public int getScore() {
-    return score;
   }
 }

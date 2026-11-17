@@ -10,7 +10,7 @@ public interface Damageable {
    *
    * @return its hurtbox
    */
-  Aabb hurtbox();
+  Aabb getHurtbox();
 
   /**
    * Loses HP from a hit. Nothing happens while it is dead or invincible.
@@ -32,5 +32,5 @@ public interface Damageable {
    *
    * @return its faction now; it may change while it lives, for example when charmed
    */
-  Faction faction();
+  Faction getFaction();
 }

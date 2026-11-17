@@ -8,9 +8,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public final class GameApplication extends Game {
 
   private SpriteBatch batch;
+
   private Skin hudSkin;
 
   private MenuFlowState menuFlowState;
+
+  /** Returns the shared {@link SpriteBatch}. */
+  public SpriteBatch getBatch() {
+    return batch;
+  }
 
   @Override
   public void create() {
@@ -53,11 +59,6 @@ public final class GameApplication extends Game {
       getScreen().dispose();
     }
     setScreen(new GameScreen(this, hudSkin, mode, hero));
-  }
-
-  /** Returns the shared {@link SpriteBatch}. */
-  public SpriteBatch batch() {
-    return batch;
   }
 
   @Override

@@ -14,9 +14,9 @@ class MenuFlowStateTest {
   void defaultStateStartsAtMainMenuWithPlayableWarrior() {
     MenuFlowState state = new MenuFlowState();
 
-    assertEquals(MenuFlowState.ScreenStep.MAIN_MENU, state.currentStep());
-    assertEquals(MenuFlowState.GameMode.ARENA, state.selectedMode());
-    assertEquals(MenuFlowState.HeroType.WARRIOR, state.selectedHero());
+    assertEquals(MenuFlowState.ScreenStep.MAIN_MENU, state.getCurrentStep());
+    assertEquals(MenuFlowState.GameMode.ARENA, state.getSelectedMode());
+    assertEquals(MenuFlowState.HeroType.WARRIOR, state.getSelectedHero());
   }
 
   @Test
@@ -24,15 +24,15 @@ class MenuFlowStateTest {
     MenuFlowState state = new MenuFlowState();
 
     state.openModeSelection();
-    assertEquals(MenuFlowState.ScreenStep.MODE_SELECTION, state.currentStep());
+    assertEquals(MenuFlowState.ScreenStep.MODE_SELECTION, state.getCurrentStep());
 
     state.selectMode(MenuFlowState.GameMode.ENDLESS);
-    assertEquals(MenuFlowState.GameMode.ENDLESS, state.selectedMode());
-    assertEquals(MenuFlowState.ScreenStep.CHARACTER_SELECTION, state.currentStep());
+    assertEquals(MenuFlowState.GameMode.ENDLESS, state.getSelectedMode());
+    assertEquals(MenuFlowState.ScreenStep.CHARACTER_SELECTION, state.getCurrentStep());
 
     assertTrue(state.trySelectHero(MenuFlowState.HeroType.WARRIOR));
     assertTrue(state.startGame());
-    assertEquals(MenuFlowState.ScreenStep.IN_GAME, state.currentStep());
+    assertEquals(MenuFlowState.ScreenStep.IN_GAME, state.getCurrentStep());
   }
 
   @Test
@@ -44,7 +44,7 @@ class MenuFlowStateTest {
     assertFalse(MenuFlowState.HeroType.MAGE.isPlayable());
     assertFalse(MenuFlowState.HeroType.ROGUE.isPlayable());
     assertFalse(state.trySelectHero(MenuFlowState.HeroType.MAGE));
-    assertEquals(MenuFlowState.HeroType.WARRIOR, state.selectedHero());
+    assertEquals(MenuFlowState.HeroType.WARRIOR, state.getSelectedHero());
   }
 
   @Test
@@ -62,8 +62,8 @@ class MenuFlowStateTest {
 
     state.showGameOver(7);
 
-    assertEquals(MenuFlowState.ScreenStep.GAME_OVER, state.currentStep());
-    assertEquals(7, state.lastScore());
+    assertEquals(MenuFlowState.ScreenStep.GAME_OVER, state.getCurrentStep());
+    assertEquals(7, state.getLastScore());
   }
 
   @Test
@@ -73,8 +73,8 @@ class MenuFlowStateTest {
 
     state.rerun();
 
-    assertEquals(MenuFlowState.ScreenStep.CHARACTER_SELECTION, state.currentStep());
-    assertEquals(MenuFlowState.GameMode.ENDLESS, state.selectedMode());
+    assertEquals(MenuFlowState.ScreenStep.CHARACTER_SELECTION, state.getCurrentStep());
+    assertEquals(MenuFlowState.GameMode.ENDLESS, state.getSelectedMode());
   }
 
   @Test
@@ -91,14 +91,14 @@ class MenuFlowStateTest {
 
     state.backToMainMenu();
 
-    assertEquals(MenuFlowState.ScreenStep.MAIN_MENU, state.currentStep());
+    assertEquals(MenuFlowState.ScreenStep.MAIN_MENU, state.getCurrentStep());
   }
 
   @Test
   void lastScoreIsZeroBeforeAnyGameOver() {
     MenuFlowState state = new MenuFlowState();
 
-    int score = state.lastScore();
+    int score = state.getLastScore();
 
     assertEquals(0, score);
   }

@@ -12,11 +12,11 @@ class ItemTest {
   void should_keep_its_values_when_created() {
     Item item = new FakeItem("potion_small", "item.potion_small.name", "potion", Rarity.RARE, 10);
 
-    assertEquals("potion_small", item.id());
-    assertEquals("item.potion_small.name", item.nameKey());
-    assertEquals("potion", item.spriteId());
-    assertEquals(Rarity.RARE, item.rarity());
-    assertEquals(10, item.price());
+    assertEquals("potion_small", item.getId());
+    assertEquals("item.potion_small.name", item.getNameKey());
+    assertEquals("potion", item.getSpriteId());
+    assertEquals(Rarity.RARE, item.getRarity());
+    assertEquals(10, item.getPrice());
   }
 
   @Test
@@ -61,7 +61,7 @@ class ItemTest {
   void should_accept_a_price_of_0() {
     Item item = new FakeItem("x", "item.x.name", "x", Rarity.COMMON, 0);
 
-    assertEquals(0, item.price());
+    assertEquals(0, item.getPrice());
   }
 
   /** Hand-written fake (Q117): an item with nothing of its own. */

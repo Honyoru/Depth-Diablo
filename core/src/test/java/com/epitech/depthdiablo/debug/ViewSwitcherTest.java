@@ -12,7 +12,7 @@ class ViewSwitcherTest {
 
   @Test
   void should_start_enabled_on_the_sprite_view() {
-    ViewMode mode = switcher.mode();
+    ViewMode mode = switcher.getMode();
 
     assertTrue(switcher.isEnabled());
     assertEquals(ViewMode.SPRITES, mode);
@@ -22,7 +22,7 @@ class ViewSwitcherTest {
   void should_show_the_next_view_when_cycled() {
     switcher.cycle();
 
-    assertEquals(ViewMode.XRAY, switcher.mode());
+    assertEquals(ViewMode.XRAY, switcher.getMode());
   }
 
   @Test
@@ -31,7 +31,7 @@ class ViewSwitcherTest {
     switcher.cycle();
     switcher.cycle();
 
-    assertEquals(ViewMode.SPRITES, switcher.mode());
+    assertEquals(ViewMode.SPRITES, switcher.getMode());
   }
 
   @Test
@@ -41,7 +41,7 @@ class ViewSwitcherTest {
     switcher.disable();
 
     assertFalse(switcher.isEnabled());
-    assertEquals(ViewMode.SPRITES, switcher.mode());
+    assertEquals(ViewMode.SPRITES, switcher.getMode());
   }
 
   @Test
@@ -51,7 +51,7 @@ class ViewSwitcherTest {
     switcher.cycle();
     switcher.enable();
 
-    assertEquals(ViewMode.SPRITES, switcher.mode());
+    assertEquals(ViewMode.SPRITES, switcher.getMode());
   }
 
   @Test
@@ -61,7 +61,7 @@ class ViewSwitcherTest {
 
     switcher.enable();
 
-    assertEquals(ViewMode.XRAY, switcher.mode());
+    assertEquals(ViewMode.XRAY, switcher.getMode());
   }
 
   @Test
@@ -70,12 +70,12 @@ class ViewSwitcherTest {
 
     switcher.onTick(42);
 
-    assertEquals(ViewMode.XRAY, switcher.mode());
+    assertEquals(ViewMode.XRAY, switcher.getMode());
   }
 
   @Test
   void should_have_a_name_for_logs() {
-    String name = switcher.name();
+    String name = switcher.getName();
 
     assertEquals("View switcher", name);
   }

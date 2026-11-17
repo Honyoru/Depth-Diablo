@@ -30,7 +30,7 @@ class DataRegistryTest {
   void should_list_the_ids_in_file_order_when_loaded() {
     DataRegistry registry = new DataRegistry("enemies", () -> file);
 
-    assertEquals(List.of("rat", "giant_rat"), registry.ids());
+    assertEquals(List.of("rat", "giant_rat"), registry.getIds());
   }
 
   @Test
@@ -69,7 +69,7 @@ class DataRegistryTest {
     registry.reload();
 
     assertEquals(5, registry.definition("rat").getInt("maxHp"));
-    assertEquals(List.of("rat"), registry.ids());
+    assertEquals(List.of("rat"), registry.getIds());
   }
 
   @Test

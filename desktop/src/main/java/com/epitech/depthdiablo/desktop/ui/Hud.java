@@ -20,9 +20,13 @@ import java.util.Objects;
 public final class Hud implements Disposable {
 
   private final Stage stage;
+
   private final HudState state;
+
   private final ProgressBar healthBar;
+
   private final ImageTextButton coinCounter;
+
   private final ImageButton[] slotButtons = new ImageButton[HudState.SLOT_COUNT];
 
   /**
@@ -82,16 +86,21 @@ public final class Hud implements Disposable {
     stage.addActor(root);
   }
 
+  /** Returns the Scene2D stage so it can be added to an {@code InputMultiplexer}. */
+  public Stage getStage() {
+    return stage;
+  }
+
   /**
    * Updates Scene2D widgets from {@link HudState} and renders the HUD stage.
    *
    * @param delta frame time in seconds
    */
   public void render(float delta) {
-    healthBar.setValue(state.healthPercentage());
-    coinCounter.setText(String.valueOf(state.coins()));
+    healthBar.setValue(state.getHealthPercentage());
+    coinCounter.setText(String.valueOf(state.getCoins()));
     for (int i = 0; i < HudState.SLOT_COUNT; i++) {
-      float scale = (i == state.activeSlot()) ? 1.15f : 1.0f;
+      float scale = (i == state.getActiveSlot()) ? 1.15f : 1.0f;
       slotButtons[i].setTransform(true);
       slotButtons[i].setScale(scale);
     }
@@ -107,11 +116,6 @@ public final class Hud implements Disposable {
    */
   public void resize(int width, int height) {
     stage.getViewport().update(width, height, true);
-  }
-
-  /** Returns the Scene2D stage so it can be added to an {@code InputMultiplexer}. */
-  public Stage stage() {
-    return stage;
   }
 
   @Override

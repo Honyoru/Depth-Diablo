@@ -79,7 +79,7 @@ class FixedTimestepTest {
   void should_have_an_alpha_of_0_when_nothing_was_advanced() {
     FixedTimestep timestep = new FixedTimestep();
 
-    assertEquals(0f, timestep.alpha(), 0.001f);
+    assertEquals(0f, timestep.getAlpha(), 0.001f);
   }
 
   @Test
@@ -88,7 +88,7 @@ class FixedTimestepTest {
 
     timestep.advance(ONE_TICK * 1.5);
 
-    assertEquals(0.5f, timestep.alpha(), 0.001f);
+    assertEquals(0.5f, timestep.getAlpha(), 0.001f);
   }
 
   @Test
@@ -97,7 +97,7 @@ class FixedTimestepTest {
 
     timestep.advance(60.0);
 
-    assertEquals(0f, timestep.alpha(), 0.001f);
+    assertEquals(0f, timestep.getAlpha(), 0.001f);
   }
 
   @Property

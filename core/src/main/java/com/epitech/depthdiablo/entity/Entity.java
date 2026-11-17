@@ -10,7 +10,9 @@ import java.util.Objects;
  * the step each subclass fills in.
  */
 public abstract class Entity implements Updatable, Collidable {
+
   private Aabb bodyBox;
+
   private boolean removed;
 
   /**
@@ -22,6 +24,16 @@ public abstract class Entity implements Updatable, Collidable {
    */
   protected Entity(Aabb bodyBox) {
     this.bodyBox = Objects.requireNonNull(bodyBox, "The body box of an entity must not be null");
+  }
+
+  /**
+   * Returns the box this entity occupies in the world.
+   *
+   * @return the body box
+   */
+  @Override
+  public final Aabb getBodyBox() {
+    return bodyBox;
   }
 
   /**
@@ -43,16 +55,6 @@ public abstract class Entity implements Updatable, Collidable {
    * @param tick the number of the current logic tick
    */
   protected abstract void onUpdate(long tick);
-
-  /**
-   * Returns the box this entity occupies in the world.
-   *
-   * @return the body box
-   */
-  @Override
-  public final Aabb bodyBox() {
-    return bodyBox;
-  }
 
   /**
    * Tells if entity stops movement. False by default; walls, closed doors an chests return true.

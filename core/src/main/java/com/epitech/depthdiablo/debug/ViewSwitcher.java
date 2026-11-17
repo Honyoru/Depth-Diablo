@@ -3,15 +3,26 @@ package com.epitech.depthdiablo.debug;
 /**
  * The F1 debug feature: picks which view the screen draws (GDD 1.1.2). It only holds a choice, so
  * the game logic runs exactly the same in every view. Pattern: Strategy (the screen picks the
- * renderer that matches {@link #mode()}).
+ * renderer that matches {@link #getMode()}).
  */
 public final class ViewSwitcher implements DebugFeature {
+
   private boolean enabled = true;
+
   private ViewMode mode = ViewMode.SPRITES;
 
   @Override
-  public String name() {
+  public String getName() {
     return "View switcher";
+  }
+
+  /**
+   * Returns the view to draw.
+   *
+   * @return the chosen view, or {@link ViewMode#SPRITES} while the feature is disabled
+   */
+  public ViewMode getMode() {
+    return enabled ? mode : ViewMode.SPRITES;
   }
 
   @Override
@@ -39,14 +50,5 @@ public final class ViewSwitcher implements DebugFeature {
     if (enabled) {
       mode = mode.next();
     }
-  }
-
-  /**
-   * Returns the view to draw.
-   *
-   * @return the chosen view, or {@link ViewMode#SPRITES} while the feature is disabled
-   */
-  public ViewMode mode() {
-    return enabled ? mode : ViewMode.SPRITES;
   }
 }

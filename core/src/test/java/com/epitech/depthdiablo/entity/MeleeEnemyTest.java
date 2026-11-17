@@ -24,7 +24,7 @@ class MeleeEnemyTest {
   private final List<GameEvent> events = new ArrayList<>();
 
   MeleeEnemyTest() {
-    world.eventBus().subscribeAll(events::add);
+    world.getEventBus().subscribeAll(events::add);
   }
 
   @Test
@@ -35,7 +35,7 @@ class MeleeEnemyTest {
 
     rat.attackTarget(world);
 
-    assertEquals(8, player.hp());
+    assertEquals(8, player.getHp());
   }
 
   @Test
@@ -45,7 +45,7 @@ class MeleeEnemyTest {
     rat.alert(player);
 
     rat.attackTarget(world);
-    world.eventBus().flush();
+    world.getEventBus().flush();
 
     assertEquals(List.of(new DamageDealt(rat, player, 2)), events);
   }
@@ -64,7 +64,7 @@ class MeleeEnemyTest {
     rat.alert(player);
 
     rat.attackTarget(world);
-    world.eventBus().flush();
+    world.getEventBus().flush();
 
     assertEquals(
         List.of(new DamageDealt(rat, player, 2), new EntityDied(player, Optional.of(rat))), events);
@@ -78,7 +78,7 @@ class MeleeEnemyTest {
 
     zombie.attackTarget(world);
 
-    assertEquals(7, player.hp());
+    assertEquals(7, player.getHp());
   }
 
   @Test
@@ -89,7 +89,7 @@ class MeleeEnemyTest {
 
     rat.attackTarget(world);
 
-    assertEquals(10, player.hp());
+    assertEquals(10, player.getHp());
   }
 
   @Test
@@ -97,7 +97,7 @@ class MeleeEnemyTest {
     MeleeEnemy rat = aRat().build();
 
     rat.attackTarget(world);
-    world.eventBus().flush();
+    world.getEventBus().flush();
 
     assertTrue(events.isEmpty());
   }
@@ -110,9 +110,9 @@ class MeleeEnemyTest {
     rat.alert(player);
 
     rat.attackTarget(world);
-    world.eventBus().flush();
+    world.getEventBus().flush();
 
-    assertEquals(10, player.hp());
+    assertEquals(10, player.getHp());
     assertTrue(events.isEmpty());
   }
 
@@ -121,10 +121,10 @@ class MeleeEnemyTest {
     MeleeEnemy rat = aRat().build();
     Character player = aPlayerAt(18, 0);
     rat.alert(player);
-    player.takeDamage(player.hp());
+    player.takeDamage(player.getHp());
 
     rat.attackTarget(world);
-    world.eventBus().flush();
+    world.getEventBus().flush();
 
     assertTrue(events.isEmpty());
   }
@@ -133,7 +133,7 @@ class MeleeEnemyTest {
   void should_give_its_reach() {
     MeleeEnemy zombie = aZombie().withReach(8).build();
 
-    assertEquals(8, zombie.reach());
+    assertEquals(8, zombie.getReach());
   }
 
   @Test

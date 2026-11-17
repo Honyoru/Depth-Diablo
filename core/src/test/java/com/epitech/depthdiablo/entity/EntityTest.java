@@ -15,7 +15,7 @@ class EntityTest {
   void should_keep_its_body_box_when_created() {
     CountingEntity entity = new CountingEntity(BOX);
 
-    Aabb box = entity.bodyBox();
+    Aabb box = entity.getBodyBox();
 
     assertEquals(BOX, box);
   }
@@ -89,7 +89,7 @@ class EntityTest {
 
     entity.onContact(other);
 
-    assertEquals(BOX, entity.bodyBox());
+    assertEquals(BOX, entity.getBodyBox());
     assertFalse(entity.isRemoved());
   }
 
@@ -116,7 +116,7 @@ class EntityTest {
 
     entity.moveTo(new Vector2(20, 30));
 
-    assertEquals(new Aabb(20, 30, 10, 10), entity.bodyBox());
+    assertEquals(new Aabb(20, 30, 10, 10), entity.getBodyBox());
   }
 
   /** Hand-written fake (Q117): counts the calls to its hook. */

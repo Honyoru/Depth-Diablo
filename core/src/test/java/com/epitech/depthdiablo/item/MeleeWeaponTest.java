@@ -19,25 +19,25 @@ class MeleeWeaponTest {
   void should_keep_its_blade_values_when_created() {
     MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
 
-    assertEquals(24f, weapon.range());
-    assertEquals(8f, weapon.width());
-    assertEquals(90f, weapon.arcDegrees());
-    assertEquals(12, weapon.swingTicks());
+    assertEquals(24f, weapon.getRange());
+    assertEquals(8f, weapon.getWidth());
+    assertEquals(90f, weapon.getArcDegrees());
+    assertEquals(12, weapon.getSwingTicks());
   }
 
   @Test
   void should_accept_an_arc_of_0_for_a_straight_thrust() {
-    assertEquals(0f, aMeleeWeapon(8f, 0f, 12).arcDegrees());
+    assertEquals(0f, aMeleeWeapon(8f, 0f, 12).getArcDegrees());
   }
 
   @Test
   void should_accept_an_arc_of_360_for_a_full_spin() {
-    assertEquals(360f, aMeleeWeapon(8f, 360f, 12).arcDegrees());
+    assertEquals(360f, aMeleeWeapon(8f, 360f, 12).getArcDegrees());
   }
 
   @Test
   void should_accept_a_swing_of_1_tick() {
-    assertEquals(1, aMeleeWeapon(8f, 90f, 1).swingTicks());
+    assertEquals(1, aMeleeWeapon(8f, 90f, 1).getSwingTicks());
   }
 
   @Test
@@ -142,7 +142,7 @@ class MeleeWeaponTest {
 
     aMeleeWeapon(8f, 90f, 12).attack(holder, 30f, new World());
 
-    assertEquals(30f, holder.currentSwing().orElseThrow().aimDegrees());
+    assertEquals(30f, holder.getCurrentSwing().orElseThrow().getAimDegrees());
   }
 
   @Test

@@ -42,14 +42,14 @@ final class EventLaserOverlay implements Disposable {
    * @param camera the world camera
    */
   void render(OrthographicCamera camera) {
-    if (laser.lines().isEmpty()) {
+    if (laser.getLines().isEmpty()) {
       return;
     }
     Gdx.gl.glEnable(GL20.GL_BLEND);
     Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
     shapes.setProjectionMatrix(camera.combined);
     shapes.begin(ShapeRenderer.ShapeType.Line);
-    for (EventLaser.Line line : laser.lines()) {
+    for (EventLaser.Line line : laser.getLines()) {
       color.set(colorOf(line.event()));
       color.a = (float) line.ticksLeft() / EventLaser.LINE_LIFETIME_TICKS;
       shapes.setColor(color);

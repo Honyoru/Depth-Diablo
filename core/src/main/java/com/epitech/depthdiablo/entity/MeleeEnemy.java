@@ -13,6 +13,7 @@ import java.util.Optional;
  * damage formula with no bonus and no buff (GDD 1.6).
  */
 public abstract class MeleeEnemy extends Enemy {
+
   private final float reach;
 
   /**
@@ -44,6 +45,15 @@ public abstract class MeleeEnemy extends Enemy {
   }
 
   /**
+   * Returns how far this enemy's attack goes past its body box.
+   *
+   * @return the reach in pixels, 0 or more
+   */
+  public float getReach() {
+    return reach;
+  }
+
+  /**
    * Hits the target if its hurtbox is in reach and it can be hurt, then publishes the damage dealt,
    * and the death if the hit kills it.
    *
@@ -51,33 +61,24 @@ public abstract class MeleeEnemy extends Enemy {
    */
   @Override
   protected void attackTarget(World world) {
-    Character target = target().orElse(null);
+    Character target = getTarget().orElse(null);
     if (target == null
         || target.isDead()
         || target.isInvincible()
-        || !faction().canHurt(target.faction())
-        || !attackArea().overlaps(target.hurtbox())) {
+        || !getFaction().canHurt(target.getFaction())
+        || !attackArea().overlaps(target.getHurtbox())) {
       return;
     }
-    int damage = DamageFormula.compute(attack(), 0, 1.0, target.defense(), 0, 1.0);
+    int damage = DamageFormula.compute(getAttack(), 0, 1.0, target.getDefense(), 0, 1.0);
     target.takeDamage(damage);
-    world.eventBus().publish(new DamageDealt(this, target, damage));
+    world.getEventBus().publish(new DamageDealt(this, target, damage));
     if (target.isDead()) {
-      world.eventBus().publish(new EntityDied(target, Optional.of(this)));
+      world.getEventBus().publish(new EntityDied(target, Optional.of(this)));
     }
-  }
-
-  /**
-   * Returns how far this enemy's attack goes past its body box.
-   *
-   * @return the reach in pixels, 0 or more
-   */
-  public float reach() {
-    return reach;
   }
 
   private Obb attackArea() {
-    Aabb body = bodyBox();
+    Aabb body = getBodyBox();
     return Obb.around(
         new Aabb(
             body.x() - reach,

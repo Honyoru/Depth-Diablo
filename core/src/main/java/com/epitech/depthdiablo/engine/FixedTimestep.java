@@ -4,12 +4,23 @@ import com.epitech.depthdiablo.GameConstants;
 
 /** Turns variable frame times into a whole number of fixed logic ticks (Q42). */
 public final class FixedTimestep {
+
   /** Most ticks one frame may run, so a long stall cannot snowball into a freeze. */
   public static final int MAX_TICKS_PER_FRAME = 15;
 
   private static final double TICK_SECONDS = 1.0 / GameConstants.TICKS_PER_SECOND;
 
   private double accumulator;
+
+  /**
+   * Returns how far the current frame is between the last tick and the next one. The renderer uses
+   * it to draw moving things between their previous and current positions.
+   *
+   * @return from 0 (a tick just ran) to just below 1 (the next tick is about to run)
+   */
+  public float getAlpha() {
+    return (float) (accumulator / TICK_SECONDS);
+  }
 
   /**
    * Adds the time of one rendered frame and returns how many logic ticks to run now.
@@ -32,15 +43,5 @@ public final class FixedTimestep {
       accumulator = 0;
     }
     return ticks;
-  }
-
-  /**
-   * Returns how far the current frame is between the last tick and the next one. The renderer uses
-   * it to draw moving things between their previous and current positions.
-   *
-   * @return from 0 (a tick just ran) to just below 1 (the next tick is about to run)
-   */
-  public float alpha() {
-    return (float) (accumulator / TICK_SECONDS);
   }
 }

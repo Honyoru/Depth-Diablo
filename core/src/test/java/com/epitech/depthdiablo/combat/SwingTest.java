@@ -40,7 +40,7 @@ class SwingTest {
   void should_start_the_blade_half_an_arc_before_the_aim() {
     Swing swing = aSwing(Items.sword(), 0f);
 
-    assertEquals(-45f, swing.shape().angleDegrees(), DELTA);
+    assertEquals(-45f, swing.getShape().angleDegrees(), DELTA);
   }
 
   @Test
@@ -48,20 +48,20 @@ class SwingTest {
     Swing swing = aSwing(Items.sword(), 0f);
 
     // half a blade (12 px) from (100, 50), at -45 degrees
-    assertEquals(108.485f, swing.shape().centreX(), DELTA);
-    assertEquals(41.515f, swing.shape().centreY(), DELTA);
+    assertEquals(108.485f, swing.getShape().centreX(), DELTA);
+    assertEquals(41.515f, swing.getShape().centreY(), DELTA);
   }
 
   @Test
   void should_keep_its_aim() {
-    assertEquals(30f, aSwing(Items.sword(), 30f).aimDegrees());
+    assertEquals(30f, aSwing(Items.sword(), 30f).getAimDegrees());
   }
 
   @Test
   void should_not_be_over_when_it_starts() {
     Swing swing = aSwing(Items.sword(), 0f);
 
-    assertEquals(0, swing.ticksElapsed());
+    assertEquals(0, swing.getTicksElapsed());
     assertFalse(swing.isOver());
   }
 
@@ -108,7 +108,7 @@ class SwingTest {
 
     runWholeSwing(aSwingAt(enemy));
 
-    assertEquals(16, enemy.hp());
+    assertEquals(16, enemy.getHp());
   }
 
   @Test
@@ -117,7 +117,7 @@ class SwingTest {
 
     runWholeSwing(aSwingAt(enemy));
 
-    assertEquals(16, enemy.hp());
+    assertEquals(16, enemy.getHp());
   }
 
   @Test
@@ -126,7 +126,7 @@ class SwingTest {
 
     runWholeSwing(aSwingAt(enemy));
 
-    assertEquals(20, enemy.hp());
+    assertEquals(20, enemy.getHp());
   }
 
   @Test
@@ -140,14 +140,14 @@ class SwingTest {
 
     runWholeSwing(aSwingAt(ally));
 
-    assertEquals(20, ally.hp());
+    assertEquals(20, ally.getHp());
   }
 
   @Test
   void should_not_hit_its_holder() {
     runWholeSwing(aSwingAt(holder));
 
-    assertEquals(10, holder.hp());
+    assertEquals(10, holder.getHp());
   }
 
   @Test
@@ -158,7 +158,7 @@ class SwingTest {
 
     runWholeSwing(swing);
 
-    assertEquals(20, enemy.hp());
+    assertEquals(20, enemy.getHp());
   }
 
   @Test
@@ -195,14 +195,14 @@ class SwingTest {
 
     runWholeSwing(swing);
 
-    assertEquals(45f, swing.shape().angleDegrees(), DELTA);
+    assertEquals(45f, swing.getShape().angleDegrees(), DELTA);
   }
 
   @Test
   void should_be_over_after_its_swing_ticks() {
     Sword sword = Items.sword();
     Swing swing = aSwing(sword, 0f);
-    int last = sword.swingTicks();
+    int last = sword.getSwingTicks();
 
     for (long tick = 1; tick < last; tick++) {
       swing.update(tick);
@@ -219,9 +219,9 @@ class SwingTest {
     Swing swing = aSwing(sword, 0f);
     runWholeSwing(swing);
 
-    swing.update(sword.swingTicks() + 1L);
+    swing.update(sword.getSwingTicks() + 1L);
 
-    assertEquals(sword.swingTicks(), swing.ticksElapsed());
+    assertEquals(sword.getSwingTicks(), swing.getTicksElapsed());
   }
 
   private Swing aSwingAt(Character target) {

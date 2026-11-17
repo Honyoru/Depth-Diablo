@@ -166,7 +166,7 @@ public final class CharacterBuilder {
     }
 
     @Override
-    public Faction faction() {
+    public Faction getFaction() {
       return faction;
     }
   }

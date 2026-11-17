@@ -25,10 +25,10 @@ class HitboxTest {
 
     Hitbox hitbox = new Hitbox(SWING, owner, Faction.PLAYER, 12);
 
-    assertSame(SWING, hitbox.shape());
-    assertSame(owner, hitbox.owner());
-    assertEquals(Faction.PLAYER, hitbox.faction());
-    assertEquals(12, hitbox.ticksLeft());
+    assertSame(SWING, hitbox.getShape());
+    assertSame(owner, hitbox.getOwner());
+    assertEquals(Faction.PLAYER, hitbox.getFaction());
+    assertEquals(12, hitbox.getTicksLeft());
   }
 
   @Test
@@ -82,7 +82,7 @@ class HitboxTest {
 
     hitbox.update(1);
 
-    assertEquals(11, hitbox.ticksLeft());
+    assertEquals(11, hitbox.getTicksLeft());
     assertFalse(hitbox.isExpired());
   }
 
@@ -94,7 +94,7 @@ class HitboxTest {
       hitbox.update(tick);
     }
 
-    assertEquals(0, hitbox.ticksLeft());
+    assertEquals(0, hitbox.getTicksLeft());
     assertTrue(hitbox.isExpired());
   }
 
@@ -106,7 +106,7 @@ class HitboxTest {
     hitbox.update(2);
     hitbox.update(3);
 
-    assertEquals(0, hitbox.ticksLeft());
+    assertEquals(0, hitbox.getTicksLeft());
     assertTrue(hitbox.isExpired());
   }
 
@@ -221,7 +221,7 @@ class HitboxTest {
 
     hitbox.reshape(turned);
 
-    assertSame(turned, hitbox.shape());
+    assertSame(turned, hitbox.getShape());
   }
 
   @Test
@@ -244,7 +244,7 @@ class HitboxTest {
     hitbox.reshape(new Obb(30, 8, 45, 24, 8));
 
     assertFalse(hitbox.canHit(target));
-    assertEquals(11, hitbox.ticksLeft());
+    assertEquals(11, hitbox.getTicksLeft());
   }
 
   @Test

@@ -12,11 +12,11 @@ class EquipmentTest {
   void should_keep_its_values_when_created() {
     Equipment equipment = anEquipment(Rarity.RARE);
 
-    assertEquals("sword", equipment.id());
-    assertEquals("item.sword.name", equipment.nameKey());
-    assertEquals("items/sword", equipment.spriteId());
-    assertEquals(Rarity.RARE, equipment.rarity());
-    assertEquals(30, equipment.price());
+    assertEquals("sword", equipment.getId());
+    assertEquals("item.sword.name", equipment.getNameKey());
+    assertEquals("items/sword", equipment.getSpriteId());
+    assertEquals(Rarity.RARE, equipment.getRarity());
+    assertEquals(30, equipment.getPrice());
   }
 
   @Test

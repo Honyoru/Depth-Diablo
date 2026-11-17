@@ -12,11 +12,43 @@ import java.util.Objects;
  * EventBus} of the run (GDD 1.1.2).
  */
 public final class World {
+
   private final EventBus eventBus = new EventBus();
+
   private final List<Entity> entities = new ArrayList<>();
+
   private final List<Entity> entitiesToAdd = new ArrayList<>();
+
   private long tick;
+
   private boolean ticking;
+
+  /**
+   * Returns the bus to pass to emitters and listeners.
+   *
+   * @return the event bus of this run
+   */
+  public EventBus getEventBus() {
+    return eventBus;
+  }
+
+  /**
+   * Returns the entities currently in the world, in the order they joined.
+   *
+   * @return a read-only view of the entities
+   */
+  public List<Entity> getEntities() {
+    return Collections.unmodifiableList(entities);
+  }
+
+  /**
+   * Returns the number of the last tick that ran.
+   *
+   * @return the tick number, 0 before the first tick
+   */
+  public long getCurrentTick() {
+    return tick;
+  }
 
   /**
    * Adds an entity to the world. During a tick, the entity joins at the end of that tick, so it is
@@ -69,7 +101,7 @@ public final class World {
       if (other.equals(mover) || other.isRemoved() || !other.blocks()) {
         continue;
       }
-      if (other.bodyBox().overlaps(box)) {
+      if (other.getBodyBox().overlaps(box)) {
         return false;
       }
     }
@@ -94,33 +126,8 @@ public final class World {
   }
 
   private static boolean touch(Entity first, Entity second) {
-    return !first.isRemoved() && !second.isRemoved() && first.bodyBox().overlaps(second.bodyBox());
-  }
-
-  /**
-   * Returns the bus to pass to emitters and listeners.
-   *
-   * @return the event bus of this run
-   */
-  public EventBus eventBus() {
-    return eventBus;
-  }
-
-  /**
-   * Returns the entities currently in the world, in the order they joined.
-   *
-   * @return a read-only view of the entities
-   */
-  public List<Entity> entities() {
-    return Collections.unmodifiableList(entities);
-  }
-
-  /**
-   * Returns the number of the last tick that ran.
-   *
-   * @return the tick number, 0 before the first tick
-   */
-  public long currentTick() {
-    return tick;
+    return !first.isRemoved()
+        && !second.isRemoved()
+        && first.getBodyBox().overlaps(second.getBodyBox());
   }
 }

@@ -14,8 +14,11 @@ import java.util.Objects;
  * angle of the blade only exist during a swing, so the Obb is built at each tick of the swing.
  */
 public abstract class MeleeWeapon extends Weapon {
+
   private final float width;
+
   private final float arcDegrees;
+
   private final int swingTicks;
 
   /**
@@ -66,6 +69,33 @@ public abstract class MeleeWeapon extends Weapon {
   }
 
   /**
+   * Returns the width of the blade.
+   *
+   * @return the width in pixels, above 0
+   */
+  public final float getWidth() {
+    return width;
+  }
+
+  /**
+   * Returns the angle the blade sweeps during one swing, centred on the aim.
+   *
+   * @return the arc in degrees, from 0 to 360
+   */
+  public final float getArcDegrees() {
+    return arcDegrees;
+  }
+
+  /**
+   * Returns how many ticks one swing lasts.
+   *
+   * @return the swing duration in ticks, 1 or more
+   */
+  public final int getSwingTicks() {
+    return swingTicks;
+  }
+
+  /**
    * Builds the blade at one moment of a swing. The blade starts at the pivot and points away from
    * it; during the swing it turns from {@code aim - arc/2} to {@code aim + arc/2}.
    *
@@ -73,7 +103,7 @@ public abstract class MeleeWeapon extends Weapon {
    * @param pivotY the y of that point
    * @param aimDegrees the direction of the attack, in degrees (0 = right, 90 = up)
    * @param progress how far the swing is, from 0 (start) to 1 (end)
-   * @return the blade as a rotated rectangle, {@link #range()} long and {@link #width()} wide
+   * @return the blade as a rotated rectangle, {@link #getRange()} long and {@link #getWidth()} wide
    * @throws IllegalArgumentException if the pivot or the aim is not finite, or the progress is
    *     outside 0 to 1
    */
@@ -83,10 +113,10 @@ public abstract class MeleeWeapon extends Weapon {
     }
     float angle = aimDegrees - arcDegrees / 2 + arcDegrees * progress;
     double radians = Math.toRadians(angle);
-    float halfRange = range() / 2;
+    float halfRange = getRange() / 2;
     float centreX = pivotX + (float) Math.cos(radians) * halfRange;
     float centreY = pivotY + (float) Math.sin(radians) * halfRange;
-    return new Obb(centreX, centreY, angle, range(), width());
+    return new Obb(centreX, centreY, angle, getRange(), getWidth());
   }
 
   /**
@@ -105,35 +135,8 @@ public abstract class MeleeWeapon extends Weapon {
   @Override
   public final void attack(Character owner, float aimDegrees, World world) {
     Objects.requireNonNull(world, "world is null");
-    Swing swing = new Swing(this, owner, aimDegrees, world::entities, world.eventBus());
-    owner.startAttackCooldown(swingTicks(), attackSpeed());
+    Swing swing = new Swing(this, owner, aimDegrees, world::getEntities, world.getEventBus());
+    owner.startAttackCooldown(getSwingTicks(), getAttackSpeed());
     owner.holdSwing(swing);
-  }
-
-  /**
-   * Returns the width of the blade.
-   *
-   * @return the width in pixels, above 0
-   */
-  public final float width() {
-    return width;
-  }
-
-  /**
-   * Returns the angle the blade sweeps during one swing, centred on the aim.
-   *
-   * @return the arc in degrees, from 0 to 360
-   */
-  public final float arcDegrees() {
-    return arcDegrees;
-  }
-
-  /**
-   * Returns how many ticks one swing lasts.
-   *
-   * @return the swing duration in ticks, 1 or more
-   */
-  public final int swingTicks() {
-    return swingTicks;
   }
 }

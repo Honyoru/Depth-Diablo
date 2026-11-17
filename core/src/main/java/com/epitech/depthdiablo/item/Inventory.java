@@ -11,6 +11,7 @@ import java.util.Objects;
  * Each slot holds one item; items never stack. The player always holds a weapon.
  */
 public final class Inventory {
+
   /** The number of hotbar slots; they take only consumables. */
   public static final int HOTBAR_SIZE = 3;
 
@@ -27,6 +28,7 @@ public final class Inventory {
       };
 
   private final Consumable[] hotbar = new Consumable[HOTBAR_SIZE];
+
   private Weapon weapon;
 
   /**
@@ -38,6 +40,26 @@ public final class Inventory {
   public Inventory(Weapon startingWeapon) {
     this.weapon = Objects.requireNonNull(startingWeapon, "startingWeapon is null");
     Arrays.fill(hotbar, EMPTY);
+  }
+
+  /**
+   * Returns the equipped weapon.
+   *
+   * @return the weapon on the portrait; never null
+   */
+  public Weapon getWeapon() {
+    return weapon;
+  }
+
+  /**
+   * Returns what changes the holder's build, in the order the character applies them (GDD 1.3.1):
+   * the weapon, then the armor, then the passive items in pickup order. Armor and passive items
+   * join this list when they exist.
+   *
+   * @return the modifiers in order; the list cannot be changed
+   */
+  public List<BuildModifier> getModifiers() {
+    return List.of(weapon);
   }
 
   /**
@@ -96,15 +118,6 @@ public final class Inventory {
   }
 
   /**
-   * Returns the equipped weapon.
-   *
-   * @return the weapon on the portrait; never null
-   */
-  public Weapon weapon() {
-    return weapon;
-  }
-
-  /**
    * Swaps the equipped weapon for a new one (GDD 1.4). The player always holds a weapon, so the old
    * one is given back for the world to drop on the ground.
    *
@@ -117,16 +130,5 @@ public final class Inventory {
     Weapon old = weapon;
     weapon = newWeapon;
     return old;
-  }
-
-  /**
-   * Returns what changes the holder's build, in the order the character applies them (GDD 1.3.1):
-   * the weapon, then the armor, then the passive items in pickup order. Armor and passive items
-   * join this list when they exist.
-   *
-   * @return the modifiers in order; the list cannot be changed
-   */
-  public List<BuildModifier> modifiers() {
-    return List.of(weapon);
   }
 }

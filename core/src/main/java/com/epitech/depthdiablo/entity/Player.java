@@ -12,8 +12,11 @@ import java.util.Objects;
  * walks. Knight, Mage and Archer are its concrete classes.
  */
 public abstract class Player extends Character {
+
   private final PlayerInput input;
+
   private final World world;
+
   private boolean moving;
 
   /**
@@ -38,6 +41,16 @@ public abstract class Player extends Character {
     this.world = Objects.requireNonNull(world, "The world of a player must not be null");
   }
 
+  /**
+   * Returns the player's side. Knight, Mage and Archer all fight for it, so it is final.
+   *
+   * @return {@link Faction#PLAYER}
+   */
+  @Override
+  public final Faction getFaction() {
+    return Faction.PLAYER;
+  }
+
   @Override
   /**
    * Walks one tick in the direction of the input, at the SPEED stat (pixels per second). A
@@ -52,7 +65,7 @@ public abstract class Player extends Character {
     if (!moving) {
       return;
     }
-    Vector2 step = direction.scl(speed() / GameConstants.TICKS_PER_SECOND);
+    Vector2 step = direction.scl(getSpeed() / GameConstants.TICKS_PER_SECOND);
     Vector2 position = position();
 
     Vector2 alongX = new Vector2(position).add(step.x, 0f);
@@ -68,7 +81,7 @@ public abstract class Player extends Character {
 
   /** Tells whether the player's body fits at the given bottom-left corner. */
   private boolean canStandAt(Vector2 corner) {
-    Aabb body = bodyBox();
+    Aabb body = getBodyBox();
     return world.isFree(new Aabb(corner.x, corner.y, body.width(), body.height()), this);
   }
 
@@ -79,15 +92,5 @@ public abstract class Player extends Character {
    */
   public boolean isMoving() {
     return moving;
-  }
-
-  /**
-   * Returns the player's side. Knight, Mage and Archer all fight for it, so it is final.
-   *
-   * @return {@link Faction#PLAYER}
-   */
-  @Override
-  public final Faction faction() {
-    return Faction.PLAYER;
   }
 }

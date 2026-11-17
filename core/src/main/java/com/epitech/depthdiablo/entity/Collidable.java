@@ -7,7 +7,7 @@ public interface Collidable {
    *
    * @return the bodybox
    */
-  Aabb bodyBox();
+  Aabb getBodyBox();
 
   /**
    * Tells if the objects stops movements, like wall, closed door, chest.

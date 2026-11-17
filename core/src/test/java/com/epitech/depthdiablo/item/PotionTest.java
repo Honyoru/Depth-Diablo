@@ -15,7 +15,7 @@ class PotionTest {
   void should_keep_its_heal_amount_when_created() {
     Potion potion = new Potion("potion_small", "item.potion_small.name", "potion", 10, 5);
 
-    int healAmount = potion.healAmount();
+    int healAmount = potion.getHealAmount();
 
     assertEquals(5, healAmount);
   }
@@ -24,7 +24,7 @@ class PotionTest {
   void should_have_the_consumable_rarity_when_created() {
     Potion potion = new Potion("potion_small", "item.potion_small.name", "potion", 10, 5);
 
-    Rarity rarity = potion.rarity();
+    Rarity rarity = potion.getRarity();
 
     assertEquals(Rarity.CONSUMABLE, rarity);
   }
@@ -44,7 +44,7 @@ class PotionTest {
 
     potion.use(user);
 
-    assertEquals(8, user.hp());
+    assertEquals(8, user.getHp());
   }
 
   @Test
@@ -66,7 +66,7 @@ class PotionTest {
     boolean spent = potion.use(user);
 
     assertTrue(spent);
-    assertEquals(10, user.hp());
+    assertEquals(10, user.getHp());
   }
 
   @Test

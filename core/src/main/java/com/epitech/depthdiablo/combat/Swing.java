@@ -21,11 +21,17 @@ import java.util.function.Supplier;
  * centre, so it follows the holder if it moves during the swing.
  */
 public final class Swing implements Updatable {
+
   private final MeleeWeapon weapon;
+
   private final Character holder;
+
   private final float aimDegrees;
+
   private final Supplier<List<Entity>> targets;
+
   private final EventBus events;
+
   private final Hitbox hitbox;
 
   /**
@@ -54,7 +60,43 @@ public final class Swing implements Updatable {
       throw new IllegalArgumentException("Aim must be a finite number: " + aimDegrees);
     }
     this.aimDegrees = aimDegrees;
-    this.hitbox = new Hitbox(bladeAt(0), holder, holder.faction(), weapon.swingTicks());
+    this.hitbox = new Hitbox(bladeAt(0), holder, holder.getFaction(), weapon.getSwingTicks());
+  }
+
+  /**
+   * Returns where the blade is now.
+   *
+   * @return the blade as a rotated rectangle
+   */
+  public Obb getShape() {
+    return hitbox.getShape();
+  }
+
+  /**
+   * Returns the character who swings.
+   *
+   * @return the holder
+   */
+  public Character getHolder() {
+    return holder;
+  }
+
+  /**
+   * Returns the direction of the attack, chosen when the swing started.
+   *
+   * @return the aim in degrees
+   */
+  public float getAimDegrees() {
+    return aimDegrees;
+  }
+
+  /**
+   * Returns how many ticks of the swing already ran.
+   *
+   * @return from 0 to the weapon's swing ticks
+   */
+  public int getTicksElapsed() {
+    return weapon.getSwingTicks() - hitbox.getTicksLeft();
   }
 
   /**
@@ -70,7 +112,7 @@ public final class Swing implements Updatable {
     if (isOver()) {
       return;
     }
-    hitbox.reshape(bladeAt(ticksElapsed()));
+    hitbox.reshape(bladeAt(getTicksElapsed()));
     if (!holder.isDead()) {
       for (Entity entity : targets.get()) {
         if (entity instanceof Character target && hitbox.canHit(target)) {
@@ -79,42 +121,6 @@ public final class Swing implements Updatable {
       }
     }
     hitbox.update(tick);
-  }
-
-  /**
-   * Returns where the blade is now.
-   *
-   * @return the blade as a rotated rectangle
-   */
-  public Obb shape() {
-    return hitbox.shape();
-  }
-
-  /**
-   * Returns the character who swings.
-   *
-   * @return the holder
-   */
-  public Character holder() {
-    return holder;
-  }
-
-  /**
-   * Returns the direction of the attack, chosen when the swing started.
-   *
-   * @return the aim in degrees
-   */
-  public float aimDegrees() {
-    return aimDegrees;
-  }
-
-  /**
-   * Returns how many ticks of the swing already ran.
-   *
-   * @return from 0 to the weapon's swing ticks
-   */
-  public int ticksElapsed() {
-    return weapon.swingTicks() - hitbox.ticksLeft();
   }
 
   /**
@@ -138,7 +144,7 @@ public final class Swing implements Updatable {
   }
 
   private Obb bladeAt(int tickIndex) {
-    Aabb body = holder.bodyBox();
+    Aabb body = holder.getBodyBox();
     float pivotX = body.x() + body.width() / 2;
     float pivotY = body.y() + body.height() / 2;
     return weapon.swingShape(pivotX, pivotY, aimDegrees, progressAt(tickIndex));
@@ -146,7 +152,7 @@ public final class Swing implements Updatable {
 
   /** Q3: tick i of n is at i / (n - 1), so the blade reaches both edges; 1 tick stabs the aim. */
   private float progressAt(int tickIndex) {
-    int last = weapon.swingTicks() - 1;
+    int last = weapon.getSwingTicks() - 1;
     return last == 0 ? 0.5f : (float) tickIndex / last;
   }
 }

@@ -5,6 +5,7 @@ import java.util.Objects;
 
 /** A consumable that restores HP to the character who drinks it (GDD 1.3.1, 1.4). */
 public final class Potion extends Consumable {
+
   private final int healAmount;
 
   /**
@@ -30,8 +31,17 @@ public final class Potion extends Consumable {
   }
 
   /**
-   * Heals the user by {@link #healAmount()}, up to their max HP. The potion is always spent, even
-   * at full HP.
+   * Returns the HP this potion restores.
+   *
+   * @return the heal amount, at least 1
+   */
+  public int getHealAmount() {
+    return healAmount;
+  }
+
+  /**
+   * Heals the user by {@link #getHealAmount()}, up to their max HP. The potion is always spent,
+   * even at full HP.
    *
    * @param user the character who drinks it
    * @return always true: the hotbar slot is emptied
@@ -42,14 +52,5 @@ public final class Potion extends Consumable {
     Objects.requireNonNull(user, "The character drinking the potion must not be null");
     user.heal(healAmount);
     return true;
-  }
-
-  /**
-   * Returns the HP this potion restores.
-   *
-   * @return the heal amount, at least 1
-   */
-  public int healAmount() {
-    return healAmount;
   }
 }

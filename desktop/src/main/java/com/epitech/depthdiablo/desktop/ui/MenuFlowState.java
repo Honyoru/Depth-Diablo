@@ -26,7 +26,7 @@ public final class MenuFlowState {
     }
 
     /** Returns the human-readable title of the mode. */
-    public String displayName() {
+    public String getDisplayName() {
       return displayName;
     }
   }
@@ -46,7 +46,7 @@ public final class MenuFlowState {
     }
 
     /** Returns the display label of the hero. */
-    public String displayName() {
+    public String getDisplayName() {
       return displayName;
     }
 
@@ -57,9 +57,36 @@ public final class MenuFlowState {
   }
 
   private ScreenStep currentStep = ScreenStep.MAIN_MENU;
+
   private GameMode selectedMode = GameMode.ARENA;
+
   private HeroType selectedHero = HeroType.WARRIOR;
+
   private int lastScore;
+
+  /**
+   * Returns the score of the last finished run.
+   *
+   * @return the score given to {@link #showGameOver(int)}, 0 before any game over
+   */
+  public int getLastScore() {
+    return lastScore;
+  }
+
+  /** Returns the current menu screen step. */
+  public ScreenStep getCurrentStep() {
+    return currentStep;
+  }
+
+  /** Returns the currently selected game mode. */
+  public GameMode getSelectedMode() {
+    return selectedMode;
+  }
+
+  /** Returns the currently selected hero. */
+  public HeroType getSelectedHero() {
+    return selectedHero;
+  }
 
   /** Advances from the main menu to the mode selection screen. */
   public void openModeSelection() {
@@ -126,29 +153,5 @@ public final class MenuFlowState {
   /** Starts a new run from the game over step: back to the character select, same mode (Q10). */
   public void rerun() {
     currentStep = ScreenStep.CHARACTER_SELECTION;
-  }
-
-  /**
-   * Returns the score of the last finished run.
-   *
-   * @return the score given to {@link #showGameOver(int)}, 0 before any game over
-   */
-  public int lastScore() {
-    return lastScore;
-  }
-
-  /** Returns the current menu screen step. */
-  public ScreenStep currentStep() {
-    return currentStep;
-  }
-
-  /** Returns the currently selected game mode. */
-  public GameMode selectedMode() {
-    return selectedMode;
-  }
-
-  /** Returns the currently selected hero. */
-  public HeroType selectedHero() {
-    return selectedHero;
   }
 }

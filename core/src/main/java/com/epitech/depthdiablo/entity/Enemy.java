@@ -16,8 +16,11 @@ import java.util.Optional;
  * #attackTarget} is the hook each family fills).
  */
 public abstract class Enemy extends Character {
+
   private StateMachine<Enemy, EnemyState> ai;
+
   private Optional<Character> target = Optional.empty();
+
   private final boolean summoned;
 
   /**
@@ -43,6 +46,34 @@ public abstract class Enemy extends Character {
   }
 
   /**
+   * Returns the side every enemy fight fo (GDD 1.5).
+   *
+   * @return {@link Faction#ENEMY}
+   */
+  @Override
+  public Faction getFaction() {
+    return Faction.ENEMY;
+  }
+
+  /**
+   * Returns the character is enemy class if any.
+   *
+   * @return the target or empty while it has none
+   */
+  public Optional<Character> getTarget() {
+    return target;
+  }
+
+  /**
+   * Returns what this enemy is doing now; the renderer picks its animation from it.
+   *
+   * @return the current state of its state machine; {@link EnemyState#IDLE} before its first tick
+   */
+  public EnemyState getState() {
+    return ai == null ? EnemyState.IDLE : ai.getCurrentState();
+  }
+
+  /**
    * Runs one step of the enemy's state machine (GDD 1.7).
    *
    * @param tick the number of current logic tick
@@ -65,7 +96,7 @@ public abstract class Enemy extends Character {
    */
   public boolean canSee(Character target) {
     Objects.requireNonNull(target, "Target is null!");
-    return !target.equals(this) && !target.isDead() && faction().canHurt(target.faction());
+    return !target.equals(this) && !target.isDead() && getFaction().canHurt(target.getFaction());
   }
 
   /**
@@ -88,34 +119,6 @@ public abstract class Enemy extends Character {
    * @param world the world the enemy lives in
    */
   protected abstract void attackTarget(World world);
-
-  /**
-   * Returns the side every enemy fight fo (GDD 1.5).
-   *
-   * @return {@link Faction#ENEMY}
-   */
-  @Override
-  public Faction faction() {
-    return Faction.ENEMY;
-  }
-
-  /**
-   * Returns the character is enemy class if any.
-   *
-   * @return the target or empty while it has none
-   */
-  public Optional<Character> target() {
-    return target;
-  }
-
-  /**
-   * Returns what this enemy is doing now; the renderer picks its animation from it.
-   *
-   * @return the current state of its state machine; {@link EnemyState#IDLE} before its first tick
-   */
-  public EnemyState state() {
-    return ai == null ? EnemyState.IDLE : ai.getCurrentState();
-  }
 
   /**
    * Tells whether a summoner spawned this enemy; a summoned enemy never drops loot (Q16).

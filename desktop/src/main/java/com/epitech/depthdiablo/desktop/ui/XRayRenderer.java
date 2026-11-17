@@ -25,7 +25,7 @@ final class XRayRenderer implements Renderer {
   public void render(Frame frame) {
     shapes.setProjectionMatrix(frame.camera().combined);
     shapes.begin(ShapeRenderer.ShapeType.Line);
-    for (Entity entity : frame.world().entities()) {
+    for (Entity entity : frame.world().getEntities()) {
       drawBoxes(frame, entity);
     }
     drawVelocity(frame);
@@ -36,19 +36,19 @@ final class XRayRenderer implements Renderer {
     float dx = 0f;
     float dy = 0f;
     if (entity.equals(frame.player())) {
-      dx = frame.playerDrawPosition().x - entity.bodyBox().x();
-      dy = frame.playerDrawPosition().y - entity.bodyBox().y();
+      dx = frame.playerDrawPosition().x - entity.getBodyBox().x();
+      dy = frame.playerDrawPosition().y - entity.getBodyBox().y();
     }
     shapes.setColor(BODY_COLOR);
-    drawBox(entity.bodyBox().translated(dx, dy));
+    drawBox(entity.getBodyBox().translated(dx, dy));
     if (entity instanceof Damageable damageable) {
       shapes.setColor(HURTBOX_COLOR);
-      drawBox(damageable.hurtbox().translated(dx, dy));
+      drawBox(damageable.getHurtbox().translated(dx, dy));
     }
   }
 
   private void drawVelocity(Frame frame) {
-    Aabb body = frame.player().bodyBox();
+    Aabb body = frame.player().getBodyBox();
     float centreX = frame.playerDrawPosition().x + body.width() / 2f;
     float centreY = frame.playerDrawPosition().y + body.height() / 2f;
     shapes.setColor(VELOCITY_COLOR);

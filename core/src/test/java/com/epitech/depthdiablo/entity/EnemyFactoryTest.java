@@ -90,7 +90,7 @@ class EnemyFactoryTest {
     DataRegistry enemies = new DataRegistry("enemies", () -> file);
     EnemyFactory factory = new EnemyFactory(enemies);
 
-    for (String id : enemies.ids()) {
+    for (String id : enemies.getIds()) {
       assertEquals(id, factory.spec(id).id());
     }
   }

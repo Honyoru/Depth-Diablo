@@ -97,14 +97,14 @@ class PlayerTest {
 
     tick(player, 10);
 
-    assertEquals(16f, player.bodyBox().width());
-    assertEquals(16f, player.bodyBox().height());
+    assertEquals(16f, player.getBodyBox().width());
+    assertEquals(16f, player.getBodyBox().height());
   }
 
   @Test
   void should_not_move_when_dead() {
     Player player = aKnight();
-    player.takeDamage(player.maxHp());
+    player.takeDamage(player.getMaxHp());
     input.point(1f, 0f);
 
     tick(player, 10);
@@ -135,7 +135,7 @@ class PlayerTest {
   void should_fight_for_the_player_side() {
     Player player = aKnight();
 
-    assertEquals(Faction.PLAYER, player.faction());
+    assertEquals(Faction.PLAYER, player.getFaction());
   }
 
   private Knight aKnight() {
@@ -218,6 +218,6 @@ class PlayerTest {
 
     tick(player, 10);
 
-    assertEquals(new Aabb(24f, 8f, 8f, 8f), player.hurtbox());
+    assertEquals(new Aabb(24f, 8f, 8f, 8f), player.getHurtbox());
   }
 }

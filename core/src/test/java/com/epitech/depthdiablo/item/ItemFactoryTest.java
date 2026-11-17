@@ -26,11 +26,11 @@ class ItemFactoryTest {
     Potion potion = assertInstanceOf(Potion.class, new ItemFactory(items).create("potion_small"));
 
     JsonValue entry = items.definition("potion_small");
-    assertEquals("potion_small", potion.id());
-    assertEquals(entry.getString("nameKey"), potion.nameKey());
-    assertEquals(entry.getString("spriteId"), potion.spriteId());
-    assertEquals(entry.getInt("price"), potion.price());
-    assertEquals(entry.getInt("healAmount"), potion.healAmount());
+    assertEquals("potion_small", potion.getId());
+    assertEquals(entry.getString("nameKey"), potion.getNameKey());
+    assertEquals(entry.getString("spriteId"), potion.getSpriteId());
+    assertEquals(entry.getInt("price"), potion.getPrice());
+    assertEquals(entry.getInt("healAmount"), potion.getHealAmount());
   }
 
   @Test
@@ -40,17 +40,17 @@ class ItemFactoryTest {
     Sword sword = assertInstanceOf(Sword.class, new ItemFactory(items).create("sword"));
 
     JsonValue entry = items.definition("sword");
-    assertEquals("sword", sword.id());
-    assertEquals(entry.getString("nameKey"), sword.nameKey());
-    assertEquals(entry.getString("spriteId"), sword.spriteId());
-    assertEquals(Rarity.valueOf(entry.getString("rarity")), sword.rarity());
-    assertEquals(entry.getInt("price"), sword.price());
-    assertEquals(entry.getInt("attackBonus"), sword.attackBonus());
-    assertEquals(entry.getFloat("attackSpeed"), sword.attackSpeed());
-    assertEquals(entry.getFloat("range"), sword.range());
-    assertEquals(entry.getFloat("width"), sword.width());
-    assertEquals(entry.getFloat("arcDegrees"), sword.arcDegrees());
-    assertEquals(entry.getInt("swingTicks"), sword.swingTicks());
+    assertEquals("sword", sword.getId());
+    assertEquals(entry.getString("nameKey"), sword.getNameKey());
+    assertEquals(entry.getString("spriteId"), sword.getSpriteId());
+    assertEquals(Rarity.valueOf(entry.getString("rarity")), sword.getRarity());
+    assertEquals(entry.getInt("price"), sword.getPrice());
+    assertEquals(entry.getInt("attackBonus"), sword.getAttackBonus());
+    assertEquals(entry.getFloat("attackSpeed"), sword.getAttackSpeed());
+    assertEquals(entry.getFloat("range"), sword.getRange());
+    assertEquals(entry.getFloat("width"), sword.getWidth());
+    assertEquals(entry.getFloat("arcDegrees"), sword.getArcDegrees());
+    assertEquals(entry.getInt("swingTicks"), sword.getSwingTicks());
   }
 
   @Test
@@ -68,8 +68,8 @@ class ItemFactoryTest {
     DataRegistry items = realItems();
     ItemFactory factory = new ItemFactory(items);
 
-    for (String id : items.ids()) {
-      assertEquals(id, factory.create(id).id());
+    for (String id : items.getIds()) {
+      assertEquals(id, factory.create(id).getId());
     }
   }
 

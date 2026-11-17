@@ -20,14 +20,14 @@ final class HighContrastRenderer implements Renderer {
   public void render(Frame frame) {
     shapes.setProjectionMatrix(frame.camera().combined);
     shapes.begin(ShapeRenderer.ShapeType.Filled);
-    for (Entity entity : frame.world().entities()) {
+    for (Entity entity : frame.world().getEntities()) {
       if (entity.equals(frame.player())) {
         continue; // drawn last, on top of everything
       }
       shapes.setColor(entity.blocks() ? WALL_COLOR : OTHER_COLOR);
-      drawBox(entity.bodyBox());
+      drawBox(entity.getBodyBox());
     }
-    Aabb body = frame.player().bodyBox();
+    Aabb body = frame.player().getBodyBox();
     shapes.setColor(PLAYER_COLOR);
     shapes.rect(
         frame.playerDrawPosition().x, frame.playerDrawPosition().y, body.width(), body.height());
