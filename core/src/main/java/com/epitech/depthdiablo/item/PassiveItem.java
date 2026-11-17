@@ -1,6 +1,8 @@
 package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.combat.Attack;
+import com.epitech.depthdiablo.entity.BuildModifier;
+import com.epitech.depthdiablo.entity.CharacterBuild;
 import com.epitech.depthdiablo.entity.StatSource;
 import java.util.Objects;
 
@@ -9,7 +11,7 @@ import java.util.Objects;
  *
  * <p>Pattern: Command. Each consumable is one action the player triggers.
  */
-public abstract class PassiveItem extends Item {
+public abstract class PassiveItem extends Item implements BuildModifier {
 
   /**
    * Creates a passive item. Every passive has the {@link Rarity#PASSIVE} rarity, so loot tables can
@@ -34,5 +36,11 @@ public abstract class PassiveItem extends Item {
   /** Returns the attack with this item's effect; by default the item doesn't touch the attack. */
   public Attack decorateAttack(Attack inner) {
     return Objects.requireNonNull(inner, "...");
+  }
+
+  @Override
+  public final CharacterBuild modify(CharacterBuild build) {
+    Objects.requireNonNull(build, "...");
+    return build.withStats(decorateStats(build.stats())).withAttack(decorateAttack(build.attack()));
   }
 }
