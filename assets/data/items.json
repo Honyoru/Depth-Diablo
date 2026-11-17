@@ -21,6 +21,14 @@
       "width": 8,
       "arcDegrees": 90,
       "swingTicks": 12
+    },
+    {
+      "id": "fire_ring",
+      "class": "FireRing",
+      "nameKey": "item.fire_ring.name",
+      "spriteId": "items/fire_ring",
+      "price": 0,
+      "burn": { "damage": 1, "intervalTicks": 30, "durationTicks": 120 }
     }
   ]
 }
