@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.epitech.depthdiablo.combat.BurnSpec;
 import com.epitech.depthdiablo.data.DataRegistry;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -95,6 +96,33 @@ class ItemFactoryTest {
     ItemFactory factory = new ItemFactory(new DataRegistry("items", () -> file));
 
     assertThrows(IllegalArgumentException.class, () -> factory.create("sword"));
+  }
+
+  @Test
+  void should_build_the_fire_ring_with_the_values_of_its_entry() throws IOException {
+    DataRegistry items = realItems();
+
+    FireRing ring = assertInstanceOf(FireRing.class, new ItemFactory(items).create("fire_ring"));
+
+    JsonValue entry = items.definition("fire_ring");
+    JsonValue burn = entry.get("burn");
+    assertEquals("fire_ring", ring.getId());
+    assertEquals(entry.getString("nameKey"), ring.getNameKey());
+    assertEquals(entry.getString("spriteId"), ring.getSpriteId());
+    assertEquals(Rarity.PASSIVE, ring.getRarity());
+    assertEquals(entry.getInt("price"), ring.getPrice());
+    assertEquals(
+        new BurnSpec(
+            burn.getInt("damage"), burn.getInt("intervalTicks"), burn.getInt("durationTicks")),
+        ring.getBurn());
+  }
+
+  @Test
+  void should_reject_the_fire_ring_when_its_burn_is_missing() throws IOException {
+    String file = readItemsFile().replace("\"burn\"", "\"heat\"");
+    ItemFactory factory = new ItemFactory(new DataRegistry("items", () -> file));
+
+    assertThrows(IllegalArgumentException.class, () -> factory.create("fire_ring"));
   }
 
   private static DataRegistry realItems() throws IOException {
