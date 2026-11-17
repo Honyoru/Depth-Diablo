@@ -24,7 +24,19 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
 
+      - name: Detect code changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          base: main            # compare the whole branch to main, not just the last push
+          predicate-quantifier: every
+          filters: |
+            code:
+              - '!**.md'
+              - '!docs/**'
+
       - name: Set up Java 21
+        if: steps.filter.outputs.code == 'true' || github.event_name == 'workflow_dispatch'
         uses: actions/setup-java@v4
         with:
           distribution: temurin
