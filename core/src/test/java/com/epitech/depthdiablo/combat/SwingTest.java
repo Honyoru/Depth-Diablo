@@ -67,39 +67,46 @@ class SwingTest {
 
   @Test
   void should_throw_when_the_aim_is_not_a_number() {
-    assertThrows(IllegalArgumentException.class, () -> aSwing(Items.sword(), Float.NaN));
+    Sword sword = Items.sword();
+
+    assertThrows(IllegalArgumentException.class, () -> aSwing(sword, Float.NaN));
   }
 
   @Test
   void should_throw_when_the_aim_is_infinite() {
-    assertThrows(
-        IllegalArgumentException.class, () -> aSwing(Items.sword(), Float.POSITIVE_INFINITY));
+    Sword sword = Items.sword();
+
+    assertThrows(IllegalArgumentException.class, () -> aSwing(sword, Float.POSITIVE_INFINITY));
   }
 
   @Test
   void should_throw_when_the_weapon_is_null() {
-    assertThrows(
-        NullPointerException.class, () -> new Swing(null, holder, 0f, NO_TARGETS, new EventBus()));
+    EventBus bus = new EventBus();
+
+    assertThrows(NullPointerException.class, () -> new Swing(null, holder, 0f, NO_TARGETS, bus));
   }
 
   @Test
   void should_throw_when_the_holder_is_null() {
-    assertThrows(
-        NullPointerException.class,
-        () -> new Swing(Items.sword(), null, 0f, NO_TARGETS, new EventBus()));
+    Sword sword = Items.sword();
+    EventBus bus = new EventBus();
+
+    assertThrows(NullPointerException.class, () -> new Swing(sword, null, 0f, NO_TARGETS, bus));
   }
 
   @Test
   void should_throw_when_the_targets_are_null() {
-    assertThrows(
-        NullPointerException.class,
-        () -> new Swing(Items.sword(), holder, 0f, null, new EventBus()));
+    Sword sword = Items.sword();
+    EventBus bus = new EventBus();
+
+    assertThrows(NullPointerException.class, () -> new Swing(sword, holder, 0f, null, bus));
   }
 
   @Test
   void should_throw_when_the_events_are_null() {
-    assertThrows(
-        NullPointerException.class, () -> new Swing(Items.sword(), holder, 0f, NO_TARGETS, null));
+    Sword sword = Items.sword();
+
+    assertThrows(NullPointerException.class, () -> new Swing(sword, holder, 0f, NO_TARGETS, null));
   }
 
   @Test

@@ -10,6 +10,7 @@ import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
+import com.epitech.depthdiablo.item.Sword;
 import com.epitech.depthdiablo.testdata.Items;
 import java.util.EnumMap;
 import java.util.Map;
@@ -128,10 +129,11 @@ class PlayerTest {
   @Test
   void should_reject_a_null_input() {
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
+    StatSource stats = stats();
+    Sword sword = Items.sword();
 
     assertThrows(
-        NullPointerException.class,
-        () -> new Knight(box, stats(), Items.sword(), box, 0, null, world));
+        NullPointerException.class, () -> new Knight(box, stats, sword, box, 0, null, world));
   }
 
   @Test

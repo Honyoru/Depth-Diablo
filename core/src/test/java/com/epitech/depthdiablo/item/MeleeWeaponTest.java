@@ -172,26 +172,28 @@ class MeleeWeaponTest {
   void should_throw_when_the_holder_cannot_attack_now() {
     Character holder = aCharacter().build();
     MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
-    weapon.attack(holder, 0f, new World());
+    World world = new World();
+    weapon.attack(holder, 0f, world);
 
-    assertThrows(IllegalStateException.class, () -> weapon.attack(holder, 0f, new World()));
+    assertThrows(IllegalStateException.class, () -> weapon.attack(holder, 0f, world));
   }
 
   @Test
   void should_keep_the_holder_ready_when_the_aim_is_wrong() {
     Character holder = aCharacter().build();
     MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
+    World world = new World();
 
-    assertThrows(
-        IllegalArgumentException.class, () -> weapon.attack(holder, Float.NaN, new World()));
+    assertThrows(IllegalArgumentException.class, () -> weapon.attack(holder, Float.NaN, world));
     assertTrue(holder.canAttack());
   }
 
   @Test
   void should_throw_when_the_holder_is_null() {
     MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
+    World world = new World();
 
-    assertThrows(NullPointerException.class, () -> weapon.attack(null, 0f, new World()));
+    assertThrows(NullPointerException.class, () -> weapon.attack(null, 0f, world));
   }
 
   @Test

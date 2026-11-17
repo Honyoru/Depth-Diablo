@@ -20,6 +20,7 @@ import com.epitech.depthdiablo.engine.EventBus;
 import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.item.Sword;
+import com.epitech.depthdiablo.testdata.CharacterBuilder;
 import com.epitech.depthdiablo.testdata.Items;
 import java.util.ArrayList;
 import java.util.List;
@@ -219,19 +220,23 @@ class CharacterTest {
   void should_reject_negative_i_frames() {
     int ticks = -1;
 
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> aCharacter().withInvincibilityAfterHit(ticks).build());
+    CharacterBuilder builder = aCharacter().withInvincibilityAfterHit(ticks);
+
+    assertThrows(IllegalArgumentException.class, builder::build);
   }
 
   @Test
   void should_reject_a_missing_body_box() {
-    assertThrows(NullPointerException.class, () -> aCharacter().withBodyBox(null).build());
+    CharacterBuilder builder = aCharacter().withBodyBox(null);
+
+    assertThrows(NullPointerException.class, builder::build);
   }
 
   @Test
   void should_reject_a_missing_hurtbox() {
-    assertThrows(NullPointerException.class, () -> aCharacter().withHurtbox(null).build());
+    CharacterBuilder builder = aCharacter().withHurtbox(null);
+
+    assertThrows(NullPointerException.class, builder::build);
   }
 
   @Test
@@ -494,17 +499,19 @@ class CharacterTest {
   void should_keep_its_swing_when_a_second_one_is_refused() {
     CountingCharacter character = new CountingCharacter();
     Sword sword = Items.sword();
-    character.startAttack(sword, 30f, new World());
+    World world = new World();
+    character.startAttack(sword, 30f, world);
 
-    assertThrows(IllegalStateException.class, () -> character.startAttack(sword, 90f, new World()));
+    assertThrows(IllegalStateException.class, () -> character.startAttack(sword, 90f, world));
     assertEquals(30f, character.getCurrentSwing().orElseThrow().getAimDegrees());
   }
 
   @Test
   void should_throw_when_the_swung_weapon_is_null() {
     CountingCharacter character = new CountingCharacter();
+    World world = new World();
 
-    assertThrows(NullPointerException.class, () -> character.startAttack(null, 0f, new World()));
+    assertThrows(NullPointerException.class, () -> character.startAttack(null, 0f, world));
   }
 
   @Test
@@ -719,6 +726,75 @@ class CharacterTest {
     Character character = aCharacter().build();
 
     assertThrows(NullPointerException.class, () -> character.takeStatusDamage(3, null));
+  }
+
+  @Test
+  void should_take_the_attack_of_the_last_weapon_when_rebuilt() {
+    Sword first = Items.sword();
+    Sword last = Items.sword();
+    Character character = new CountingCharacter(stat -> 1f, Items.sword());
+
+    character.rebuild(List.of(first, last));
+
+    assertSame(last, character.getBuild().attack());
+  }
+
+  @Test
+  void should_rebuild_from_its_base_each_time() {
+    Character character = new CountingCharacter(stat -> 1f, Items.sword());
+    BuildModifier faster = attackSpeedTimes(1.5f);
+
+    character.rebuild(List.of(faster));
+    character.rebuild(List.of(faster));
+
+    assertEquals(1.5f, character.getAttackSpeed());
+  }
+
+  @Test
+  void should_go_back_to_its_base_build_when_rebuilt_with_no_modifier() {
+    Sword base = Items.sword();
+    Character character = new CountingCharacter(stat -> 1f, base);
+    character.rebuild(List.of(attackSpeedTimes(1.5f)));
+
+    character.rebuild(List.of());
+
+    assertSame(base, character.getBuild().attack());
+    assertEquals(1f, character.getAttackSpeed());
+  }
+
+  @Test
+  void should_throw_when_the_modifiers_are_null() {
+    Character character = new CountingCharacter(stat -> 1f, Items.sword());
+
+    assertThrows(NullPointerException.class, () -> character.rebuild(null));
+  }
+
+  @Test
+  void should_cut_its_hp_down_to_the_new_max_hp_when_rebuilt() {
+    Character character = new CountingCharacter(stat -> 10f, Items.sword());
+    BuildModifier lowerMaxHp = build -> build.withStats(stat -> stat == Stat.MAX_HP ? 5f : 10f);
+
+    character.rebuild(List.of(lowerMaxHp));
+
+    assertEquals(5, character.getHp());
+  }
+
+  @Test
+  void should_keep_its_hp_when_the_new_max_hp_is_higher() {
+    Character character = new CountingCharacter(stat -> 10f, Items.sword());
+    BuildModifier higherMaxHp = build -> build.withStats(stat -> stat == Stat.MAX_HP ? 20f : 10f);
+
+    character.rebuild(List.of(higherMaxHp));
+
+    assertEquals(10, character.getHp());
+  }
+
+  private static BuildModifier attackSpeedTimes(float factor) {
+    return build -> {
+      StatSource base = build.stats();
+      return build.withStats(
+          stat -> stat == Stat.ATTACK_SPEED ? base.get(stat) * factor : base.get(stat));
+    };
   }
 
   /** Hand-written fake (Q117): counts the calls to its step. */

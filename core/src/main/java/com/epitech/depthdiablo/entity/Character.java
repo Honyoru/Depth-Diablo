@@ -20,7 +20,9 @@ import java.util.Optional;
  */
 public abstract class Character extends Entity implements Damageable {
 
-  private final CharacterBuild build;
+  private final CharacterBuild baseBuild;
+
+  private CharacterBuild build;
 
   private int hp;
 
@@ -72,7 +74,8 @@ public abstract class Character extends Entity implements Damageable {
     }
     Objects.requireNonNull(hurtbox, "The hurtbox of a character must not be null");
     this.hurtboxFromBody = hurtbox.translated(-bodyBox.x(), -bodyBox.y());
-    this.build = new CharacterBuild(baseAttack, stats);
+    this.baseBuild = new CharacterBuild(baseAttack, stats);
+    this.build = baseBuild;
     this.hp = (int) stats.get(Stat.MAX_HP);
     this.invincibilityTicksAfterHit = invincibilityTicksAfterHit;
     this.world = Objects.requireNonNull(world, "...");
@@ -374,5 +377,23 @@ public abstract class Character extends Entity implements Damageable {
    */
   protected World world() {
     return world;
+  }
+
+  /**
+   * Rebuilds what this character fights with (GDD 1.3.1): starts again from its base build and
+   * applies each modifier in order (weapon, then armor, then passive items in pickup order). If the
+   * new max HP is below the current HP, the HP is cut down to it.
+   *
+   * @param modifiers the modifiers in the order to apply them; an empty list gives the base build
+   * @throws NullPointerException if {@code modifiers} or one of them is {@code null}
+   */
+  public final void rebuild(List<BuildModifier> modifiers) {
+    Objects.requireNonNull(modifiers, "modifiers is null");
+    CharacterBuild result = baseBuild;
+    for (BuildModifier modifier : modifiers) {
+      result = Objects.requireNonNull(modifier, "modifier is null").modify(result);
+    }
+    build = result;
+    hp = Math.min(hp, getMaxHp());
   }
 }
