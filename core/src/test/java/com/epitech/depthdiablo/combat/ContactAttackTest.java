@@ -22,12 +22,12 @@ class ContactAttackTest {
 
   @Test
   void should_keep_its_reach_when_created() {
-    assertEquals(6f, new AroundContactAttack(6f).reach());
+    assertEquals(6f, new AroundContactAttack(6f).getReach());
   }
 
   @Test
   void should_accept_a_reach_of_0_for_touching_only() {
-    assertEquals(0f, new AroundContactAttack(0f).reach());
+    assertEquals(0f, new AroundContactAttack(0f).getReach());
   }
 
   @Test
@@ -54,7 +54,7 @@ class ContactAttackTest {
     HitResult result = new AroundContactAttack(0f).hit(attacker, target);
 
     assertEquals(new HitResult(5, false), result);
-    assertEquals(5, target.hp());
+    assertEquals(5, target.getHp());
   }
 
   @Test
@@ -81,7 +81,7 @@ class ContactAttackTest {
     target.grantInvincibility(10);
 
     assertEquals(HitResult.NONE, new AroundContactAttack(0f).hit(attacker, target));
-    assertEquals(10, target.hp());
+    assertEquals(10, target.getHp());
   }
 
   @Test
@@ -108,7 +108,7 @@ class ContactAttackTest {
 
     new AroundContactAttack(4f).attack(owner, 0f, world);
 
-    assertEquals(9, target.hp());
+    assertEquals(9, target.getHp());
   }
 
   @Test
@@ -119,7 +119,7 @@ class ContactAttackTest {
 
     new AroundContactAttack(4f).attack(owner, 0f, world);
 
-    assertEquals(10, target.hp());
+    assertEquals(10, target.getHp());
   }
 
   @Test
@@ -130,7 +130,7 @@ class ContactAttackTest {
 
     new AroundContactAttack(4f).attack(owner, 0f, world);
 
-    assertEquals(10, ally.hp());
+    assertEquals(10, ally.getHp());
   }
 
   @Test
@@ -142,8 +142,8 @@ class ContactAttackTest {
 
     new AroundContactAttack(4f).attack(owner, 0f, world);
 
-    assertEquals(9, right.hp());
-    assertEquals(9, left.hp());
+    assertEquals(9, right.getHp());
+    assertEquals(9, left.getHp());
   }
 
   @Test
@@ -153,7 +153,7 @@ class ContactAttackTest {
 
     new AroundContactAttack(4f).attack(owner, 0f, world);
 
-    assertEquals(10, owner.hp());
+    assertEquals(10, owner.getHp());
   }
 
   @Test
@@ -162,10 +162,10 @@ class ContactAttackTest {
     Character owner = anOwner(world);
     Character target = aCharacterAt(world, 18f, Faction.PLAYER);
     List<GameEvent> seen = new ArrayList<>();
-    world.eventBus().subscribeAll(seen::add);
+    world.getEventBus().subscribeAll(seen::add);
 
     new AroundContactAttack(4f).attack(owner, 0f, world);
-    world.eventBus().flush();
+    world.getEventBus().flush();
 
     assertEquals(List.of(new DamageDealt(owner, target, 1)), seen);
   }
@@ -184,10 +184,10 @@ class ContactAttackTest {
             .build();
     world.add(target);
     List<GameEvent> seen = new ArrayList<>();
-    world.eventBus().subscribeAll(seen::add);
+    world.getEventBus().subscribeAll(seen::add);
 
     new AroundContactAttack(4f).attack(owner, 0f, world);
-    world.eventBus().flush();
+    world.getEventBus().flush();
 
     assertEquals(
         List.of(new DamageDealt(owner, target, 1), new EntityDied(target, Optional.of(owner))),

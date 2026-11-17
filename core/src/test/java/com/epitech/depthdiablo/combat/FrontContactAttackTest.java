@@ -33,8 +33,8 @@ class FrontContactAttackTest {
 
     new FrontContactAttack(4f).attack(owner, 0f, world);
 
-    assertEquals(9, front.hp());
-    assertEquals(10, behind.hp());
+    assertEquals(9, front.getHp());
+    assertEquals(10, behind.getHp());
   }
 
   @Test
@@ -46,8 +46,8 @@ class FrontContactAttackTest {
 
     new FrontContactAttack(4f).attack(owner, 90f, world);
 
-    assertEquals(9, above.hp());
-    assertEquals(10, below.hp());
+    assertEquals(9, above.getHp());
+    assertEquals(10, below.getHp());
   }
 
   @Test
@@ -59,8 +59,8 @@ class FrontContactAttackTest {
 
     new FrontContactAttack(4f).attack(owner, 45f, world);
 
-    assertEquals(9, diagonal.hp());
-    assertEquals(10, opposite.hp());
+    assertEquals(9, diagonal.getHp());
+    assertEquals(10, opposite.getHp());
   }
 
   @Test
@@ -76,8 +76,8 @@ class FrontContactAttackTest {
     new FrontContactAttack(4f).attack(straightOwner, 0f, straightWorld);
     new FrontContactAttack(4f).attack(diagonalOwner, 45f, diagonalWorld);
 
-    assertEquals(9, straight.hp());
-    assertEquals(9, diagonal.hp());
+    assertEquals(9, straight.getHp());
+    assertEquals(9, diagonal.getHp());
   }
 
   @Test
@@ -93,8 +93,8 @@ class FrontContactAttackTest {
     new FrontContactAttack(4f).attack(straightOwner, 0f, straightWorld);
     new FrontContactAttack(4f).attack(diagonalOwner, 45f, diagonalWorld);
 
-    assertEquals(10, straight.hp());
-    assertEquals(10, diagonal.hp());
+    assertEquals(10, straight.getHp());
+    assertEquals(10, diagonal.getHp());
   }
 
   private static Character aCharacterAt(World world, float x, float y, Faction faction) {

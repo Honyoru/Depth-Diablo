@@ -37,10 +37,10 @@ class AroundContactAttackTest {
 
     new AroundContactAttack(4f).attack(owner, 0f, world);
 
-    assertEquals(9, right.hp());
-    assertEquals(9, left.hp());
-    assertEquals(9, above.hp());
-    assertEquals(9, below.hp());
+    assertEquals(9, right.getHp());
+    assertEquals(9, left.getHp());
+    assertEquals(9, above.getHp());
+    assertEquals(9, below.getHp());
   }
 
   private static Character aCharacterAt(World world, float x, float y, Faction faction) {

@@ -23,9 +23,9 @@ public final class AroundContactAttack extends ContactAttack {
   protected Obb area(Aabb body, float aimDegrees) {
     return Obb.around(
         new Aabb(
-            body.x() - reach(),
-            body.y() - reach(),
-            body.width() + 2 * reach(),
-            body.height() + 2 * reach()));
+            body.x() - getReach(),
+            body.y() - getReach(),
+            body.width() + 2 * getReach(),
+            body.height() + 2 * getReach()));
   }
 }

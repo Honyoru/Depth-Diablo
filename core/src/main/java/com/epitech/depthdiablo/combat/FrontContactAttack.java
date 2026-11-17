@@ -29,7 +29,7 @@ public final class FrontContactAttack extends ContactAttack {
     float cos = (float) Math.cos(radians);
     float sin = (float) Math.sin(radians);
     float halfExtent = Math.abs(cos) * body.width() / 2 + Math.abs(sin) * body.height() / 2;
-    float length = halfExtent + reach();
+    float length = halfExtent + getReach();
     float centreX = body.x() + body.width() / 2 + cos * length / 2;
     float centreY = body.y() + body.height() / 2 + sin * length / 2;
     return new Obb(centreX, centreY, aimDegrees, length, body.width());

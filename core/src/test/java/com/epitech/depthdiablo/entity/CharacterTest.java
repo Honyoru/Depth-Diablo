@@ -534,7 +534,7 @@ class CharacterTest {
 
     Character character = new CountingCharacter(stat -> 1f, sword);
 
-    assertSame(sword, character.build().attack());
+    assertSame(sword, character.getBuild().attack());
   }
 
   @Test
@@ -543,8 +543,8 @@ class CharacterTest {
 
     Character character = new CountingCharacter(stats, Items.sword());
 
-    assertSame(stats, character.build().stats());
-    assertEquals(7, character.attack());
+    assertSame(stats, character.getBuild().stats());
+    assertEquals(7, character.getAttack());
   }
 
   @Test

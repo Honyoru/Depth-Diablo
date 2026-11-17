@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.data;
 
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.SerializationException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;

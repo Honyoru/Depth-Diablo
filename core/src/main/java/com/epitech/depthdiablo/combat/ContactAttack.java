@@ -39,7 +39,7 @@ public abstract class ContactAttack implements Attack {
    *
    * @return the reach in pixels, 0 or more
    */
-  public final float reach() {
+  public final float getReach() {
     return reach;
   }
 
@@ -60,7 +60,7 @@ public abstract class ContactAttack implements Attack {
     if (target.isDead() || target.isInvincible()) {
       return HitResult.NONE;
     }
-    int damage = DamageFormula.compute(attacker.attack(), 0, 1.0, target.defense(), 0, 1.0);
+    int damage = DamageFormula.compute(attacker.getAttack(), 0, 1.0, target.getDefense(), 0, 1.0);
     target.takeDamage(damage);
     return new HitResult(damage, target.isDead());
   }
@@ -85,13 +85,13 @@ public abstract class ContactAttack implements Attack {
       throw new IllegalArgumentException("Aim must be a finite number: " + aimDegrees);
     }
     owner.startAttackCooldown(0, 1f);
-    Obb area = area(owner.bodyBox(), aimDegrees);
-    for (Entity entity : world.entities()) {
+    Obb area = area(owner.getBodyBox(), aimDegrees);
+    for (Entity entity : world.getEntities()) {
       if (entity instanceof Character target
           && !owner.equals(target)
-          && owner.faction().canHurt(target.faction())
-          && area.overlaps(target.hurtbox())) {
-        strike(owner, target, world.eventBus());
+          && owner.getFaction().canHurt(target.getFaction())
+          && area.overlaps(target.getHurtbox())) {
+        strike(owner, target, world.getEventBus());
       }
     }
   }
