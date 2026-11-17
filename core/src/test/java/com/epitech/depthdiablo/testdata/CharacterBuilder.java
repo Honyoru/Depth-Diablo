@@ -1,6 +1,7 @@
 package com.epitech.depthdiablo.testdata;
 
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.BaseStats;
 import com.epitech.depthdiablo.entity.Character;
@@ -16,6 +17,7 @@ public final class CharacterBuilder {
   private Aabb hurtbox = new Aabb(0, 0, 16, 16);
   private int invincibilityTicksAfterHit;
   private Faction faction = Faction.ENEMY;
+  private World world = new World();
 
   private CharacterBuilder() {
     stats.put(Stat.MAX_HP, 10f);
@@ -136,6 +138,17 @@ public final class CharacterBuilder {
   }
 
   /**
+   * Sets the world the character lives in, to read the events it publishes.
+   *
+   * @param value the world; a new empty world by default
+   * @return this builder
+   */
+  public CharacterBuilder withWorld(World value) {
+    this.world = value;
+    return this;
+  }
+
+  /**
    * Builds the character.
    *
    * @return a character that does nothing on its own
@@ -143,7 +156,7 @@ public final class CharacterBuilder {
    */
   public Character build() {
     return new IdleCharacter(
-        bodyBox, new BaseStats(stats), hurtbox, invincibilityTicksAfterHit, faction);
+        bodyBox, new BaseStats(stats), hurtbox, invincibilityTicksAfterHit, faction, world);
   }
 
   /** Hand-written fake (Q117): a character with no behaviour of its own. */
@@ -155,8 +168,9 @@ public final class CharacterBuilder {
         StatSource stats,
         Aabb hurtbox,
         int invincibilityTicksAfterHit,
-        Faction faction) {
-      super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit);
+        Faction faction,
+        World world) {
+      super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, world);
       this.faction = faction;
     }
 

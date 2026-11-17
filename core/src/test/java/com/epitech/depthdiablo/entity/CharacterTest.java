@@ -7,13 +7,21 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.epitech.depthdiablo.combat.Burn;
+import com.epitech.depthdiablo.combat.BurnSpec;
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.combat.StatusEffect;
 import com.epitech.depthdiablo.combat.Swing;
+import com.epitech.depthdiablo.engine.DamageDealt;
+import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.EventBus;
+import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.item.Sword;
 import com.epitech.depthdiablo.testdata.Items;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.constraints.IntRange;
@@ -241,7 +249,7 @@ class CharacterTest {
 
     character.heal(50);
 
-    assertEquals(10, character.getHp());
+    assertEquals(10, character.getMaxHp());
   }
 
   @Test
@@ -518,6 +526,187 @@ class CharacterTest {
     assertThrows(NullPointerException.class, () -> new CountingCharacter(null));
   }
 
+  @Test
+  void should_tick_its_status_effects_once_per_update() {
+    Character character = aCharacter().build();
+    CountingEffect effect = new CountingEffect(5, aCharacter().build());
+    character.applyStatus(effect);
+
+    character.update(1);
+    character.update(2);
+
+    assertEquals(2, effect.steps);
+  }
+
+  @Test
+  void should_ignore_a_status_effect_applied_when_dead() {
+    Character character = aCharacter().withHp(5).build();
+    character.takeDamage(5);
+    CountingEffect effect = new CountingEffect(5, aCharacter().build());
+
+    character.applyStatus(effect);
+    character.update(1);
+
+    assertEquals(0, effect.steps);
+  }
+
+  @Test
+  void should_stop_its_status_effects_when_it_dies() {
+    Character character = aCharacter().withHp(10).build();
+    CountingEffect effect = new CountingEffect(5, aCharacter().build());
+    character.applyStatus(new Burn(new BurnSpec(10, 1, 5), aCharacter().build()));
+    character.applyStatus(effect);
+
+    character.update(1);
+    character.update(2);
+
+    assertTrue(character.isDead());
+    assertEquals(1, effect.steps);
+  }
+
+  @Test
+  void should_throw_when_the_status_effect_is_null() {
+    Character character = aCharacter().build();
+
+    assertThrows(NullPointerException.class, () -> character.applyStatus(null));
+  }
+
+  @Test
+  void should_lose_hp_when_it_takes_status_damage() {
+    Character character = aCharacter().withHp(10).build();
+
+    character.takeStatusDamage(3, aCharacter().build());
+
+    assertEquals(7, character.getHp());
+  }
+
+  @Test
+  void should_stop_at_0_hp_when_the_status_damage_is_higher_than_the_hp() {
+    Character character = aCharacter().withHp(5).build();
+
+    character.takeStatusDamage(50, aCharacter().build());
+
+    assertEquals(0, character.getHp());
+    assertTrue(character.isDead());
+  }
+
+  @Test
+  void should_take_status_damage_when_invincible() {
+    Character character = aCharacter().withHp(10).build();
+    character.grantInvincibility(100);
+
+    character.takeStatusDamage(3, aCharacter().build());
+
+    assertEquals(7, character.getHp());
+  }
+
+  @Test
+  void should_not_become_invincible_when_it_takes_status_damage() {
+    Character character = aCharacter().withHp(10).withInvincibilityAfterHit(30).build();
+
+    character.takeStatusDamage(3, aCharacter().build());
+
+    assertFalse(character.isInvincible());
+  }
+
+  @Test
+  void should_take_a_hit_right_after_status_damage() {
+    Character character = aCharacter().withHp(10).withInvincibilityAfterHit(30).build();
+    character.takeStatusDamage(3, aCharacter().build());
+
+    character.takeDamage(2);
+
+    assertEquals(5, character.getHp());
+  }
+
+  @Test
+  void should_publish_the_status_damage_with_its_source() {
+    World world = new World();
+    Character character = aCharacter().withHp(10).withWorld(world).build();
+    Character source = aCharacter().build();
+    List<GameEvent> events = new ArrayList<>();
+    world.getEventBus().subscribeAll(events::add);
+
+    character.takeStatusDamage(3, source);
+    world.getEventBus().flush();
+
+    assertEquals(List.of(new DamageDealt(source, character, 3)), events);
+  }
+
+  @Test
+  void should_publish_its_death_with_the_source_as_killer_when_status_damage_kills_it() {
+    World world = new World();
+    Character character = aCharacter().withHp(3).withWorld(world).build();
+    Character source = aCharacter().build();
+    List<GameEvent> events = new ArrayList<>();
+    world.getEventBus().subscribe(EntityDied.class, events::add);
+
+    character.takeStatusDamage(3, source);
+    world.getEventBus().flush();
+
+    assertEquals(List.of(new EntityDied(character, Optional.of(source))), events);
+  }
+
+  @Test
+  void should_publish_its_death_once_when_two_burns_tick_on_the_killing_update() {
+    World world = new World();
+    Character character = aCharacter().withHp(2).withWorld(world).build();
+    Character source = aCharacter().build();
+    character.applyStatus(new Burn(new BurnSpec(2, 1, 5), source));
+    character.applyStatus(new Burn(new BurnSpec(2, 1, 5), source));
+    List<GameEvent> deaths = new ArrayList<>();
+    world.getEventBus().subscribe(EntityDied.class, deaths::add);
+
+    character.update(1);
+    world.getEventBus().flush();
+
+    assertEquals(1, deaths.size());
+  }
+
+  @Test
+  void should_take_no_status_damage_and_publish_nothing_when_dead() {
+    World world = new World();
+    Character character = aCharacter().withHp(5).withWorld(world).build();
+    character.takeDamage(5);
+    List<GameEvent> events = new ArrayList<>();
+    world.getEventBus().subscribeAll(events::add);
+
+    character.takeStatusDamage(3, aCharacter().build());
+    world.getEventBus().flush();
+
+    assertEquals(0, character.getHp());
+    assertTrue(events.isEmpty());
+  }
+
+  @Test
+  void should_throw_when_the_status_damage_is_below_1() {
+    Character character = aCharacter().build();
+    Character source = aCharacter().build();
+
+    assertThrows(IllegalArgumentException.class, () -> character.takeStatusDamage(0, source));
+  }
+
+  @Test
+  void should_throw_when_the_status_damage_source_is_null() {
+    Character character = aCharacter().build();
+
+    assertThrows(NullPointerException.class, () -> character.takeStatusDamage(3, null));
+  }
+
+  /** Hand-written fake (Q117): counts the calls to its step. */
+  private static final class CountingEffect extends StatusEffect {
+    private int steps;
+
+    CountingEffect(int durationTicks, Character source) {
+      super(durationTicks, source);
+    }
+
+    @Override
+    protected void onTick(Character target) {
+      steps++;
+    }
+  }
+
   /** Hand-written fake (Q117): counts the calls to think(). */
   private static final class CountingCharacter extends Character {
     private int thinks;
@@ -528,7 +717,7 @@ class CharacterTest {
     }
 
     CountingCharacter(StatSource stats) {
-      super(new Aabb(0, 0, 16, 16), stats, new Aabb(0, 0, 16, 16), 0);
+      super(new Aabb(0, 0, 16, 16), stats, new Aabb(0, 0, 16, 16), 0, new World());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.testdata;
 
+import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.BaseStats;
 import com.epitech.depthdiablo.entity.MeleeEnemy;
@@ -17,6 +18,7 @@ public final class EnemyBuilder {
   private Aabb bodyBox = new Aabb(0, 0, 16, 16);
   private float reach = 4;
   private boolean summoned;
+  private World world = new World();
 
   private EnemyBuilder(Kind kind, float maxHp, float attack) {
     this.kind = kind;
@@ -81,12 +83,23 @@ public final class EnemyBuilder {
   }
 
   /**
+   * Sets the world the enemy lives in, to read the events it publishes.
+   *
+   * @param value the world; a new empty world by default
+   * @return this builder
+   */
+  public EnemyBuilder withWorld(World value) {
+    this.world = value;
+    return this;
+  }
+
+  /**
    * Builds the enemy.
    *
    * @return a new rat or zombie
    */
   public MeleeEnemy build() {
-    return kind.create(bodyBox, new BaseStats(stats), bodyBox, 0, summoned, reach);
+    return kind.create(bodyBox, new BaseStats(stats), bodyBox, 0, summoned, reach, world);
   }
 
   /** The constructor of a real melee enemy: {@code Rat::new} or {@code Zombie::new}. */
@@ -98,6 +111,7 @@ public final class EnemyBuilder {
         Aabb hurtbox,
         int invincibilityTicksAfterHit,
         boolean summoned,
-        float reach);
+        float reach,
+        World world);
   }
 }
