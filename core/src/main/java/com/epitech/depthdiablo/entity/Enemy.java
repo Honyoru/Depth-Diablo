@@ -2,6 +2,8 @@ package com.epitech.depthdiablo.entity;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
+import com.badlogic.gdx.math.Vector2;
+import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.World;
 import java.util.Objects;
@@ -9,13 +11,18 @@ import java.util.Optional;
 
 /**
  * Every enemy and boss (GDD 1.3.1). Its gdx-ai state machine decides what it does each tick (GDD
- * 1.7); each family fixes how it attacks in {@link #attackTarget}. Its values come from {@code
- * data/enemies.json} (Q93) through the EnemyFactory.
+ * 1.7); each family fixes how it attacks in {@link #attackTarget} and how far in {@link #canReach}.
+ * Its values come from {@code data/enemies.json} (Q93) through the EnemyFactory.
  *
  * <p>Pattern: State ({@link EnemyState} on the gdx-ai state machine) and Template Method ({@link
- * #attackTarget} is the hook each family fills).
+ * #attackTarget} and {@link #canReach} are the hooks each family fills).
  */
 public abstract class Enemy extends Character {
+  /** A contact attack has no swing: the cooldown starts at once. */
+  private static final int CONTACT_SWING_TICKS = 0;
+
+  /** An enemy holds no weapon: only its own attack speed sets the cooldown. */
+  private static final float NO_WEAPON_ATTACK_SPEED = 1f;
 
   private StateMachine<Enemy, EnemyState> ai;
 
@@ -31,8 +38,9 @@ public abstract class Enemy extends Character {
    * @param hurtbox the enemy's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
    * @param summoned true if a summoner spawned it; a summoned enemy never drops loot (Q16)
-   * @throws NullPointerException if {@code bodyBox}, {@code stats} or {@code hurtbox} is {@code
-   *     null}
+   * @param world the world it lives in: its walls stop it, its event bus hears its hits
+   * @throws NullPointerException if {@code bodyBox}, {@code stats}, {@code hurtbox} or {@code
+   *     world} is {@code null}
    * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} is negative
    */
   protected Enemy(
@@ -75,7 +83,8 @@ public abstract class Enemy extends Character {
   }
 
   /**
-   * Runs one step of the enemy's state machine (GDD 1.7).
+   * Runs one step of the enemy's state machine (GDD 1.7). An enemy whose HP reached 0 goes to
+   * {@link EnemyState#DEAD}.
    *
    * @param tick the number of current logic tick
    */
@@ -83,6 +92,9 @@ public abstract class Enemy extends Character {
   protected void think(long tick) {
     if (ai == null) {
       ai = new DefaultStateMachine<>(this, EnemyState.IDLE);
+    }
+    if (isDead() && !ai.isInState(EnemyState.DEAD)) {
+      ai.changeState(EnemyState.DEAD);
     }
     ai.update();
   }
@@ -120,6 +132,103 @@ public abstract class Enemy extends Character {
    * @param world the world the enemy lives in
    */
   protected abstract void attackTarget(World world);
+
+  /**
+   * Tells whether the target is close enough for {@link #attackTarget} to hit it. Each family fixes
+   * how far: its reach for a melee enemy.
+   *
+   * @param target the character to reach
+   * @return true if an attack now would hit it
+   */
+  protected abstract boolean canReach(Character target);
+
+  /**
+   * Tells whether this enemy has a target it still sees. Used by its states.
+   *
+   * @return true if it has a living target on a side it can hurt
+   */
+  boolean seesTarget() {
+    return target.filter(this::canSee).isPresent();
+  }
+
+  /**
+   * Tells whether this enemy can hit its target from where it stands. Used by its states.
+   *
+   * @return true if it sees its target and the target is in reach
+   */
+  boolean reachesTarget() {
+    return seesTarget() && canReach(target.orElseThrow());
+  }
+
+  /**
+   * Takes one step towards the target, at its speed. A wall or another enemy stops the step on its
+   * axis only, so the enemy slides along it like the player. Used by its states.
+   */
+  void stepTowardsTarget() {
+    if (!seesTarget()) {
+      return;
+    }
+    Aabb body = getBodyBox();
+    Aabb goal = target.orElseThrow().getBodyBox();
+    Vector2 direction =
+        new Vector2(
+                goal.x() + goal.width() / 2 - (body.x() + body.width() / 2),
+                goal.y() + goal.height() / 2 - (body.y() + body.height() / 2))
+            .nor();
+    Vector2 step = direction.scl(getSpeed() / GameConstants.TICKS_PER_SECOND);
+    Vector2 position = position();
+    if (canStandIn(body.translated(step.x, 0f))) {
+      position.x += step.x;
+    }
+    if (canStandIn(new Aabb(position.x, body.y() + step.y, body.width(), body.height()))) {
+      position.y += step.y;
+    }
+    moveTo(position);
+  }
+
+  /**
+   * Tells whether this enemy can stand in the given box: no wall, and no other living enemy that it
+   * does not touch yet. Enemies it already touches are ignored, so two enemies on top of each other
+   * can still move apart.
+   */
+  private boolean canStandIn(Aabb box) {
+    if (!world().isFree(box, this)) {
+      return false;
+    }
+    Aabb body = getBodyBox();
+    for (Entity other : world().getEntities()) {
+      if (other instanceof Enemy enemy
+          && !enemy.equals(this)
+          && !enemy.isDead()
+          && !enemy.isRemoved()
+          && !enemy.getBodyBox().overlaps(body)
+          && enemy.getBodyBox().overlaps(box)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Attacks the target if the cooldown allows it, then starts the cooldown: one attack per second
+   * times its attack speed (GDD 1.6). Used by its states.
+   */
+  void attackWhenReady() {
+    if (canAttack()) {
+      attackTarget(world());
+      startAttackCooldown(CONTACT_SWING_TICKS, NO_WEAPON_ATTACK_SPEED);
+    }
+  }
+
+  /**
+   * Switches this enemy to another state; gdx-ai calls exit() on the old one and enter() on the new
+   * one. Used by its states.
+   *
+   * @param next the state to go to
+   */
+  void changeState(EnemyState next) {
+    ai.changeState(next);
+  }
 
   /**
    * Tells whether a summoner spawned this enemy; a summoned enemy never drops loot (Q16).

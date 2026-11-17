@@ -11,21 +11,55 @@ import com.badlogic.gdx.ai.msg.Telegram;
  */
 public enum EnemyState implements State<Enemy> {
   /** Waits until it sees a target or is alerted. */
-  IDLE,
+  IDLE {
+    @Override
+    public void update(Enemy enemy) {
+      if (enemy.seesTarget()) {
+        enemy.changeState(CHASE);
+      }
+    }
+  },
   /** Walks towards its target (melee enemies). */
-  CHASE,
+  CHASE {
+    @Override
+    public void update(Enemy enemy) {
+      if (!enemy.seesTarget()) {
+        enemy.changeState(IDLE);
+      } else if (enemy.reachesTarget()) {
+        enemy.changeState(ATTACK);
+      } else {
+        enemy.stepTowardsTarget();
+      }
+    }
+  },
   /** Stays at its distance from its target (ranged enemies). */
   KEEP_DISTANCE,
   /** Runs away from its target (Necromancer). */
   FLEE,
   /** Hits, shoots or casts at its target. */
-  ATTACK,
+  ATTACK {
+    @Override
+    public void update(Enemy enemy) {
+      if (!enemy.seesTarget()) {
+        enemy.changeState(IDLE);
+      } else if (!enemy.reachesTarget()) {
+        enemy.changeState(CHASE);
+      } else {
+        enemy.attackWhenReady();
+      }
+    }
+  },
   /** Spawns other enemies (summoners). */
   SUMMON,
   /** Has just been hit. */
   HIT,
   /** HP at 0. */
-  DEAD;
+  DEAD {
+    @Override
+    public void enter(Enemy enemy) {
+      enemy.remove();
+    }
+  };
 
   @Override
   public void enter(Enemy enemy) {

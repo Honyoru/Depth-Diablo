@@ -78,15 +78,6 @@ class EnemyTest {
   }
 
   @Test
-  void should_stay_idle_when_updated_while_its_states_do_nothing() {
-    Enemy rat = aRat().build();
-
-    rat.update(1);
-
-    assertEquals(EnemyState.IDLE, rat.getState());
-  }
-
-  @Test
   void should_remember_whether_it_was_summoned() {
     assertTrue(aRat().summoned().build().isSummoned());
     assertFalse(aRat().build().isSummoned());

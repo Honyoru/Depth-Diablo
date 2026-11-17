@@ -25,8 +25,9 @@ public abstract class MeleeEnemy extends Enemy {
    * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
    * @param summoned true if a summoner spawned it
    * @param reach how far its attack goes past its body box, in pixels; 0 means touching
-   * @throws NullPointerException if {@code bodyBox}, {@code stats} or {@code hurtbox} is {@code
-   *     null}
+   * @param world the world it lives in
+   * @throws NullPointerException if {@code bodyBox}, {@code stats}, {@code hurtbox} or{@code world}
+   *     is {@code null}
    * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} or {@code reach} is
    *     negative, or {@code reach} is not finite
    */
@@ -67,7 +68,7 @@ public abstract class MeleeEnemy extends Enemy {
         || target.isDead()
         || target.isInvincible()
         || !getFaction().canHurt(target.getFaction())
-        || !attackArea().overlaps(target.getHurtbox())) {
+        || !canReach(target)) {
       return;
     }
     int damage = DamageFormula.compute(getAttack(), 0, 1.0, target.getDefense(), 0, 1.0);
@@ -76,6 +77,18 @@ public abstract class MeleeEnemy extends Enemy {
     if (target.isDead()) {
       world.getEventBus().publish(new EntityDied(target, Optional.of(this)));
     }
+  }
+
+  /**
+   * Tells whether the target's hurtbox is inside this enemy's attack area: its body box grown by
+   * its reach on every side.
+   *
+   * @param target the character to reach
+   * @return true if an attack now would touch it
+   */
+  @Override
+  protected boolean canReach(Character target) {
+    return attackArea().overlaps(target.getHurtbox());
   }
 
   private Obb attackArea() {
