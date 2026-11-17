@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.entity;
 
+import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
 
@@ -11,6 +12,7 @@ public final class Knight extends Player {
    *
    * @param bodyBox the box the knight occupies in the world; must not be {@code null}
    * @param stats where its stats come from; must not be {@code null}
+   * @param baseAttack the starting weapon; must not be {@code null}
    * @param hurtbox the knight's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
    * @param input what the user asks for; must not be {@code null}
@@ -19,10 +21,11 @@ public final class Knight extends Player {
   public Knight(
       Aabb bodyBox,
       StatSource stats,
+      Attack baseAttack,
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
       PlayerInput input,
       World world) {
-    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, input, world);
+    super(bodyBox, stats, baseAttack, hurtbox, invincibilityTicksAfterHit, input, world);
   }
 }

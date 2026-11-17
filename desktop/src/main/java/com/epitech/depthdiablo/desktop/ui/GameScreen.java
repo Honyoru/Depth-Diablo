@@ -17,6 +17,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.arena.ArenaCycle;
+import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.debug.EventLaser;
 import com.epitech.depthdiablo.debug.ViewMode;
 import com.epitech.depthdiablo.debug.ViewSwitcher;
@@ -31,6 +32,8 @@ import com.epitech.depthdiablo.entity.Player;
 import com.epitech.depthdiablo.entity.Rat;
 import com.epitech.depthdiablo.entity.Stat;
 import com.epitech.depthdiablo.entity.Wall;
+import com.epitech.depthdiablo.item.ItemFactory;
+import com.epitech.depthdiablo.item.Weapon;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -310,8 +313,14 @@ public final class GameScreen extends ScreenAdapter {
     stats.put(Stat.LUCK, 0f);
     Aabb body =
         new Aabb(spawn.x + 2f, spawn.y + 2f, 28f, 28f); // 28 px knight centred in a 32 px tile
+    Weapon sword =
+        (Weapon)
+            new ItemFactory(
+                    new DataRegistry(
+                        "items", () -> Gdx.files.internal("data/items.json").readString("UTF-8")))
+                .create("sword");
     return new Knight(
-        body, new BaseStats(stats), body, GameConstants.TICKS_PER_SECOND / 2, input, world);
+        body, new BaseStats(stats), sword, body, GameConstants.TICKS_PER_SECOND / 2, input, world);
   }
 
   /**

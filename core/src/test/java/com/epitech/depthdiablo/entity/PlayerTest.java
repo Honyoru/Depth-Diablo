@@ -10,6 +10,7 @@ import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
+import com.epitech.depthdiablo.testdata.Items;
 import java.util.EnumMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -128,7 +129,9 @@ class PlayerTest {
   void should_reject_a_null_input() {
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
 
-    assertThrows(NullPointerException.class, () -> new Knight(box, stats(), box, 0, null, world));
+    assertThrows(
+        NullPointerException.class,
+        () -> new Knight(box, stats(), Items.sword(), box, 0, null, world));
   }
 
   @Test
@@ -140,7 +143,7 @@ class PlayerTest {
 
   private Knight aKnight() {
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
-    return new Knight(box, stats(), box, 0, input, world);
+    return new Knight(box, stats(), Items.sword(), box, 0, input, world);
   }
 
   private static BaseStats stats() {
@@ -213,7 +216,7 @@ class PlayerTest {
   void should_carry_its_hurtbox_when_it_walks() {
     Aabb body = new Aabb(0f, 0f, 16f, 16f);
     Aabb hurtbox = new Aabb(4f, 8f, 8f, 8f);
-    Player player = new Knight(body, stats(), hurtbox, 0, input, world);
+    Player player = new Knight(body, stats(), Items.sword(), hurtbox, 0, input, world);
     input.point(1f, 0f);
 
     tick(player, 10);

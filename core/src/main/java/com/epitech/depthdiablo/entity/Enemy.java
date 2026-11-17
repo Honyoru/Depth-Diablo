@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
+import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.World;
 import java.util.Objects;
@@ -35,22 +36,24 @@ public abstract class Enemy extends Character {
    *
    * @param bodyBox the box the enemy occupies in the world; must not be {@code null}
    * @param stats where its stats come from (GDD 1.6); must not be {@code null}
+   * @param baseAttack its natural attack; must not be {@code null}
    * @param hurtbox the enemy's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
    * @param summoned true if a summoner spawned it; a summoned enemy never drops loot (Q16)
    * @param world the world it lives in: its walls stop it, its event bus hears its hits
-   * @throws NullPointerException if {@code bodyBox}, {@code stats}, {@code hurtbox} or {@code
-   *     world} is {@code null}
+   * @throws NullPointerException if {@code bodyBox}, {@code stats}, {@code baseAttack}, {@code
+   *     hurtbox} or {@code world} is {@code null}
    * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} is negative
    */
   protected Enemy(
       Aabb bodyBox,
       StatSource stats,
+      Attack baseAttack,
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
       boolean summoned,
       World world) {
-    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, world);
+    super(bodyBox, stats, baseAttack, hurtbox, invincibilityTicksAfterHit, world);
     this.summoned = summoned;
   }
 

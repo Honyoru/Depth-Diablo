@@ -1,5 +1,7 @@
 package com.epitech.depthdiablo.testdata;
 
+import com.epitech.depthdiablo.combat.AroundContactAttack;
+import com.epitech.depthdiablo.combat.ContactAttack;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.BaseStats;
@@ -99,7 +101,8 @@ public final class EnemyBuilder {
    * @return a new rat or zombie
    */
   public MeleeEnemy build() {
-    return kind.create(bodyBox, new BaseStats(stats), bodyBox, 0, summoned, reach, world);
+    return kind.create(
+        bodyBox, new BaseStats(stats), new AroundContactAttack(reach), bodyBox, 0, summoned, world);
   }
 
   /** The constructor of a real melee enemy: {@code Rat::new} or {@code Zombie::new}. */
@@ -108,10 +111,10 @@ public final class EnemyBuilder {
     MeleeEnemy create(
         Aabb bodyBox,
         StatSource stats,
+        ContactAttack attack,
         Aabb hurtbox,
         int invincibilityTicksAfterHit,
         boolean summoned,
-        float reach,
         World world);
   }
 }

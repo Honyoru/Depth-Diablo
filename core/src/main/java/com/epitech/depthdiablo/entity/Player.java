@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.entity;
 
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
+import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
@@ -21,6 +22,7 @@ public abstract class Player extends Character {
    *
    * @param bodyBox the box the player occupies in the world; must not be {@code null}
    * @param stats where its stats come from; must not be {@code null}
+   * @param baseAttack the starting weapon; must not be {@code null}
    * @param hurtbox the player's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
    * @param input what the user asks for; must not be {@code null}
@@ -29,11 +31,12 @@ public abstract class Player extends Character {
   protected Player(
       Aabb bodyBox,
       StatSource stats,
+      Attack baseAttack,
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
       PlayerInput input,
       World world) {
-    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, world);
+    super(bodyBox, stats, baseAttack, hurtbox, invincibilityTicksAfterHit, world);
     this.input = Objects.requireNonNull(input, "The input of a player must not be null");
   }
 

@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.testdata;
 
+import com.epitech.depthdiablo.combat.AroundContactAttack;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
@@ -170,7 +171,8 @@ public final class CharacterBuilder {
         int invincibilityTicksAfterHit,
         Faction faction,
         World world) {
-      super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, world);
+      super(
+          bodyBox, stats, new AroundContactAttack(0f), hurtbox, invincibilityTicksAfterHit, world);
       this.faction = faction;
     }
 

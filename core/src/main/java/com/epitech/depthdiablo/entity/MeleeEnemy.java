@@ -1,10 +1,12 @@
 package com.epitech.depthdiablo.entity;
 
+import com.epitech.depthdiablo.combat.ContactAttack;
 import com.epitech.depthdiablo.combat.DamageFormula;
 import com.epitech.depthdiablo.combat.Obb;
 import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.World;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -14,36 +16,33 @@ import java.util.Optional;
  */
 public abstract class MeleeEnemy extends Enemy {
 
-  private final float reach;
+  private final ContactAttack attack;
 
   /**
    * Creates a melee enemy.
    *
    * @param bodyBox the box the enemy occupies in the world; must not be {@code null}
    * @param stats where its stats come from (GDD 1.6); must not be {@code null}
+   * @param attack its contact attack, which holds its reach; it is also its base attack; must not
+   *     be {@code null}
    * @param hurtbox the enemy's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
    * @param summoned true if a summoner spawned it
-   * @param reach how far its attack goes past its body box, in pixels; 0 means touching
-   * @param world the world it lives in
-   * @throws NullPointerException if {@code bodyBox}, {@code stats}, {@code hurtbox} or{@code world}
-   *     is {@code null}
-   * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} or {@code reach} is
-   *     negative, or {@code reach} is not finite
+   * @param world the world it lives in; must not be {@code null}
+   * @throws NullPointerException if {@code bodyBox}, {@code stats}, {@code attack}, {@code hurtbox}
+   *     or {@code world} is {@code null}
+   * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} is negative
    */
   protected MeleeEnemy(
       Aabb bodyBox,
       StatSource stats,
+      ContactAttack attack,
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
       boolean summoned,
-      float reach,
       World world) {
-    super(bodyBox, stats, hurtbox, invincibilityTicksAfterHit, summoned, world);
-    if (!(reach >= 0) || Float.isInfinite(reach)) {
-      throw new IllegalArgumentException("reach must be a finite number of 0 or more: " + reach);
-    }
-    this.reach = reach;
+    super(bodyBox, stats, attack, hurtbox, invincibilityTicksAfterHit, summoned, world);
+    this.attack = Objects.requireNonNull(attack, "attack is null");
   }
 
   /**
@@ -52,7 +51,7 @@ public abstract class MeleeEnemy extends Enemy {
    * @return the reach in pixels, 0 or more
    */
   public float getReach() {
-    return reach;
+    return attack.getReach();
   }
 
   /**
@@ -93,6 +92,7 @@ public abstract class MeleeEnemy extends Enemy {
 
   private Obb attackArea() {
     Aabb body = getBodyBox();
+    float reach = getReach();
     return Obb.around(
         new Aabb(
             body.x() - reach,

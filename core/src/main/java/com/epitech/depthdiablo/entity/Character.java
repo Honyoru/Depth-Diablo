@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 public abstract class Character extends Entity implements Damageable {
 
-  private final StatSource stats;
+  private final CharacterBuild build;
 
   private int hp;
 
@@ -39,22 +39,30 @@ public abstract class Character extends Entity implements Damageable {
   private final World world;
 
   /**
-   * Creates a character with the specified body box, stats, hurtbox, and post-hit invincibility
-   * duration. It starts with full HP.
+   * Creates a character with the specified body box, stats, base attack, hurtbox, and post-hit
+   * invincibility duration. Its build starts as its stats and base attack (GDD 1.3.1). It starts
+   * with full HP.
    *
    * @param bodyBox the box the character occupies in the world; must not be {@code null}
    * @param stats where its stats come from (GDD 1.6), usually {@link BaseStats}, which checks the
    *     values; must not be {@code null}
+   * @param baseAttack its attack before any item: the starting weapon of a player, the natural
+   *     attack of an enemy; must not be {@code null}
    * @param hurtbox the character's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit the number of invincibility ticks granted after taking
    *     damage; must not be negative
    * @param world the world it lives in; its event bus gets the damage and death of status effects
    * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} is negative
-   * @throws NullPointerException if {@code bodyBox}, {@code stats}, {@code hurtbox} or {@code
-   *     world} is {@code null}
+   * @throws NullPointerException if {@code bodyBox}, {@code stats}, {@code baseAttack}, {@code
+   *     hurtbox} or {@code world} is {@code null}
    */
   protected Character(
-      Aabb bodyBox, StatSource stats, Aabb hurtbox, int invincibilityTicksAfterHit, World world) {
+      Aabb bodyBox,
+      StatSource stats,
+      Attack baseAttack,
+      Aabb hurtbox,
+      int invincibilityTicksAfterHit,
+      World world) {
     super(bodyBox);
     if (invincibilityTicksAfterHit < 0) {
       throw new IllegalArgumentException(
@@ -64,7 +72,7 @@ public abstract class Character extends Entity implements Damageable {
     }
     Objects.requireNonNull(hurtbox, "The hurtbox of a character must not be null");
     this.hurtboxFromBody = hurtbox.translated(-bodyBox.x(), -bodyBox.y());
-    this.stats = Objects.requireNonNull(stats, "The stats of a character must not be null");
+    this.build = new CharacterBuild(baseAttack, stats);
     this.hp = (int) stats.get(Stat.MAX_HP);
     this.invincibilityTicksAfterHit = invincibilityTicksAfterHit;
     this.world = Objects.requireNonNull(world, "...");
@@ -90,7 +98,7 @@ public abstract class Character extends Entity implements Damageable {
    * @return the attack, rounded down
    */
   public int getAttack() {
-    return (int) stats.get(Stat.ATTACK);
+    return (int) build.stats().get(Stat.ATTACK);
   }
 
   /**
@@ -100,7 +108,7 @@ public abstract class Character extends Entity implements Damageable {
    * @return the defense, rounded down
    */
   public int getDefense() {
-    return (int) stats.get(Stat.DEFENSE);
+    return (int) build.stats().get(Stat.DEFENSE);
   }
 
   /**
@@ -109,7 +117,7 @@ public abstract class Character extends Entity implements Damageable {
    * @return the speed in pixels per second
    */
   public float getSpeed() {
-    return stats.get(Stat.SPEED);
+    return build.stats().get(Stat.SPEED);
   }
 
   /**
@@ -119,7 +127,7 @@ public abstract class Character extends Entity implements Damageable {
    * @return the multiplier; 0 means it never attacks
    */
   public float getAttackSpeed() {
-    return stats.get(Stat.ATTACK_SPEED);
+    return build.stats().get(Stat.ATTACK_SPEED);
   }
 
   /**
@@ -129,6 +137,24 @@ public abstract class Character extends Entity implements Damageable {
    */
   public Optional<Swing> getCurrentSwing() {
     return Optional.ofNullable(currentSwing).filter(swing -> !swing.isOver());
+  }
+
+  /**
+   * Returns the character's maximum health.
+   *
+   * @return the maximum HP, rounded down
+   */
+  public int getMaxHp() {
+    return (int) build.stats().get(Stat.MAX_HP);
+  }
+
+  /**
+   * Returns what this character fights with now: its attack and its stats (GDD 1.3.1).
+   *
+   * @return the current build
+   */
+  public CharacterBuild getBuild() {
+    return build;
   }
 
   /**
@@ -297,24 +323,6 @@ public abstract class Character extends Entity implements Damageable {
       throw new IllegalStateException("Still swinging");
     }
     currentSwing = swing;
-  }
-
-  /**
-   * Returns the swing running now, for the renderer.
-   *
-   * @return the current swing, or empty if this character is not swinging or its swing is over
-   */
-  public Optional<Swing> currentSwing() {
-    return Optional.ofNullable(currentSwing).filter(swing -> !swing.isOver());
-  }
-
-  /**
-   * Returns the character's maximum health.
-   *
-   * @return the maximum HP, rounded down
-   */
-  public int getMaxHp() {
-    return (int) stats.get(Stat.MAX_HP);
   }
 
   /**

@@ -36,7 +36,7 @@ public final class DataRegistry {
    * @throws NullPointerException if an argument is null
    * @throws IllegalArgumentException if the text has no such array, or an entry has no id or the
    *     same id as another
-   * @throws com.badlogic.gdx.utils.SerializationException if the text is not valid JSON
+   * @throws SerializationException if the text is not valid JSON
    */
   public DataRegistry(String category, Supplier<String> source) {
     this.category = Objects.requireNonNull(category, "The data category must not be null");
@@ -59,7 +59,7 @@ public final class DataRegistry {
    *
    * @throws IllegalArgumentException if the text has no such array, or an entry has no id or the
    *     same id as another
-   * @throws com.badlogic.gdx.utils.SerializationException if the text is not valid JSON
+   * @throws SerializationException if the text is not valid JSON
    */
   public void reload() {
     JsonValue entries = new JsonReader().parse(source.get()).get(category);
@@ -77,7 +77,7 @@ public final class DataRegistry {
   }
 
   /**
-   * Returns the entrey with the given id.
+   * Returns the entry with the given id.
    *
    * @param id the entry's id ex{@code "rat"}
    * @return its json values

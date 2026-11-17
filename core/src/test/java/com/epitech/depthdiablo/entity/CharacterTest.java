@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.epitech.depthdiablo.combat.AroundContactAttack;
+import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.Burn;
 import com.epitech.depthdiablo.combat.BurnSpec;
 import com.epitech.depthdiablo.combat.Faction;
@@ -527,6 +529,32 @@ class CharacterTest {
   }
 
   @Test
+  void should_start_with_its_base_attack() {
+    Sword sword = Items.sword();
+
+    Character character = new CountingCharacter(stat -> 1f, sword);
+
+    assertSame(sword, character.build().attack());
+  }
+
+  @Test
+  void should_read_its_stats_from_its_build() {
+    StatSource stats = stat -> stat == Stat.ATTACK ? 7f : 1f;
+
+    Character character = new CountingCharacter(stats, Items.sword());
+
+    assertSame(stats, character.build().stats());
+    assertEquals(7, character.attack());
+  }
+
+  @Test
+  void should_throw_when_the_base_attack_is_null() {
+    StatSource stats = stat -> 1f;
+
+    assertThrows(NullPointerException.class, () -> new CountingCharacter(stats, null));
+  }
+
+  @Test
   void should_tick_its_status_effects_once_per_update() {
     Character character = aCharacter().build();
     CountingEffect effect = new CountingEffect(5, aCharacter().build());
@@ -717,7 +745,11 @@ class CharacterTest {
     }
 
     CountingCharacter(StatSource stats) {
-      super(new Aabb(0, 0, 16, 16), stats, new Aabb(0, 0, 16, 16), 0, new World());
+      this(stats, new AroundContactAttack(0f));
+    }
+
+    CountingCharacter(StatSource stats, Attack baseAttack) {
+      super(new Aabb(0, 0, 16, 16), stats, baseAttack, new Aabb(0, 0, 16, 16), 0, new World());
     }
 
     @Override
