@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.desktop.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -25,6 +26,7 @@ import com.epitech.depthdiablo.entity.Knight;
 import com.epitech.depthdiablo.entity.Player;
 import com.epitech.depthdiablo.entity.Stat;
 import com.epitech.depthdiablo.entity.Wall;
+import com.badlogic.gdx.graphics.Color;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -45,6 +47,10 @@ public final class GameScreen extends ScreenAdapter {
   private final OrthographicCamera minimapCamera;
 
   private final TiledMap tiledMap;
+
+  private static final Color DEFAULT_CLEAR = new Color(0.05f, 0.05f, 0.07f, 1f);
+
+  private final Color clearColor;
 
   private final OrthogonalTiledMapRenderer mapRenderer;
 
@@ -124,6 +130,8 @@ public final class GameScreen extends ScreenAdapter {
     this.minimapCamera.setToOrtho(false, MINIMAP_WORLD_SIZE, MINIMAP_WORLD_SIZE);
 
     this.tiledMap = new TmxMapLoader().load(DEFAULT_MAP_PATH);
+    this.clearColor = readBackgroundColor(tiledMap);
+    
     this.mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, app.getBatch());
     this.batch = app.getBatch();
     this.worldCamera.zoom = CAMERA_ZOOM;
@@ -175,7 +183,7 @@ public final class GameScreen extends ScreenAdapter {
 
     hudState.syncFromCharacter(player);
 
-    Gdx.gl.glClearColor(0.05f, 0.05f, 0.07f, 1f);
+    Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
     // 1. The world, drawn by the renderer of the current F1 view
@@ -320,5 +328,14 @@ public final class GameScreen extends ScreenAdapter {
     worldCamera.position.set(
         drawPosition.x + body.width() / 2f, drawPosition.y + body.height() / 2f, 0f);
     worldCamera.update();
+  }
+
+  /** Tiled's map "backgroundcolor" (e.g. "#281e1c"), or the default when the map has none. */
+  private static Color readBackgroundColor(TiledMap map) {
+    String hex = map.getProperties().get("backgroundcolor", String.class);
+    if (hex == null){
+      return DEFAULT_CLEAR;
+    }
+    else return Color.valueOf(hex);
   }
 }
