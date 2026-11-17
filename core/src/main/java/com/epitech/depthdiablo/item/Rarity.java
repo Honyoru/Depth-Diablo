@@ -16,5 +16,7 @@ public enum Rarity {
   /** The rarest equipment. */
   LEGENDARY,
   /** Every consumable, such as potions and roulette tickets. */
-  CONSUMABLE
+  CONSUMABLE,
+  /** Every passive, such has ring and equippement */
+  PASSIVE
 }

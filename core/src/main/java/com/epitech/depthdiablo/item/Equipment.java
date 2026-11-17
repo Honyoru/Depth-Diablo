@@ -15,7 +15,7 @@ public abstract class Equipment extends Item implements BuildModifier {
    * @param id the item's key in the data files
    * @param nameKey the translation key of its name
    * @param spriteId the picture the renderer draws for it
-   * @param rarity its loot tier; never {@link Rarity#CONSUMABLE}
+   * @param rarity its loot tier; never {@link Rarity#CONSUMABLE} or {@link Rarity#PASSIVE}
    * @param price its shop price in coins; 0 means free
    * @throws NullPointerException if a text or the rarity is {@code null}
    * @throws IllegalArgumentException if a text is blank, the price is negative or the rarity is
@@ -25,6 +25,9 @@ public abstract class Equipment extends Item implements BuildModifier {
     super(id, nameKey, spriteId, rarity, price);
     if (rarity == Rarity.CONSUMABLE) {
       throw new IllegalArgumentException("Equipment cannot have the CONSUMABLE rarity");
+    }
+    if (rarity == Rarity.PASSIVE) {
+      throw new IllegalArgumentException("Equipment cannot have the PASSIVE rarity");
     }
   }
 }
