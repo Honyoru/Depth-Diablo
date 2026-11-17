@@ -12,6 +12,7 @@ import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.Burn;
 import com.epitech.depthdiablo.combat.BurnSpec;
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.combat.HitResult;
 import com.epitech.depthdiablo.combat.StatusEffect;
 import com.epitech.depthdiablo.combat.Swing;
 import com.epitech.depthdiablo.engine.DamageDealt;
@@ -787,6 +788,53 @@ class CharacterTest {
     character.rebuild(List.of(higherMaxHp));
 
     assertEquals(10, character.getHp());
+  }
+
+  @Test
+  void should_deal_the_formula_damage_when_it_hits() {
+    Character attacker = aCharacter().withAttack(12).build();
+    Character target = aCharacter().withHp(20).withDefense(3).build();
+
+    HitResult result = attacker.hit(target);
+
+    assertEquals(4, result.damage());
+    assertFalse(result.killed());
+    assertEquals(16, target.getHp());
+  }
+
+  @Test
+  void should_tell_when_its_hit_kills_the_target() {
+    Character attacker = aCharacter().withAttack(12).build();
+    Character target = aCharacter().withHp(4).withDefense(3).build();
+
+    assertTrue(attacker.hit(target).killed());
+    assertTrue(target.isDead());
+  }
+
+  @Test
+  void should_deal_no_damage_when_the_target_is_invincible() {
+    Character attacker = aCharacter().withAttack(12).build();
+    Character target = aCharacter().withHp(20).build();
+    target.grantInvincibility(30);
+
+    assertEquals(HitResult.NONE, attacker.hit(target));
+    assertEquals(20, target.getHp());
+  }
+
+  @Test
+  void should_deal_no_damage_when_the_target_is_dead() {
+    Character attacker = aCharacter().build();
+    Character target = aCharacter().withHp(1).build();
+    target.takeDamage(1);
+
+    assertEquals(HitResult.NONE, attacker.hit(target));
+  }
+
+  @Test
+  void should_throw_when_the_hit_target_is_null() {
+    Character attacker = aCharacter().build();
+
+    assertThrows(NullPointerException.class, () -> attacker.hit(null));
   }
 
   private static BuildModifier attackSpeedTimes(float factor) {
