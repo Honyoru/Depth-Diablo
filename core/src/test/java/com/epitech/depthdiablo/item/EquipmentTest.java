@@ -28,4 +28,23 @@ class EquipmentTest {
     return new Sword(
         "sword", "item.sword.name", "items/sword", rarity, 30, 2, 1f, 24f, 8f, 90f, 12);
   }
+
+  @Test
+  void should_throw_when_the_rarity_is_passive() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new Sword(
+                "sword_iron",
+                "item.sword_iron.name",
+                "items/sword_iron",
+                Rarity.PASSIVE,
+                30,
+                2,
+                1f,
+                24f,
+                8f,
+                90f,
+                12));
+  }
 }
