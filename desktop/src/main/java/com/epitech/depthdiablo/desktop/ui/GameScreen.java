@@ -26,7 +26,6 @@ import com.epitech.depthdiablo.entity.Knight;
 import com.epitech.depthdiablo.entity.Player;
 import com.epitech.depthdiablo.entity.Stat;
 import com.epitech.depthdiablo.entity.Wall;
-import com.badlogic.gdx.graphics.Color;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -131,7 +130,7 @@ public final class GameScreen extends ScreenAdapter {
 
     this.tiledMap = new TmxMapLoader().load(DEFAULT_MAP_PATH);
     this.clearColor = readBackgroundColor(tiledMap);
-    
+
     this.mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, app.getBatch());
     this.batch = app.getBatch();
     this.worldCamera.zoom = CAMERA_ZOOM;
@@ -333,9 +332,8 @@ public final class GameScreen extends ScreenAdapter {
   /** Tiled's map "backgroundcolor" (e.g. "#281e1c"), or the default when the map has none. */
   private static Color readBackgroundColor(TiledMap map) {
     String hex = map.getProperties().get("backgroundcolor", String.class);
-    if (hex == null){
+    if (hex == null) {
       return DEFAULT_CLEAR;
-    }
-    else return Color.valueOf(hex);
+    } else return Color.valueOf(hex);
   }
 }
