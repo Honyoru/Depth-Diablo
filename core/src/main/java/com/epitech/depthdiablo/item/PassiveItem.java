@@ -7,9 +7,11 @@ import com.epitech.depthdiablo.entity.StatSource;
 import java.util.Objects;
 
 /**
- * An item used once from the hotbar, such as a potion (GDD 1.3.1, 1.4).
+ * A permanent modifier the player holds, such as the fire ring (GDD 1.3.1, 1.4). It changes the
+ * holder's build: its stats, its attack, or both.
  *
- * <p>Pattern: Command. Each consumable is one action the player triggers.
+ * <p>Pattern: Decorator. Each passive wraps the stats or the attack it is given; the build applies
+ * them in pickup order, so removing one and rebuilding restores the holder exactly.
  */
 public abstract class PassiveItem extends Item implements BuildModifier {
 
@@ -28,16 +30,35 @@ public abstract class PassiveItem extends Item implements BuildModifier {
     super(id, nameKey, spriteId, Rarity.PASSIVE, price);
   }
 
-  /** Returns the stats with this item's effect; by default the item doesn't touch stats. */
+  /**
+   * Returns the stats with this item's effect. By default a passive does not touch the stats.
+   *
+   * @param inner the stats so far
+   * @return the stats with the effect; {@code inner} itself by default
+   * @throws NullPointerException if {@code inner} is {@code null}
+   */
   public StatSource decorateStats(StatSource inner) {
     return Objects.requireNonNull(inner, "...");
   }
 
-  /** Returns the attack with this item's effect; by default the item doesn't touch the attack. */
+  /**
+   * Returns the attack with this item's effect. By default a passive does not touch the attack.
+   *
+   * @param inner the attack so far
+   * @return the attack with the effect; {@code inner} itself by default
+   * @throws NullPointerException if {@code inner} is {@code null}
+   */
   public Attack decorateAttack(Attack inner) {
     return Objects.requireNonNull(inner, "...");
   }
 
+  /**
+   * Applies this item to a build through its two hooks. Subclasses change the hooks, never this.
+   *
+   * @param build the build so far; it is not changed
+   * @return a new build with the decorated stats and attack
+   * @throws NullPointerException if {@code build} is {@code null}
+   */
   @Override
   public final CharacterBuild modify(CharacterBuild build) {
     Objects.requireNonNull(build, "...");

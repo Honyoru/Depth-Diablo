@@ -6,9 +6,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
+/**
+ * Reads one entry of {@code data/items.json} into an {@link ItemSpec} (Q93, Q129). The entry comes
+ * from the {@link com.epitech.depthdiablo.data.DataRegistry}, which parses the file; this is the
+ * only class of the item package that reads JSON fields.
+ */
 public final class ItemSpecReader {
   private ItemSpecReader() {}
 
+  /** One reader per {@code "class"} of the data file; a new item kind is one more entry. */
   private static final Map<String, BiFunction<String, JsonValue, ItemSpec>> READERS =
       Map.of(
           "Potion",
@@ -42,6 +48,7 @@ public final class ItemSpecReader {
                   json.getInt("price"),
                   readBurn(id, json.get("burn"))));
 
+  /** Reads the {@code "burn"} object of a fire ring entry. */
   private static BurnSpec readBurn(String id, JsonValue burn) {
     if (burn == null) {
       throw new IllegalArgumentException("Item " + id + " has no \"burn\" object in the data file");
@@ -50,6 +57,16 @@ public final class ItemSpecReader {
         burn.getInt("damage"), burn.getInt("intervalTicks"), burn.getInt("durationTicks"));
   }
 
+  /**
+   * Reads an entry into the spec of its {@code "class"}.
+   *
+   * @param id the item's id, e.g. {@code "fire_ring"}
+   * @param entry its entry in the data file
+   * @return the typed values of the entry
+   * @throws NullPointerException if an argument is {@code null}
+   * @throws IllegalArgumentException if the class is missing or unknown, or a value is missing or
+   *     invalid
+   */
   public static ItemSpec read(String id, JsonValue entry) {
     Objects.requireNonNull(id, "The item id must not be null");
     Objects.requireNonNull(entry, "The item entry must not be null");

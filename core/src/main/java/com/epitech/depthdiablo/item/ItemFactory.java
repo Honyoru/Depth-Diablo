@@ -5,12 +5,12 @@ import java.util.Objects;
 
 /**
  * Builds items from {@code data/items.json} (Q23, Q129). Each entry names its class ex {@code
- * "class":"Potion"} plus its values. After F5 the next {@link #create(String)} use the new values.
+ * "class":"Potion"} plus its values; {@link ItemSpecReader} reads them into an {@link ItemSpec}.
+ * After F5 the next {@link #create(String)} use the new values.
  *
  * <p>Pattern: Simple Factory
  */
 public final class ItemFactory {
-  /** One builder per {@code "class"} of the data file; a new item type is one more line. */
   private final DataRegistry items;
 
   /**

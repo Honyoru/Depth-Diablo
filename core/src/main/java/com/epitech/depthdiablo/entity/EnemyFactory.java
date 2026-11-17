@@ -4,9 +4,9 @@ import com.epitech.depthdiablo.data.DataRegistry;
 import java.util.Objects;
 
 /**
- * Reads enemy type from {@code data/enemies.json} (Q23, Q129). Until the Enemy class exists it
- * gives the values as an {@link EnemySpec}; {@code create(id, floor, summoned)} (UML) will build
- * the Enemy from it. After F5 the next call uses the new values.
+ * Reads enemy type from {@code data/enemies.json} (Q23, Q129) through {@link EnemySpecReader}.
+ * Until the Enemy class exists it gives the values as an {@link EnemySpec}; {@code create(id,
+ * floor, summoned)} (UML) will build the Enemy from it. After F5 the next call uses the new values.
  *
  * <p>Pattern: Simple Factory.
  */

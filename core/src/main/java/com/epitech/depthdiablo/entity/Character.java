@@ -48,9 +48,10 @@ public abstract class Character extends Entity implements Damageable {
    * @param hurtbox the character's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit the number of invincibility ticks granted after taking
    *     damage; must not be negative
+   * @param world the world it lives in; its event bus gets the damage and death of status effects
    * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} is negative
-   * @throws NullPointerException if {@code bodyBox}, {@code stats} or {@code hurtbox} is {@code
-   *     null}
+   * @throws NullPointerException if {@code bodyBox}, {@code stats}, {@code hurtbox} or {@code
+   *     world} is {@code null}
    */
   protected Character(
       Aabb bodyBox, StatSource stats, Aabb hurtbox, int invincibilityTicksAfterHit, World world) {
@@ -131,9 +132,9 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
-   * Counts the invincibility down, runs the current swing, counts the swing of the current attack
-   * down, then its cooldown once the swing is over, and performs character-specific behavior for
-   * the tick.
+   * Ticks the status effects and drops the ones that are over (all of them once dead), counts the
+   * invincibility down, runs the current swing, counts the swing of the current attack down, then
+   * its cooldown once the swing is over, and performs character-specific behavior for the tick.
    */
   @Override
   protected final void onUpdate(long tick) {
@@ -316,6 +317,13 @@ public abstract class Character extends Entity implements Damageable {
     return (int) stats.get(Stat.MAX_HP);
   }
 
+  /**
+   * Adds a status effect, such as a burn (GDD 1.3.1). It ticks from the next update until it is
+   * over. Effects stack: two burns both deal their damage. Does nothing once the character is dead.
+   *
+   * @param effect the effect to add
+   * @throws NullPointerException if {@code effect} is {@code null}
+   */
   public void applyStatus(StatusEffect effect) {
     Objects.requireNonNull(effect, "status effect is null");
     if (isDead()) {
@@ -324,7 +332,18 @@ public abstract class Character extends Entity implements Damageable {
     statuses.add(effect);
   }
 
-  // Character
+  /**
+   * Takes damage from a status effect, such as a burn tick (GDD 1.3.1). Unlike {@link
+   * #takeDamage(int)}, it ignores invincibility and grants none: a burn keeps ticking during the
+   * frames after a hit, and never blocks the next hit. The amount is applied as is, without the
+   * damage formula. It publishes a {@link DamageDealt}, then an {@link EntityDied} if it kills,
+   * both credited to the source. Does nothing once the character is dead.
+   *
+   * @param amount the HP to lose; must be at least 1
+   * @param source the character who applied the effect
+   * @throws IllegalArgumentException if {@code amount} is less than 1
+   * @throws NullPointerException if {@code source} is {@code null}
+   */
   public void takeStatusDamage(int amount, Character source) {
     if (amount < 1) {
       throw new IllegalArgumentException("Status damage amount must be at least 1, was " + amount);
@@ -340,6 +359,11 @@ public abstract class Character extends Entity implements Damageable {
     }
   }
 
+  /**
+   * Returns the world this character lives in.
+   *
+   * @return the world given at creation
+   */
   protected World world() {
     return world;
   }

@@ -5,9 +5,22 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Reads one entry of {@code data/enemies.json} into an {@link EnemySpec} (Q23, Q129). The entry
+ * comes from the {@link com.epitech.depthdiablo.data.DataRegistry}, which parses the file.
+ */
 public final class EnemySpecReader {
   private EnemySpecReader() {}
 
+  /**
+   * Reads an entry into the values of its enemy type.
+   *
+   * @param id the enemy's id, e.g. {@code "rat"}
+   * @param entry its entry in the data file
+   * @return its values
+   * @throws NullPointerException if an argument is {@code null}
+   * @throws IllegalArgumentException if a value is missing or invalid
+   */
   public static EnemySpec read(String id, JsonValue entry) {
     Objects.requireNonNull(id, "The id of an enemy must not be null");
     Objects.requireNonNull(entry, "The entry of enemy " + id + " must not be null");

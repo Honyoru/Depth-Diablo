@@ -5,31 +5,48 @@ import com.epitech.depthdiablo.combat.BurnSpec;
 import com.epitech.depthdiablo.combat.FireTouch;
 import java.util.Objects;
 
-/** A consumable that restores HP to the character who drinks it (GDD 1.3.1, 1.4). */
+/**
+ * A passive item that makes every landed hit of its holder burn the target (GDD 1.3.1, 1.4.1). It
+ * wraps the holder's attack in a {@link FireTouch} and leaves the stats alone.
+ */
 public final class FireRing extends PassiveItem {
 
   private final BurnSpec burn;
 
   /**
-   * Creates a potion. The heal amount comes from {@code data/items.json} (Q93), so potions of
-   * different sizes are the same class with different data.
+   * Creates a fire ring. The burn comes from {@code data/items.json} (Q93), so rings of different
+   * strengths are the same class with different data.
    *
    * @param id the item's key in the data files
    * @param nameKey the translation key of its name
    * @param spriteId the picture the renderer draws for it
    * @param price its shop price in coins; 0 means free
-   *     <p>healAmount} is less than 1
+   * @param burn the burn each landed hit applies
+   * @throws NullPointerException if a text or {@code burn} is {@code null}
+   * @throws IllegalArgumentException if a text is blank or the price is negative
    */
   public FireRing(String id, String nameKey, String spriteId, int price, BurnSpec burn) {
     super(id, nameKey, spriteId, price);
     this.burn = Objects.requireNonNull(burn, "The burn spec of a fire ring must not be null");
   }
 
+  /**
+   * Wraps the attack so that every landed hit burns the target.
+   *
+   * @param inner the attack so far
+   * @return a fire touch around {@code inner}
+   * @throws NullPointerException if {@code inner} is {@code null}
+   */
   @Override
   public Attack decorateAttack(Attack inner) {
     return new FireTouch(Objects.requireNonNull(inner, "inner is null"), burn);
   }
 
+  /**
+   * Returns the burn this ring applies.
+   *
+   * @return its burn values
+   */
   public BurnSpec getBurn() {
     return burn;
   }
