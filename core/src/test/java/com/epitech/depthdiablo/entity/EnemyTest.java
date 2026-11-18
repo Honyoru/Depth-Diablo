@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 /** What every enemy shares, checked on real rats and zombies (GDD 1.3.1, 1.7). */
 class EnemyTest {
 
+  private static final float DELTA = 0.001f;
+
   @Test
   void should_start_idle_on_the_enemy_side_with_no_target() {
     Enemy rat = aRat().build();
@@ -89,6 +91,45 @@ class EnemyTest {
 
     assertThrows(NullPointerException.class, () -> rat.canSee(null));
     assertThrows(NullPointerException.class, () -> rat.alert(null));
+  }
+
+  @Test
+  void should_aim_right_at_a_target_on_its_right() {
+    Enemy rat = aRat().build();
+
+    assertEquals(0f, rat.aimAt(aTargetAt(40f, 0f)), DELTA);
+  }
+
+  @Test
+  void should_aim_up_at_a_target_above() {
+    Enemy rat = aRat().build();
+
+    assertEquals(90f, rat.aimAt(aTargetAt(0f, 40f)), DELTA);
+  }
+
+  @Test
+  void should_aim_at_the_diagonal_of_a_target_up_and_right() {
+    Enemy rat = aRat().build();
+
+    assertEquals(45f, rat.aimAt(aTargetAt(40f, 40f)), DELTA);
+  }
+
+  @Test
+  void should_aim_left_at_a_target_on_its_left() {
+    Enemy rat = aRat().build();
+
+    assertEquals(180f, rat.aimAt(aTargetAt(-40f, 0f)), DELTA);
+  }
+
+  @Test
+  void should_throw_when_the_aimed_target_is_null() {
+    Enemy rat = aRat().build();
+
+    assertThrows(NullPointerException.class, () -> rat.aimAt(null));
+  }
+
+  private static Character aTargetAt(float x, float y) {
+    return aCharacter().withBodyBox(new Aabb(x, y, 16f, 16f)).build();
   }
 
   private static Character aPlayer() {

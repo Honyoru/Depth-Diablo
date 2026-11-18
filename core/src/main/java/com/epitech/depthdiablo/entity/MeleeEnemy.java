@@ -1,18 +1,14 @@
 package com.epitech.depthdiablo.entity;
 
 import com.epitech.depthdiablo.combat.ContactAttack;
-import com.epitech.depthdiablo.combat.DamageFormula;
-import com.epitech.depthdiablo.combat.Obb;
-import com.epitech.depthdiablo.engine.DamageDealt;
-import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.World;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
- * The enemies that hit at contact: Rat, Zombie, Orc (GDD 1.3.1). Its attack covers its body box
- * grown by its reach on every side, as an {@link Obb} at angle 0 (DECISIONS §5), and uses the
- * damage formula with no bonus and no buff (GDD 1.6).
+ * The enemies that hit at contact: Rat, Zombie, Orc (GDD 1.3.1). They attack with their {@link
+ * ContactAttack}, aimed at their target's centre: the attack decides the area, around or in front,
+ * and the damage formula (GDD 1.6).
  */
 public abstract class MeleeEnemy extends Enemy {
 
@@ -55,49 +51,28 @@ public abstract class MeleeEnemy extends Enemy {
   }
 
   /**
-   * Hits the target if its hurtbox is in reach and it can be hurt, then publishes the damage dealt,
-   * and the death if the hit kills it.
+   * Attacks the target with its contact attack, aimed at the target's centre, if it still sees it
+   * and its attack touches it. The attack starts the cooldown and hits through the build (GDD
+   * 1.3.1, 1.6).
    *
    * @param world the world the enemy lives in
    */
   @Override
   protected void attackTarget(World world) {
-    Character target = getTarget().orElse(null);
-    if (target == null
-        || target.isDead()
-        || target.isInvincible()
-        || !getFaction().canHurt(target.getFaction())
-        || !canReach(target)) {
-      return;
-    }
-    int damage = DamageFormula.compute(getAttack(), 0, 1.0, target.getDefense(), 0, 1.0);
-    target.takeDamage(damage);
-    world.getEventBus().publish(new DamageDealt(this, target, damage));
-    if (target.isDead()) {
-      world.getEventBus().publish(new EntityDied(target, Optional.of(this)));
+    Optional<Character> target = getTarget().filter(this::canSee).filter(this::canReach);
+    if (target.isPresent()) {
+      startAttack(attack, aimAt(target.get()), world);
     }
   }
 
   /**
-   * Tells whether the target's hurtbox is inside this enemy's attack area: its body box grown by
-   * its reach on every side.
+   * Tells whether its contact attack, aimed at the target's centre, touches the target's hurtbox.
    *
    * @param target the character to reach
    * @return true if an attack now would touch it
    */
   @Override
   protected boolean canReach(Character target) {
-    return attackArea().overlaps(target.getHurtbox());
-  }
-
-  private Obb attackArea() {
-    Aabb body = getBodyBox();
-    float reach = getReach();
-    return Obb.around(
-        new Aabb(
-            body.x() - reach,
-            body.y() - reach,
-            body.width() + 2 * reach,
-            body.height() + 2 * reach));
+    return attack.touches(getBodyBox(), aimAt(target), target.getHurtbox());
   }
 }

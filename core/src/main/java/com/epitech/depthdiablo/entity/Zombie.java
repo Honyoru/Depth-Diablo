@@ -1,6 +1,6 @@
 package com.epitech.depthdiablo.entity;
 
-import com.epitech.depthdiablo.combat.ContactAttack;
+import com.epitech.depthdiablo.combat.FrontContactAttack;
 import com.epitech.depthdiablo.engine.World;
 
 /**
@@ -14,7 +14,7 @@ public final class Zombie extends MeleeEnemy {
    *
    * @param bodyBox the box the rat occupies in the world; must not be {@code null}
    * @param stats where its stats come from (GDD 1.6); must not be {@code null}
-   * @param attack its contact attack, which holds its reach; must not be {@code null}
+   * @param reach how far its bite goes past its body box, in pixels; 0 or more and finite
    * @param hurtbox the rat's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
    * @param summoned true if a summoner spawned it
@@ -23,11 +23,18 @@ public final class Zombie extends MeleeEnemy {
   public Zombie(
       Aabb bodyBox,
       StatSource stats,
-      ContactAttack attack,
+      float reach,
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
       boolean summoned,
       World world) {
-    super(bodyBox, stats, attack, hurtbox, invincibilityTicksAfterHit, summoned, world);
+    super(
+        bodyBox,
+        stats,
+        new FrontContactAttack(reach),
+        hurtbox,
+        invincibilityTicksAfterHit,
+        summoned,
+        world);
   }
 }

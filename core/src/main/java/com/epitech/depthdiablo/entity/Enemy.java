@@ -19,12 +19,6 @@ import java.util.Optional;
  * #attackTarget} and {@link #canReach} are the hooks each family fills).
  */
 public abstract class Enemy extends Character {
-  /** A contact attack has no swing: the cooldown starts at once. */
-  private static final int CONTACT_SWING_TICKS = 0;
-
-  /** An enemy holds no weapon: only its own attack speed sets the cooldown. */
-  private static final float NO_WEAPON_ATTACK_SPEED = 1f;
-
   private StateMachine<Enemy, EnemyState> ai;
 
   private Optional<Character> target = Optional.empty();
@@ -131,6 +125,7 @@ public abstract class Enemy extends Character {
 
   /**
    * Attacks the target if it can. Each family fixes how: contact, projectile or summon (GDD 1.3.1).
+   * It also starts the cooldown, through its attack.
    *
    * @param world the world the enemy lives in
    */
@@ -172,12 +167,7 @@ public abstract class Enemy extends Character {
       return;
     }
     Aabb body = getBodyBox();
-    Aabb goal = target.orElseThrow().getBodyBox();
-    Vector2 direction =
-        new Vector2(
-                goal.x() + goal.width() / 2 - (body.x() + body.width() / 2),
-                goal.y() + goal.height() / 2 - (body.y() + body.height() / 2))
-            .nor();
+    Vector2 direction = towards(target.orElseThrow()).nor();
     Vector2 step = direction.scl(getSpeed() / GameConstants.TICKS_PER_SECOND);
     Vector2 position = position();
     if (canStandIn(body.translated(step.x, 0f))) {
@@ -187,6 +177,25 @@ public abstract class Enemy extends Character {
       position.y += step.y;
     }
     moveTo(position);
+  }
+
+  /**
+   * Returns the direction from this enemy's centre to the target's centre, for its attack.
+   *
+   * @param target the character to aim at
+   * @return the aim in degrees (0 = right, 90 = up), from 0 to 360
+   * @throws NullPointerException if {@code target} is {@code null}
+   */
+  float aimAt(Character target) {
+    return towards(Objects.requireNonNull(target, "target is null")).angleDeg();
+  }
+
+  private Vector2 towards(Character target) {
+    Aabb body = getBodyBox();
+    Aabb goal = target.getBodyBox();
+    return new Vector2(
+        goal.x() + goal.width() / 2 - (body.x() + body.width() / 2),
+        goal.y() + goal.height() / 2 - (body.y() + body.height() / 2));
   }
 
   /**
@@ -219,7 +228,6 @@ public abstract class Enemy extends Character {
   void attackWhenReady() {
     if (canAttack()) {
       attackTarget(world());
-      startAttackCooldown(CONTACT_SWING_TICKS, NO_WEAPON_ATTACK_SPEED);
     }
   }
 

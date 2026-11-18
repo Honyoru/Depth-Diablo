@@ -4,6 +4,7 @@ import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static com.epitech.depthdiablo.testdata.EnemyBuilder.aRat;
 import static com.epitech.depthdiablo.testdata.EnemyBuilder.aZombie;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -61,6 +62,7 @@ class MeleeEnemyTest {
             .withHurtbox(box)
             .withHp(2)
             .build();
+    world.add(player);
     rat.alert(player);
 
     rat.attackTarget(world);
@@ -130,6 +132,43 @@ class MeleeEnemyTest {
   }
 
   @Test
+  void should_start_its_cooldown_when_it_attacks() {
+    MeleeEnemy rat = aRat().build();
+    Character player = aPlayerAt(18, 0);
+    rat.alert(player);
+
+    rat.attackTarget(world);
+
+    assertFalse(rat.canAttack());
+  }
+
+  @Test
+  void should_bite_only_in_front_of_it_for_a_rat() {
+    MeleeEnemy rat = aRat().build();
+    Character front = aPlayerAt(18, 0);
+    Character behind = aPlayerAt(-18, 0);
+    rat.alert(front);
+
+    rat.attackTarget(world);
+
+    assertEquals(8, front.getHp());
+    assertEquals(10, behind.getHp());
+  }
+
+  @Test
+  void should_bite_only_in_front_of_it_for_a_zombie() {
+    MeleeEnemy zombie = aZombie().build();
+    Character front = aPlayerAt(18, 0);
+    Character behind = aPlayerAt(-18, 0);
+    zombie.alert(front);
+
+    zombie.attackTarget(world);
+
+    assertEquals(7, front.getHp());
+    assertEquals(10, behind.getHp());
+  }
+
+  @Test
   void should_give_its_reach() {
     MeleeEnemy zombie = aZombie().withReach(8).build();
 
@@ -143,8 +182,11 @@ class MeleeEnemyTest {
     assertThrows(IllegalArgumentException.class, rat::build);
   }
 
-  private static Character aPlayerAt(float x, float y) {
+  private Character aPlayerAt(float x, float y) {
     Aabb box = new Aabb(x, y, 16, 16);
-    return aCharacter().withFaction(Faction.PLAYER).withBodyBox(box).withHurtbox(box).build();
+    Character player =
+        aCharacter().withFaction(Faction.PLAYER).withBodyBox(box).withHurtbox(box).build();
+    world.add(player);
+    return player;
   }
 }
