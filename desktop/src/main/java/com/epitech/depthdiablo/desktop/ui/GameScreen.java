@@ -32,6 +32,7 @@ import com.epitech.depthdiablo.entity.Player;
 import com.epitech.depthdiablo.entity.Rat;
 import com.epitech.depthdiablo.entity.Stat;
 import com.epitech.depthdiablo.entity.Wall;
+import com.epitech.depthdiablo.input.PlayerOrders;
 import com.epitech.depthdiablo.item.ItemFactory;
 import com.epitech.depthdiablo.item.Weapon;
 import java.util.ArrayList;
@@ -85,6 +86,8 @@ public final class GameScreen extends ScreenAdapter {
   private static final float CAMERA_ZOOM = 0.8f;
 
   private final KeyboardPlayerInput input = new KeyboardPlayerInput();
+
+  private final PlayerOrders orders = new PlayerOrders();
 
   private final SpriteBatch batch;
 
@@ -153,7 +156,7 @@ public final class GameScreen extends ScreenAdapter {
     this.batch = app.getBatch();
     this.worldCamera.zoom = CAMERA_ZOOM;
     addWalls();
-    this.player = spawnKnight(input, world, findSpawn());
+    this.player = spawnKnight(orders, world, findSpawn());
     this.world.add(player);
     for (Vector2 spawn : findEnemySpawns()) {
       Rat rat = spawnRat(world, spawn);
@@ -193,7 +196,8 @@ public final class GameScreen extends ScreenAdapter {
     if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
       toggleEventLaser();
     }
-    playerView.lookTowards(input.moveDirection().x);
+    input.readInto(orders, worldCamera);
+    playerView.lookTowards(orders.moveDirection().x);
 
     runLogic(delta);
 
@@ -303,7 +307,7 @@ public final class GameScreen extends ScreenAdapter {
     tiledMap.dispose();
   }
 
-  private static Player spawnKnight(KeyboardPlayerInput input, World world, Vector2 spawn) {
+  private static Player spawnKnight(PlayerOrders orders, World world, Vector2 spawn) {
     Map<Stat, Float> stats = new EnumMap<>(Stat.class);
     stats.put(Stat.MAX_HP, 100f);
     stats.put(Stat.ATTACK, 10f);
@@ -320,7 +324,7 @@ public final class GameScreen extends ScreenAdapter {
                         "items", () -> Gdx.files.internal("data/items.json").readString("UTF-8")))
                 .create("sword");
     return new Knight(
-        body, new BaseStats(stats), sword, body, GameConstants.TICKS_PER_SECOND / 2, input, world);
+        body, new BaseStats(stats), sword, body, GameConstants.TICKS_PER_SECOND / 2, orders, world);
   }
 
   /**

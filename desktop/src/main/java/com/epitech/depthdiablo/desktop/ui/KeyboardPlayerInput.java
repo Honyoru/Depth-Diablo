@@ -2,34 +2,43 @@ package com.epitech.depthdiablo.desktop.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.math.Vector2;
-import com.epitech.depthdiablo.input.PlayerInput;
-import java.util.Optional;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector3;
+import com.epitech.depthdiablo.input.PlayerOrders;
 
-/** Reads the player's orders from the keyboard: WASD to walk (GDD, Q38). */
-final class KeyboardPlayerInput implements PlayerInput {
+/**
+ * Reads the keyboard and the mouse into the player's orders (GDD, Q38): WASD to walk, the left
+ * button held to attack towards the mouse.
+ */
+final class KeyboardPlayerInput {
 
-  @Override
-  public Vector2 moveDirection() {
-    float x = 0f;
-    float y = 0f;
-    if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-      x -= 1f;
+  private final Vector3 mouse = new Vector3();
+
+  /**
+   * Writes what the user does this frame into the orders. The mouse is turned from screen pixels
+   * into a point of the world through the camera.
+   *
+   * @param orders the orders the player reads every tick
+   * @param camera the camera that shows the world
+   */
+  void readInto(PlayerOrders orders, Camera camera) {
+    orders.walk(axis(Input.Keys.A, Input.Keys.D), axis(Input.Keys.S, Input.Keys.W));
+    if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+      camera.unproject(mouse.set(Gdx.input.getX(), Gdx.input.getY(), 0f));
+      orders.holdAttack(mouse.x, mouse.y);
+    } else {
+      orders.releaseAttack();
     }
-    if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-      x += 1f;
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-      y -= 1f;
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-      y += 1f;
-    }
-    return new Vector2(x, y);
   }
 
-  @Override
-  public Optional<Vector2> attackPoint() {
-    return Optional.empty(); // the left button comes in the next step
+  private static float axis(int negative, int positive) {
+    float value = 0f;
+    if (Gdx.input.isKeyPressed(negative)) {
+      value -= 1f;
+    }
+    if (Gdx.input.isKeyPressed(positive)) {
+      value += 1f;
+    }
+    return value;
   }
 }
