@@ -1,0 +1,55 @@
+{
+  "characters": [
+    {
+      "id": "knight",
+      "class": "KNIGHT",
+      "spriteId": "player/knight",
+      "stats": {
+        "MAX_HP": 100,
+        "ATTACK": 5,
+        "DEFENSE": 1,
+        "SPEED": 120,
+        "ATTACK_SPEED": 1,
+        "LUCK": 0
+      },
+      "width": 28,
+      "height": 28,
+      "invincibilityTicks": 30,
+      "weapon": "sword"
+    },
+    {
+      "id": "rat",
+      "class": "RAT",
+      "spriteId": "enemies/rat",
+      "stats": {
+        "MAX_HP": 10,
+        "ATTACK": 10,
+        "DEFENSE": 1,
+        "SPEED": 100,
+        "ATTACK_SPEED": 1,
+        "LUCK": 0
+      },
+      "width": 28,
+      "height": 28,
+      "invincibilityTicks": 0,
+      "reach": 4
+    },
+    {
+      "id": "zombie",
+      "class": "ZOMBIE",
+      "spriteId": "enemies/zombie",
+      "stats": {
+        "MAX_HP": 8,
+        "ATTACK": 2,
+        "DEFENSE": 2,
+        "SPEED": 40,
+        "ATTACK_SPEED": 0.5,
+        "LUCK": 0
+      },
+      "width": 24,
+      "height": 28,
+      "invincibilityTicks": 18,
+      "reach": 6
+    }
+  ]
+}
