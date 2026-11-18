@@ -26,10 +26,13 @@ public final class EnemySpecReader {
     Objects.requireNonNull(entry, "The entry of enemy " + id + " must not be null");
     return new EnemySpec(
         id,
+        EnemyKind.valueOf(entry.getString("class")),
         entry.getString("spriteId"),
         readStats(id, entry.get("stats")),
         entry.getFloat("width"),
-        entry.getFloat("height"));
+        entry.getFloat("height"),
+        entry.getFloat("reach"),
+        entry.getInt("invincibilityTicks"));
   }
 
   /** Reads one value per {@link Stat} keyed by the stat's name. */

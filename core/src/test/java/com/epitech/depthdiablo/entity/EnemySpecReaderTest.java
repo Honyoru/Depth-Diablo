@@ -17,10 +17,10 @@ class EnemySpecReaderTest {
 
   private static final String RAT =
       """
-      { "id": "rat", "spriteId": "enemies/rat",
+      { "id": "rat","class":"RAT", "spriteId": "enemies/rat",
         "stats": { "MAX_HP": 3, "ATTACK": 1, "DEFENSE": 2, "SPEED": 90,
                    "ATTACK_SPEED": 1.5, "LUCK": 0 },
-        "width": 16, "height": 20 }
+        "width": 16, "height": 20, "reach": 4, "invincibilityTicks": 18 }
       """;
 
   @Test
@@ -46,6 +46,21 @@ class EnemySpecReaderTest {
   }
 
   @Test
+  void should_read_the_class_of_the_entry() {
+    EnemySpec rat = EnemySpecReader.read("rat", parse(RAT));
+
+    assertEquals(EnemyKind.RAT, rat.kind());
+  }
+
+  @Test
+  void should_read_the_reach_and_the_invincibility_of_the_entry() {
+    EnemySpec rat = EnemySpecReader.read("rat", parse(RAT));
+
+    assertEquals(4f, rat.reach());
+    assertEquals(18, rat.invincibilityTicks());
+  }
+
+  @Test
   void should_use_the_given_id() {
     EnemySpec spec = EnemySpecReader.read("rat_big", parse(RAT));
 
@@ -55,6 +70,20 @@ class EnemySpecReaderTest {
   @Test
   void should_throw_when_the_entry_has_no_stats() {
     JsonValue entry = parse(RAT.replace("\"stats\"", "\"values\""));
+
+    assertThrows(IllegalArgumentException.class, () -> EnemySpecReader.read("rat", entry));
+  }
+
+  @Test
+  void should_throw_when_the_class_is_missing() {
+    JsonValue entry = parse(RAT.replace("\"class\"", "\"kind\""));
+
+    assertThrows(IllegalArgumentException.class, () -> EnemySpecReader.read("rat", entry));
+  }
+
+  @Test
+  void should_throw_when_the_class_is_unknown() {
+    JsonValue entry = parse(RAT.replace("\"RAT\"", "\"DRAGON\""));
 
     assertThrows(IllegalArgumentException.class, () -> EnemySpecReader.read("rat", entry));
   }
@@ -83,6 +112,28 @@ class EnemySpecReaderTest {
   @Test
   void should_throw_when_the_width_is_0() {
     JsonValue entry = parse(RAT.replace("\"width\": 16", "\"width\": 0"));
+
+    assertThrows(IllegalArgumentException.class, () -> EnemySpecReader.read("rat", entry));
+  }
+
+  @Test
+  void should_throw_when_the_reach_is_missing() {
+    JsonValue entry = parse(RAT.replace("\"reach\"", "\"range\""));
+
+    assertThrows(IllegalArgumentException.class, () -> EnemySpecReader.read("rat", entry));
+  }
+
+  @Test
+  void should_throw_when_the_reach_is_negative() {
+    JsonValue entry = parse(RAT.replace("\"reach\": 4", "\"reach\": -1"));
+
+    assertThrows(IllegalArgumentException.class, () -> EnemySpecReader.read("rat", entry));
+  }
+
+  @Test
+  void should_throw_when_the_invincibility_is_negative() {
+    JsonValue entry =
+        parse(RAT.replace("\"invincibilityTicks\": 18", "\"invincibilityTicks\": -1"));
 
     assertThrows(IllegalArgumentException.class, () -> EnemySpecReader.read("rat", entry));
   }
