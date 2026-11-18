@@ -7,10 +7,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.epitech.depthdiablo.GameConstants;
@@ -22,6 +24,8 @@ import com.epitech.depthdiablo.engine.FixedTimestep;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.BaseStats;
+import com.epitech.depthdiablo.entity.Enemy;
+import com.epitech.depthdiablo.entity.Entity;
 import com.epitech.depthdiablo.entity.Knight;
 import com.epitech.depthdiablo.entity.Player;
 import com.epitech.depthdiablo.entity.Rat;
@@ -109,6 +113,8 @@ public final class GameScreen extends ScreenAdapter {
 
   /** Draws the enemies in the sprite view. */
   private final EnemyView enemyView;
+
+  private static final float MINIMAP_BORDER = 4f;
 
   /**
    * Creates the gameplay screen with the selected mode and hero.
@@ -252,10 +258,14 @@ public final class GameScreen extends ScreenAdapter {
   private void renderMinimapPass() {
     int screenW = Gdx.graphics.getWidth();
     int screenH = Gdx.graphics.getHeight();
-    int pad = Math.round(12f * screenW / GameConstants.VIRTUAL_WIDTH);
-    int size = Math.round(96f * screenW / GameConstants.VIRTUAL_WIDTH);
+    Rectangle box = hud.minimapScreenBounds();
+    int inset = Math.round(MINIMAP_BORDER * box.width / 96f);
+    HdpiUtils.glViewport(
+        (int) box.x + inset,
+        (int) box.y + inset,
+        (int) box.width - 2 * inset,
+        (int) box.height - 2 * inset);
 
-    Gdx.gl.glViewport(screenW - size - pad, pad, size, size);
     minimapCamera.position.set(worldCamera.position); // already centred on the player
     minimapCamera.update();
     mapRenderer.setView(minimapCamera);
@@ -263,11 +273,16 @@ public final class GameScreen extends ScreenAdapter {
 
     batch.setProjectionMatrix(minimapCamera.combined);
     batch.begin();
+    for (Entity entity : world.getEntities()) {
+      if (entity instanceof Enemy enemy) {
+        enemyView.draw(batch, enemy);
+      }
+    }
     playerView.draw(
         batch, player, drawPosition, 0f); // 0: the animation already advanced this frame
     batch.end();
 
-    Gdx.gl.glViewport(0, 0, screenW, screenH);
+    HdpiUtils.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
   }
 
   @Override

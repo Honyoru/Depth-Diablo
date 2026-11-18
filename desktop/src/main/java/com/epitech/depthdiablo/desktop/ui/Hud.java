@@ -1,6 +1,8 @@
 package com.epitech.depthdiablo.desktop.ui;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -28,6 +30,8 @@ public final class Hud implements Disposable {
   private final ImageTextButton coinCounter;
 
   private final ImageButton[] slotButtons = new ImageButton[HudState.SLOT_COUNT];
+
+  private final Image minimapBox;
 
   /**
    * Builds the Scene2D HUD table using the provided skin and state model.
@@ -63,7 +67,7 @@ public final class Hud implements Disposable {
       quickAccessTable.add(slotBtn).size(40f, 40f).pad(4f);
     }
 
-    Image minimapBox = new Image(skin.get("minimap_bg", TextureRegionDrawable.class));
+    this.minimapBox = new Image(skin.get("minimap_bg", TextureRegionDrawable.class));
 
     Table root = new Table();
     root.setFillParent(true);
@@ -121,5 +125,13 @@ public final class Hud implements Disposable {
   @Override
   public void dispose() {
     stage.dispose();
+  }
+
+  Rectangle minimapScreenBounds() {
+    Vector2 corner = minimapBox.localToStageCoordinates(new Vector2(0f, 0f));
+    stage.getViewport().project(corner); // virtual -> screen pixels, letterbox included
+    float scale = stage.getViewport().getScreenWidth() / (float) GameConstants.VIRTUAL_WIDTH;
+    return new Rectangle(
+        corner.x, corner.y, minimapBox.getWidth() * scale, minimapBox.getHeight() * scale);
   }
 }
