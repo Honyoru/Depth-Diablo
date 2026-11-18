@@ -61,9 +61,9 @@ public final class EnemyFactory {
     Aabb body = new Aabb(position.x, position.y, spec.width(), spec.height());
     int invincibility = spec.invincibilityTicks();
     return switch (spec.kind()) {
-      case RAT -> new Rat(body, spec.stats(), body, invincibility, summoned, spec.reach(), world);
+      case RAT -> new Rat(body, spec.stats(), spec.reach(), body, invincibility, summoned, world);
       case ZOMBIE ->
-          new Zombie(body, spec.stats(), body, invincibility, summoned, spec.reach(), world);
+          new Zombie(body, spec.stats(), spec.reach(), body, invincibility, summoned, world);
     };
   }
 }

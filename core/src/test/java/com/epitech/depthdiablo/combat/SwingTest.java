@@ -17,6 +17,7 @@ import com.epitech.depthdiablo.item.FireRing;
 import com.epitech.depthdiablo.item.MeleeWeapon;
 import com.epitech.depthdiablo.item.Sword;
 import com.epitech.depthdiablo.testdata.Items;
+import com.epitech.depthdiablo.testdata.TestSword;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,9 +47,9 @@ class SwingTest {
 
   @Test
   void should_turn_the_blade_around_the_holder_centre() {
-    Swing swing = aSwing(Items.sword(), 0f);
+    Swing swing = aSwing(new TestSword(), 0f);
 
-    // half a blade (12 px) from (100, 50), at -45 degrees
+    // half a blade (RANGE / 2 = 12 px) from (100, 50), at -45 degrees
     assertEquals(108.485f, swing.getShape().centreX(), DELTA);
     assertEquals(41.515f, swing.getShape().centreY(), DELTA);
   }
