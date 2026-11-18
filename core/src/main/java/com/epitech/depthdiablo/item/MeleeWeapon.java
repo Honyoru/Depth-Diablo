@@ -136,7 +136,7 @@ public abstract class MeleeWeapon extends Weapon {
   public final void attack(Character owner, float aimDegrees, World world) {
     Objects.requireNonNull(world, "world is null");
     Swing swing = new Swing(this, owner, aimDegrees, world::getEntities, world.getEventBus());
-    owner.startAttackCooldown(getSwingTicks(), getAttackSpeed());
+    owner.startAttackCooldown(getSwingTicks());
     owner.holdSwing(swing);
   }
 }

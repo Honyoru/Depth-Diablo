@@ -62,7 +62,7 @@ public abstract class ContactAttack implements Attack {
     if (!Float.isFinite(aimDegrees)) {
       throw new IllegalArgumentException("Aim must be a finite number: " + aimDegrees);
     }
-    owner.startAttackCooldown(0, 1f);
+    owner.startAttackCooldown(0);
     for (Entity entity : world.getEntities()) {
       if (entity instanceof Character target
           && !owner.equals(target)

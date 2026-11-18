@@ -263,33 +263,25 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
-   * Starts an attack: the swing runs first, then the character waits {@code 60 / (weapon attack
-   * speed × its own attack speed)} ticks, rounded and at least 1, before the next one. The cooldown
-   * only counts down once the swing is over, so two swings never overlap (DECISIONS §5).
+   * Starts an attack: the swing runs first, then the character waits {@code 60 / ATTACK_SPEED}
+   * ticks, rounded and at least 1, before the next one. ATTACK_SPEED comes from the build, so the
+   * weapon's speed already counts in it (GDD 1.3.1). The cooldown only counts down once the swing
+   * is over, so two swings never overlap (DECISIONS §5).
    *
    * @param swingTicks how many ticks the swing of the weapon lasts; 0 for an attack with no swing
-   * @param weaponAttackSpeed the base attack speed of the weapon; above 0 and finite
-   * @throws IllegalArgumentException if {@code swingTicks} is negative or {@code weaponAttackSpeed}
-   *     is not a finite number above 0
+   * @throws IllegalArgumentException if {@code swingTicks} is negative
    * @throws IllegalStateException if the character cannot attack now (see {@link #canAttack})
    */
-  public void startAttackCooldown(int swingTicks, float weaponAttackSpeed) {
+  public void startAttackCooldown(int swingTicks) {
     if (swingTicks < 0) {
       throw new IllegalArgumentException("Swing ticks must not be negative: " + swingTicks);
-    }
-    if ((weaponAttackSpeed <= 0)
-        || Float.isNaN(weaponAttackSpeed)
-        || Float.isInfinite(weaponAttackSpeed)) {
-      throw new IllegalArgumentException(
-          "Weapon attack speed must be a finite number above 0: " + weaponAttackSpeed);
     }
     if (!canAttack()) {
       throw new IllegalStateException("Cannot attack now");
     }
     swingTicksLeft = swingTicks;
     attackCooldownTicksLeft =
-        Math.max(
-            1, Math.round(GameConstants.TICKS_PER_SECOND / (weaponAttackSpeed * getAttackSpeed())));
+        Math.max(1, Math.round(GameConstants.TICKS_PER_SECOND / getAttackSpeed()));
   }
 
   /**

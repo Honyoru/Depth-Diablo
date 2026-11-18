@@ -29,8 +29,8 @@ public abstract class Weapon extends Equipment implements Attack {
    * @param rarity its loot tier; never {@link Rarity#CONSUMABLE}
    * @param price its shop price in coins; 0 means free
    * @param attackBonus the flat bonus added to the holder's ATTACK when it builds; 0 or more
-   * @param attackSpeed its base attack speed; the holder's ATTACK_SPEED stat multiplies it (GDD
-   *     1.6); above 0 and finite
+   * @param attackSpeed its base attack speed; it multiplies the holder's ATTACK_SPEED when it
+   *     builds (GDD 1.6); above 0 and finite
    * @param range how far its hit reaches, in pixels; above 0 and finite
    * @throws NullPointerException if a text or the rarity is {@code null}
    * @throws IllegalArgumentException if a text is blank, the price or the attack bonus is negative,
@@ -71,7 +71,8 @@ public abstract class Weapon extends Equipment implements Attack {
   }
 
   /**
-   * Returns the base attack speed of this weapon. The holder's ATTACK_SPEED stat multiplies it.
+   * Returns the base attack speed of this weapon. It multiplies the holder's ATTACK_SPEED when it
+   * builds.
    *
    * @return the attack speed, above 0
    */

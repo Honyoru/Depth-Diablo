@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.epitech.depthdiablo.combat.Obb;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Character;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.6: a melee weapon sweeps a blade of a given size over an arc during a few ticks. */
@@ -169,6 +170,22 @@ class MeleeWeaponTest {
   }
 
   @Test
+  void should_count_its_attack_speed_only_once_in_the_cooldown() {
+    MeleeWeapon weapon = aMeleeWeaponWithAttackSpeed(2f);
+    Character holder = aCharacter().withAttackSpeed(1f).build();
+    holder.rebuild(List.of(weapon)); // the build's ATTACK_SPEED becomes 1 x 2 = 2
+    weapon.attack(holder, 0f, new World());
+
+    for (long tick = 1; tick <= 41; tick++) {
+      holder.update(tick);
+    }
+    assertFalse(holder.canAttack());
+
+    holder.update(42); // 12 swing ticks + 60 / 2 = 30 cooldown ticks
+    assertTrue(holder.canAttack());
+  }
+
+  @Test
   void should_throw_when_the_holder_cannot_attack_now() {
     Character holder = aCharacter().build();
     MeleeWeapon weapon = aMeleeWeapon(8f, 90f, 12);
@@ -203,6 +220,21 @@ class MeleeWeaponTest {
 
     assertThrows(NullPointerException.class, () -> weapon.attack(holder, 0f, null));
     assertTrue(holder.canAttack());
+  }
+
+  private static MeleeWeapon aMeleeWeaponWithAttackSpeed(float attackSpeed) {
+    return new Sword(
+        "sword",
+        "item.sword.name",
+        "items/sword",
+        Rarity.COMMON,
+        30,
+        2,
+        attackSpeed,
+        24f,
+        8f,
+        90f,
+        12);
   }
 
   private static MeleeWeapon aMeleeWeapon(float width, float arcDegrees, int swingTicks) {

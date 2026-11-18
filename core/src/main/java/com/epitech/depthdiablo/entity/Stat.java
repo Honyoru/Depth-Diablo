@@ -14,8 +14,8 @@ public enum Stat {
   /** Movement speed in pixels per second; 0 or more. */
   SPEED,
   /**
-   * Multiplier of the equipped weapon's attack speed: 1 keeps it, 1.5 makes it 50 % faster; 0 or
-   * more, and 0 never attacks.
+   * How many attacks per second: the weapon's attack speed, multiplied by passive items when the
+   * character builds (GDD 1.3.1); 0 or more, and 0 never attacks.
    */
   ATTACK_SPEED,
   /** Drop chances and roulette odds (GDD 1.6, TBD); 0 or more. */
