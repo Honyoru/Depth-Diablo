@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.entity;
 
+import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -159,6 +160,49 @@ class PlayerTest {
     Player player = aKnight();
 
     assertEquals(1 + Items.sword().getAttackBonus(), player.getAttack());
+  }
+
+  @Test
+  void should_swing_towards_the_point_it_attacks() {
+    Player player = aKnight();
+    input.holdAttack(108f, 8f);
+
+    tick(player, 1);
+
+    assertEquals(0f, player.getCurrentSwing().orElseThrow().getAimDegrees(), TOLERANCE);
+  }
+
+  @Test
+  void should_swing_up_when_it_attacks_a_point_above() {
+    Player player = aKnight();
+    input.holdAttack(8f, 108f);
+
+    tick(player, 1);
+
+    assertEquals(90f, player.getCurrentSwing().orElseThrow().getAimDegrees(), TOLERANCE);
+  }
+
+  @Test
+  void should_not_swing_when_it_does_not_attack() {
+    Player player = aKnight();
+
+    tick(player, 1);
+
+    assertTrue(player.getCurrentSwing().isEmpty());
+  }
+
+  @Test
+  void should_hit_the_enemy_its_swing_reaches() {
+    Player player = aKnight();
+    Aabb box = new Aabb(20f, 0f, 16f, 16f);
+    Character enemy =
+        aCharacter().withFaction(Faction.ENEMY).withBodyBox(box).withHurtbox(box).build();
+    world.add(enemy);
+    input.holdAttack(28f, 8f);
+
+    tick(player, 12);
+
+    assertEquals(7, enemy.getHp());
   }
 
   private Knight aKnight() {

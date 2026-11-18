@@ -66,12 +66,21 @@ public abstract class Player extends Character {
     return Faction.PLAYER;
   }
 
+  /**
+   * Walks one tick in the direction of the input, then, while the user attacks, starts an attack
+   * towards the point as soon as it can (see {@link #canAttack()}).
+   */
   @Override
+  protected final void think(long tick) {
+    walk();
+    input.attackPoint().filter(point -> canAttack()).ifPresent(this::attackTowards);
+  }
+
   /**
    * Walks one tick in the direction of the input, at the SPEED stat (pixels per second). A
    * direction longer than 1 is shortened to 1, so a diagonal is not faster than a straight line.
    */
-  protected final void think(long tick) {
+  private void walk() {
     Vector2 direction = input.moveDirection();
     if (direction.len2() > 1f) {
       direction.nor();
@@ -92,6 +101,16 @@ public abstract class Player extends Character {
       position.set(alongY);
     }
     moveTo(position);
+  }
+
+  /** Attacks with the attack of the build, aimed from the player's centre to the point. */
+  private void attackTowards(Vector2 point) {
+    Aabb body = getBodyBox();
+    float aim =
+        new Vector2(point)
+            .sub(body.x() + body.width() / 2f, body.y() + body.height() / 2f)
+            .angleDeg();
+    startAttack(getBuild().attack(), aim, world());
   }
 
   /** Tells whether the player's body fits at the given bottom-left corner. */
