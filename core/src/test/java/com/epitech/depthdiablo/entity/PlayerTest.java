@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -141,6 +142,23 @@ class PlayerTest {
     Player player = aKnight();
 
     assertEquals(Faction.PLAYER, player.getFaction());
+  }
+
+  @Test
+  void should_hold_its_starting_weapon_in_its_inventory() {
+    Sword sword = Items.sword();
+    Aabb box = new Aabb(0f, 0f, 16f, 16f);
+
+    Player player = new Knight(box, stats(), sword, box, 0, input, world);
+
+    assertSame(sword, player.getInventory().getWeapon());
+  }
+
+  @Test
+  void should_count_its_starting_weapon_in_its_attack() {
+    Player player = aKnight();
+
+    assertEquals(1 + Items.sword().getAttackBonus(), player.getAttack());
   }
 
   private Knight aKnight() {

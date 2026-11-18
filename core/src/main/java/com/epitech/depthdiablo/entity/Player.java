@@ -2,10 +2,11 @@ package com.epitech.depthdiablo.entity;
 
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
-import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
+import com.epitech.depthdiablo.item.Inventory;
+import com.epitech.depthdiablo.item.Weapon;
 import java.util.Objects;
 
 /**
@@ -15,6 +16,9 @@ import java.util.Objects;
 public abstract class Player extends Character {
 
   private final PlayerInput input;
+
+  private final Inventory inventory;
+
   private boolean moving;
 
   /**
@@ -22,7 +26,8 @@ public abstract class Player extends Character {
    *
    * @param bodyBox the box the player occupies in the world; must not be {@code null}
    * @param stats where its stats come from; must not be {@code null}
-   * @param baseAttack the starting weapon; must not be {@code null}
+   * @param startingWeapon the weapon it starts with: its base attack and the first item of its
+   *     inventory; must not be {@code null}
    * @param hurtbox the player's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
    * @param input what the user asks for; must not be {@code null}
@@ -31,13 +36,24 @@ public abstract class Player extends Character {
   protected Player(
       Aabb bodyBox,
       StatSource stats,
-      Attack baseAttack,
+      Weapon startingWeapon,
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
       PlayerInput input,
       World world) {
-    super(bodyBox, stats, baseAttack, hurtbox, invincibilityTicksAfterHit, world);
+    super(bodyBox, stats, startingWeapon, hurtbox, invincibilityTicksAfterHit, world);
     this.input = Objects.requireNonNull(input, "The input of a player must not be null");
+    this.inventory = new Inventory(startingWeapon);
+    rebuild(inventory.getModifiers());
+  }
+
+  /**
+   * Returns the player's bag: its hotbar and its equipped weapon (GDD 1.4).
+   *
+   * @return the inventory; never null
+   */
+  public Inventory getInventory() {
+    return inventory;
   }
 
   /**
