@@ -44,28 +44,6 @@ public abstract class ContactAttack implements Attack {
   }
 
   /**
-   * Hits the target with the damage formula (GDD 1.6): the attacker's attack against the target's
-   * defense, with no bonus and no buff.
-   *
-   * @param attacker the character who hits
-   * @param target the character who is hit
-   * @return the damage dealt and whether it killed the target; {@link HitResult#NONE} if the target
-   *     is dead or invincible
-   * @throws NullPointerException if {@code attacker} or {@code target} is {@code null}
-   */
-  @Override
-  public final HitResult hit(Character attacker, Character target) {
-    Objects.requireNonNull(attacker, "attacker is null");
-    Objects.requireNonNull(target, "target is null");
-    if (target.isDead() || target.isInvincible()) {
-      return HitResult.NONE;
-    }
-    int damage = DamageFormula.compute(attacker.getAttack(), 0, 1.0, target.getDefense(), 0, 1.0);
-    target.takeDamage(damage);
-    return new HitResult(damage, target.isDead());
-  }
-
-  /**
    * Starts the owner's cooldown, then hits every hostile character whose hurtbox touches the area
    * of this attack (see {@link #area}), never the owner itself. Each hit that lands publishes a
    * DamageDealt event, and an EntityDied event if it kills.

@@ -74,27 +74,28 @@ class WeaponTest {
   }
 
   @Test
-  void should_deal_the_formula_damage_with_its_bonus_when_it_hits() {
+  void should_not_add_its_bonus_again_when_it_hits() {
+    // The bonus is already in the holder's ATTACK through modify(); hit() adds nothing on top.
     Character attacker = aCharacter().withAttack(10).build();
     Character target = aCharacter().withHp(20).withDefense(3).build();
     Weapon weapon = aWeapon(Rarity.RARE, 2, 24f);
 
     HitResult result = weapon.hit(attacker, target);
 
-    assertEquals(4, result.damage());
+    assertEquals(3, result.damage());
     assertFalse(result.killed());
-    assertEquals(16, target.getHp());
+    assertEquals(17, target.getHp());
   }
 
   @Test
   void should_tell_when_its_hit_kills_the_target() {
     Character attacker = aCharacter().withAttack(10).build();
-    Character target = aCharacter().withHp(4).withDefense(3).build();
+    Character target = aCharacter().withHp(3).withDefense(3).build();
     Weapon weapon = aWeapon(Rarity.RARE, 2, 24f);
 
     HitResult result = weapon.hit(attacker, target);
 
-    assertEquals(4, result.damage());
+    assertEquals(3, result.damage());
     assertTrue(result.killed());
     assertTrue(target.isDead());
   }

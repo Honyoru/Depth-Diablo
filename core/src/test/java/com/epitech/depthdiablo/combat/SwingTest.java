@@ -27,7 +27,7 @@ class SwingTest {
   private static final float DELTA = 0.001f;
   private static final Supplier<List<Entity>> NO_TARGETS = List::of;
 
-  /** Centre (100, 50); its hurtbox is its body. */
+  /** Centre (100, 50); its hurtbox is its body. Its ATTACK of 10 already counts its weapon. */
   private final Character holder =
       aCharacter()
           .withBodyBox(new Aabb(92, 42, 16, 16))
@@ -115,7 +115,7 @@ class SwingTest {
 
     runWholeSwing(aSwingAt(enemy));
 
-    assertEquals(16, enemy.getHp());
+    assertEquals(17, enemy.getHp());
   }
 
   @Test
@@ -124,7 +124,7 @@ class SwingTest {
 
     runWholeSwing(aSwingAt(enemy));
 
-    assertEquals(16, enemy.getHp());
+    assertEquals(17, enemy.getHp());
   }
 
   @Test
@@ -178,12 +178,12 @@ class SwingTest {
     runWholeSwing(new Swing(Items.sword(), holder, 0f, () -> List.of(enemy), events));
     events.flush();
 
-    assertEquals(List.of(new DamageDealt(holder, enemy, 4)), seen);
+    assertEquals(List.of(new DamageDealt(holder, enemy, 3)), seen);
   }
 
   @Test
   void should_publish_the_death_of_the_enemy_it_kills() {
-    Character enemy = anEnemyAt(110, 46, 4);
+    Character enemy = anEnemyAt(110, 46, 3);
     EventBus events = new EventBus();
     List<GameEvent> seen = new ArrayList<>();
     events.subscribeAll(seen::add);
@@ -192,7 +192,7 @@ class SwingTest {
     events.flush();
 
     assertEquals(
-        List.of(new DamageDealt(holder, enemy, 4), new EntityDied(enemy, Optional.of(holder))),
+        List.of(new DamageDealt(holder, enemy, 3), new EntityDied(enemy, Optional.of(holder))),
         seen);
   }
 

@@ -1,16 +1,13 @@
 package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.combat.Attack;
-import com.epitech.depthdiablo.combat.DamageFormula;
-import com.epitech.depthdiablo.combat.HitResult;
-import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.entity.CharacterBuild;
 import com.epitech.depthdiablo.entity.StatSource;
 import java.util.Objects;
 
 /**
- * The equipped weapon: the player's attack (GDD 1.3.1, 1.6). It adds its attack bonus to the attack
- * side of the damage formula and only hits targets within its range (Q37).
+ * The equipped weapon: the player's attack (GDD 1.3.1, 1.6). Its attack bonus and attack speed go
+ * into its holder's build (see {@link #modify}); it only hits targets within its range (Q37).
  *
  * <p>Pattern: Strategy. Each weapon is one {@link Attack}; the character calls it without knowing
  * which weapon it is, and equipping another weapon swaps the strategy.
@@ -89,30 +86,6 @@ public abstract class Weapon extends Equipment implements Attack {
    */
   public final float getRange() {
     return range;
-  }
-
-  /**
-   * Hits the target with the damage formula (GDD 1.6): the attacker's attack plus this weapon's
-   * bonus, against the target's defense. The attack buff stays at 1 and the defense bonus at 0
-   * until buffs and armor exist.
-   *
-   * @param attacker the character who holds this weapon
-   * @param target the character who is hit
-   * @return the damage dealt and whether it killed the target; {@link HitResult#NONE} if the target
-   *     is dead or invincible
-   * @throws NullPointerException if {@code attacker} or {@code target} is {@code null}
-   */
-  @Override
-  public HitResult hit(Character attacker, Character target) {
-    Objects.requireNonNull(attacker, "The character attacking must not be null");
-    Objects.requireNonNull(target, "The target of the attack must not be null");
-    if (target.isDead() || target.isInvincible()) {
-      return HitResult.NONE;
-    }
-    int damage =
-        DamageFormula.compute(attacker.getAttack(), attackBonus, 1.0, target.getDefense(), 0, 1.0);
-    target.takeDamage(damage);
-    return new HitResult(damage, target.isDead());
   }
 
   /**

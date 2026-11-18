@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.combat;
 
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Character;
+import java.util.Objects;
 
 /**
  * What a character's attack does (GDD 1.3.1, 1.6). The equipped weapon is the base attack; passive
@@ -13,14 +14,26 @@ import com.epitech.depthdiablo.entity.Character;
 public interface Attack {
 
   /**
-   * Applies one hit from the attacker to the target.
+   * Applies one hit from the attacker to the target with the damage formula (GDD 1.6): the
+   * attacker's ATTACK against the target's DEFENSE. Weapon, armor and passive items already count
+   * in both through the builds, so there is no bonus here. Decorators override it to add an effect
+   * around the hit (a burn); the others keep this one.
    *
    * @param attacker the character who hits
    * @param target the character who is hit
    * @return what the hit did; {@link HitResult#NONE} if it did not land (dead or invincible target)
    * @throws NullPointerException if {@code attacker} or {@code target} is {@code null}
    */
-  HitResult hit(Character attacker, Character target);
+  default HitResult hit(Character attacker, Character target) {
+    Objects.requireNonNull(attacker, "attacker is null");
+    Objects.requireNonNull(target, "target is null");
+    if (target.isDead() || target.isInvincible()) {
+      return HitResult.NONE;
+    }
+    int damage = DamageFormula.compute(attacker.getAttack(), 0, 1.0, target.getDefense(), 0, 1.0);
+    target.takeDamage(damage);
+    return new HitResult(damage, target.isDead());
+  }
 
   /**
    * Starts one attack of the owner towards the aim: a sword starts a swing, a bow will shoot an
