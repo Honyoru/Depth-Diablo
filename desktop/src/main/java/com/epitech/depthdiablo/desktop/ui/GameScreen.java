@@ -24,8 +24,10 @@ import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.BaseStats;
 import com.epitech.depthdiablo.entity.Knight;
 import com.epitech.depthdiablo.entity.Player;
+import com.epitech.depthdiablo.entity.Rat;
 import com.epitech.depthdiablo.entity.Stat;
 import com.epitech.depthdiablo.entity.Wall;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +104,11 @@ public final class GameScreen extends ScreenAdapter {
 
   private final EventLaserOverlay eventLaserOverlay = new EventLaserOverlay(eventLaser);
 
-  private final List<Vector2> enemies;
+  /** The bottom-left corners, in pixels, of the tiles whose "spawn_enemy" property is true. */
+  private final List<Vector2> enemies = new ArrayList<>();
+
+  /** Draws the enemies in the sprite view. */
+  private final EnemyView enemyView;
 
   /**
    * Creates the gameplay screen with the selected mode and hero.
@@ -112,7 +118,7 @@ public final class GameScreen extends ScreenAdapter {
    * @param mode the selected game mode; must not be {@code null}
    * @param hero the selected playable hero; must not be {@code null}
    */
-  final GameScreen(
+  public GameScreen(
       GameApplication app, Skin skin, MenuFlowState.GameMode mode, MenuFlowState.HeroType hero) {
     Objects.requireNonNull(skin, "The UI skin must not be null");
     Objects.requireNonNull(hero, "The selected hero must not be null");
@@ -140,9 +146,15 @@ public final class GameScreen extends ScreenAdapter {
     addWalls();
     this.player = spawnKnight(input, world, findSpawn());
     this.world.add(player);
+    for (Vector2 spawn : findEnemySpawns()) {
+      Rat rat = spawnRat(world, spawn);
+      rat.alert(player);
+      world.add(rat);
+    }
     this.playerView = new PlayerView();
+    this.enemyView = new EnemyView();
     this.previousPosition.set(player.position());
-    renderers.put(ViewMode.SPRITES, new SpriteRenderer(mapRenderer, batch, playerView));
+    renderers.put(ViewMode.SPRITES, new SpriteRenderer(mapRenderer, batch, playerView, enemyView));
     renderers.put(ViewMode.XRAY, new XRayRenderer());
     renderers.put(ViewMode.HIGH_CONTRAST, new HighContrastRenderer());
     world.getEventBus().subscribeAll(eventLaser);
@@ -270,6 +282,7 @@ public final class GameScreen extends ScreenAdapter {
     renderers.values().forEach(Renderer::dispose);
     eventLaserOverlay.dispose();
     playerView.dispose();
+    enemyView.dispose();
     mapRenderer.dispose();
     tiledMap.dispose();
   }
@@ -299,7 +312,7 @@ public final class GameScreen extends ScreenAdapter {
         TiledMapTileLayer.Cell cell = layer.getCell(x, y);
         if (cell != null
             && cell.getTile() != null
-            && cell.getTile().getProperties().get("spawn", false, Boolean.class)) {
+            && cell.getTile().getProperties().get("spawn", false, Boolean.class).booleanValue()) {
           return new Vector2(x * tile, y * tile);
         }
       }
@@ -340,7 +353,11 @@ public final class GameScreen extends ScreenAdapter {
     } else return Color.valueOf(hex);
   }
 
-  private Vector2 findSpawnenemy() {
+  /**
+   * Returns the bottom-left corner, in pixels, of every tile whose "spawn_enemy" property is true.
+   * The list is empty when the map has none.
+   */
+  private List<Vector2> findEnemySpawns() {
     TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
     float tile = GameConstants.TILE_SIZE;
     for (int x = 0; x < layer.getWidth(); x++) {
@@ -348,10 +365,36 @@ public final class GameScreen extends ScreenAdapter {
         TiledMapTileLayer.Cell cell = layer.getCell(x, y);
         if (cell != null
             && cell.getTile() != null
-            && cell.getTile().getProperties().get("spawn", false, Boolean.class)) {
-          return new Vector2(x * tile, y * tile);
+            && cell.getTile()
+                .getProperties()
+                .get("spawn_enemy", false, Boolean.class)
+                .booleanValue()) {
+          enemies.add(new Vector2(x * tile, y * tile));
         }
       }
     }
+    return enemies;
+  }
+
+  /**
+   * Creates a rat standing on the given tile. Its stats are placeholders, written here until {@code
+   * EnemyFactory} is wired into the game, and its body has the knight's size so the knight's sprite
+   * fits it.
+   *
+   * @param world the world it lives in
+   * @param spawn the bottom-left corner of its tile, in pixels
+   * @return the new rat, not yet added to the world
+   */
+  private static Rat spawnRat(World world, Vector2 spawn) {
+    Map<Stat, Float> stats = new EnumMap<>(Stat.class);
+    stats.put(Stat.MAX_HP, 100f);
+    stats.put(Stat.ATTACK, 10f);
+    stats.put(Stat.DEFENSE, 1f);
+    stats.put(Stat.SPEED, 100f);
+    stats.put(Stat.ATTACK_SPEED, 1f);
+    stats.put(Stat.LUCK, 0f);
+    Aabb body =
+        new Aabb(spawn.x + 2f, spawn.y + 2f, 28f, 28f); // 28 px body centred in a 32 px tile
+    return new Rat(body, new BaseStats(stats), body, 0, false, 4f, world);
   }
 }
