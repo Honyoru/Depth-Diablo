@@ -27,6 +27,7 @@ import com.epitech.depthdiablo.entity.Player;
 import com.epitech.depthdiablo.entity.Stat;
 import com.epitech.depthdiablo.entity.Wall;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.slf4j.Logger;
@@ -101,6 +102,8 @@ public final class GameScreen extends ScreenAdapter {
 
   private final EventLaserOverlay eventLaserOverlay = new EventLaserOverlay(eventLaser);
 
+  private final List<Vector2> enemies;
+
   /**
    * Creates the gameplay screen with the selected mode and hero.
    *
@@ -109,7 +112,7 @@ public final class GameScreen extends ScreenAdapter {
    * @param mode the selected game mode; must not be {@code null}
    * @param hero the selected playable hero; must not be {@code null}
    */
-  public GameScreen(
+  final GameScreen(
       GameApplication app, Skin skin, MenuFlowState.GameMode mode, MenuFlowState.HeroType hero) {
     Objects.requireNonNull(skin, "The UI skin must not be null");
     Objects.requireNonNull(hero, "The selected hero must not be null");
@@ -335,5 +338,20 @@ public final class GameScreen extends ScreenAdapter {
     if (hex == null) {
       return DEFAULT_CLEAR;
     } else return Color.valueOf(hex);
+  }
+
+  private Vector2 findSpawnenemy() {
+    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+    float tile = GameConstants.TILE_SIZE;
+    for (int x = 0; x < layer.getWidth(); x++) {
+      for (int y = 0; y < layer.getHeight(); y++) {
+        TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+        if (cell != null
+            && cell.getTile() != null
+            && cell.getTile().getProperties().get("spawn", false, Boolean.class)) {
+          return new Vector2(x * tile, y * tile);
+        }
+      }
+    }
   }
 }
