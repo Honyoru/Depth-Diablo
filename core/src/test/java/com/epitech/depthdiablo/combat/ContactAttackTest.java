@@ -12,6 +12,7 @@ import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.item.FireRing;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -239,6 +240,24 @@ class ContactAttackTest {
 
     assertThrows(NullPointerException.class, () -> attack.attack(owner, 0f, null));
     assertTrue(owner.canAttack());
+  }
+
+  @Test
+  void should_hit_through_the_attack_of_its_owner() {
+    World world = new World();
+    Character owner = anOwner(world);
+    owner.rebuild(List.of(aFireRing()));
+    Character target = aCharacterAt(world, 18f, Faction.PLAYER);
+
+    new AroundContactAttack(4f).attack(owner, 0f, world);
+    target.update(1);
+
+    assertEquals(7, target.getHp());
+  }
+
+  private static FireRing aFireRing() {
+    return new FireRing(
+        "fire_ring", "item.fire_ring.name", "items/fire_ring", 0, new BurnSpec(2, 1, 3));
   }
 
   private static Character anOwner(World world) {

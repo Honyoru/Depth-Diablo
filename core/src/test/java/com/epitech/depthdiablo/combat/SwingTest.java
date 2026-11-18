@@ -13,6 +13,7 @@ import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.entity.Entity;
+import com.epitech.depthdiablo.item.FireRing;
 import com.epitech.depthdiablo.item.MeleeWeapon;
 import com.epitech.depthdiablo.item.Sword;
 import com.epitech.depthdiablo.testdata.Items;
@@ -229,6 +230,22 @@ class SwingTest {
     swing.update(sword.getSwingTicks() + 1L);
 
     assertEquals(sword.getSwingTicks(), swing.getTicksElapsed());
+  }
+
+  @Test
+  void should_hit_through_the_attack_of_its_holder() {
+    holder.rebuild(List.of(aFireRing()));
+    Character enemy = anEnemyAt(110, 46, 20);
+
+    runWholeSwing(aSwingAt(enemy));
+    enemy.update(1);
+
+    assertEquals(15, enemy.getHp());
+  }
+
+  private static FireRing aFireRing() {
+    return new FireRing(
+        "fire_ring", "item.fire_ring.name", "items/fire_ring", 0, new BurnSpec(2, 1, 3));
   }
 
   private Swing aSwingAt(Character target) {

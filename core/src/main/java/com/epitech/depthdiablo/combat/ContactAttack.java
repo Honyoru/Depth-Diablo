@@ -84,7 +84,7 @@ public abstract class ContactAttack implements Attack {
   protected abstract Obb area(Aabb body, float aimDegrees);
 
   private void strike(Character owner, Character target, EventBus events) {
-    HitResult result = hit(owner, target);
+    HitResult result = owner.hit(target);
     if (result.landed()) {
       events.publish(new DamageDealt(owner, target, result.damage()));
       if (result.killed()) {

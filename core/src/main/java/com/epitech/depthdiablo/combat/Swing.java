@@ -133,7 +133,7 @@ public final class Swing implements Updatable {
   }
 
   private void strike(Character target) {
-    HitResult result = weapon.hit(holder, target);
+    HitResult result = holder.hit(target);
     hitbox.recordHit(target, result);
     if (result.landed()) {
       events.publish(new DamageDealt(holder, target, result.damage()));
