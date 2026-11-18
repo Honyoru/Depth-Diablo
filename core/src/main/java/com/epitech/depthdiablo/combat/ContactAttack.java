@@ -63,15 +63,28 @@ public abstract class ContactAttack implements Attack {
       throw new IllegalArgumentException("Aim must be a finite number: " + aimDegrees);
     }
     owner.startAttackCooldown(0, 1f);
-    Obb area = area(owner.getBodyBox(), aimDegrees);
     for (Entity entity : world.getEntities()) {
       if (entity instanceof Character target
           && !owner.equals(target)
           && owner.getFaction().canHurt(target.getFaction())
-          && area.overlaps(target.getHurtbox())) {
+          && touches(owner.getBodyBox(), aimDegrees, target.getHurtbox())) {
         strike(owner, target, world.getEventBus());
       }
     }
+  }
+
+  /**
+   * Tells whether the area of this attack, aimed from the body, touches the hurtbox. An enemy asks
+   * it before attacking, to know whether its target is in reach; {@link #attack} asks it for each
+   * character around.
+   *
+   * @param body the body box of the character who attacks
+   * @param aimDegrees the direction of the attack, in degrees (0 = right, 90 = up)
+   * @param hurtbox the hurtbox to reach
+   * @return true if an attack now would touch it
+   */
+  public final boolean touches(Aabb body, float aimDegrees, Aabb hurtbox) {
+    return area(body, aimDegrees).overlaps(hurtbox);
   }
 
   /**

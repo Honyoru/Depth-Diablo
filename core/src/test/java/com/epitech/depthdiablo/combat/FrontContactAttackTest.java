@@ -2,6 +2,8 @@ package com.epitech.depthdiablo.combat;
 
 import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
@@ -95,6 +97,20 @@ class FrontContactAttackTest {
 
     assertEquals(10, straight.getHp());
     assertEquals(10, diagonal.getHp());
+  }
+
+  @Test
+  void should_touch_a_hurtbox_in_front_of_its_aim() {
+    Aabb body = new Aabb(0f, 0f, 16f, 16f);
+
+    assertTrue(new FrontContactAttack(4f).touches(body, 0f, new Aabb(18f, 0f, 16f, 16f)));
+  }
+
+  @Test
+  void should_not_touch_a_hurtbox_behind_its_aim() {
+    Aabb body = new Aabb(0f, 0f, 16f, 16f);
+
+    assertFalse(new FrontContactAttack(4f).touches(body, 0f, new Aabb(-18f, 0f, 16f, 16f)));
   }
 
   private static Character aCharacterAt(World world, float x, float y, Faction faction) {
