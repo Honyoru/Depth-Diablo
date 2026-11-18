@@ -256,8 +256,6 @@ public final class GameScreen extends ScreenAdapter {
   }
 
   private void renderMinimapPass() {
-    int screenW = Gdx.graphics.getWidth();
-    int screenH = Gdx.graphics.getHeight();
     Rectangle box = hud.minimapScreenBounds();
     int inset = Math.round(MINIMAP_BORDER * box.width / 96f);
     HdpiUtils.glViewport(
