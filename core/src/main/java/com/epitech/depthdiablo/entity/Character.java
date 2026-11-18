@@ -2,7 +2,6 @@ package com.epitech.depthdiablo.entity;
 
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Attack;
-import com.epitech.depthdiablo.combat.DamageFormula;
 import com.epitech.depthdiablo.combat.Damageable;
 import com.epitech.depthdiablo.combat.HitResult;
 import com.epitech.depthdiablo.combat.StatusEffect;
@@ -400,9 +399,8 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
-   * Hits the target with the damage formula (GDD 1.6): this character's attack against the target's
-   * defense. Weapon, armor and passive items already count in the attack through the build, so
-   * there is no bonus here. The attack buff stays at 1 until buffs exist.
+   * Hits the target with the attack of this character's build (GDD 1.3.1, 1.6): its weapon or
+   * natural attack, wrapped by its passive items, so a fire ring also burns the target.
    *
    * @param target the character who is hit
    * @return the damage dealt and whether it killed the target; {@link HitResult#NONE} if the target
@@ -411,11 +409,6 @@ public abstract class Character extends Entity implements Damageable {
    */
   public final HitResult hit(Character target) {
     Objects.requireNonNull(target, "target is null");
-    if (target.isDead() || target.isInvincible()) {
-      return HitResult.NONE;
-    }
-    int damage = DamageFormula.compute(getAttack(), 0, 1.0, target.getDefense(), 0, 1.0);
-    target.takeDamage(damage);
-    return new HitResult(damage, target.isDead());
+    return build.attack().hit(this, target);
   }
 }

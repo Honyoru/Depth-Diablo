@@ -20,6 +20,7 @@ import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.EventBus;
 import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.engine.World;
+import com.epitech.depthdiablo.item.FireRing;
 import com.epitech.depthdiablo.item.Sword;
 import com.epitech.depthdiablo.testdata.CharacterBuilder;
 import com.epitech.depthdiablo.testdata.Items;
@@ -835,6 +836,24 @@ class CharacterTest {
     Character attacker = aCharacter().build();
 
     assertThrows(NullPointerException.class, () -> attacker.hit(null));
+  }
+
+  @Test
+  void should_hit_through_the_attack_of_its_build() {
+    Character attacker =
+        new CountingCharacter(stat -> stat == Stat.ATTACK ? 12f : 1f, Items.sword());
+    attacker.rebuild(List.of(aFireRing()));
+    Character target = aCharacter().withHp(20).withDefense(3).build();
+
+    attacker.hit(target);
+    target.update(1);
+
+    assertEquals(14, target.getHp());
+  }
+
+  private static FireRing aFireRing() {
+    return new FireRing(
+        "fire_ring", "item.fire_ring.name", "items/fire_ring", 0, new BurnSpec(2, 1, 3));
   }
 
   private static BuildModifier attackSpeedTimes(float factor) {
