@@ -310,7 +310,7 @@ public final class GameScreen extends ScreenAdapter {
   private static Player spawnKnight(PlayerOrders orders, World world, Vector2 spawn) {
     Map<Stat, Float> stats = new EnumMap<>(Stat.class);
     stats.put(Stat.MAX_HP, 100f);
-    stats.put(Stat.ATTACK, 10f);
+    stats.put(Stat.ATTACK, 5f);
     stats.put(Stat.DEFENSE, 1f);
     stats.put(Stat.SPEED, 120f);
     stats.put(Stat.ATTACK_SPEED, 1f);
@@ -413,7 +413,7 @@ public final class GameScreen extends ScreenAdapter {
    */
   private static Rat spawnRat(World world, Vector2 spawn) {
     Map<Stat, Float> stats = new EnumMap<>(Stat.class);
-    stats.put(Stat.MAX_HP, 100f);
+    stats.put(Stat.MAX_HP, 10f);
     stats.put(Stat.ATTACK, 10f);
     stats.put(Stat.DEFENSE, 1f);
     stats.put(Stat.SPEED, 100f);
