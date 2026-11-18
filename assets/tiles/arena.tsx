@@ -941,7 +941,9 @@
  <tile id="196" type="floor">
   <properties>
    <property name="collides" type="bool" value="false"/>
+   <property name="enemy" type="bool" value="false"/>
    <property name="name" value="floor_cracked_2"/>
+   <property name="spawn_enemy" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="197" type="floor">
