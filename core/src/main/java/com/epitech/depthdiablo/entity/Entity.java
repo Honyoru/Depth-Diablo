@@ -81,7 +81,7 @@ public abstract class Entity implements Updatable, Collidable {
   /**
    * Returns the position of this entity: bottom-left corner of its bodybox.
    *
-   * @return a new vetor, safe to change
+   * @return a new vector, safe to change
    */
   public final Vector2 position() {
     return new Vector2(bodyBox.x(), bodyBox.y());
