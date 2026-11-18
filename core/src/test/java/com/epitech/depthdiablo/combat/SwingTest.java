@@ -233,6 +233,31 @@ class SwingTest {
   }
 
   @Test
+  void should_start_with_no_progress() {
+    assertEquals(0f, aSwingAt(anEnemyAt(500, 500, 20)).getProgress(), 0.001f);
+  }
+
+  @Test
+  void should_be_halfway_after_half_of_its_ticks() {
+    Swing swing = aSwingAt(anEnemyAt(500, 500, 20));
+
+    for (long tick = 1; tick <= 6; tick++) { // the sword swings for 12 ticks
+      swing.update(tick);
+    }
+
+    assertEquals(0.5f, swing.getProgress(), 0.001f);
+  }
+
+  @Test
+  void should_be_complete_once_over() {
+    Swing swing = aSwingAt(anEnemyAt(500, 500, 20));
+
+    runWholeSwing(swing);
+
+    assertEquals(1f, swing.getProgress(), 0.001f);
+  }
+
+  @Test
   void should_hit_through_the_attack_of_its_holder() {
     holder.rebuild(List.of(aFireRing()));
     Character enemy = anEnemyAt(110, 46, 20);

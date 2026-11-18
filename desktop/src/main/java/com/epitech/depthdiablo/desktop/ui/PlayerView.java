@@ -7,17 +7,24 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
+import com.epitech.depthdiablo.combat.Swing;
 import com.epitech.depthdiablo.entity.Player;
+import java.util.Optional;
 
-/** Draws the player: idle or walking animation on its body box, mirrored when it looks left. */
+/**
+ * Draws the player: idle, walking or attacking animation on its body box, mirrored when it looks
+ * left.
+ */
 final class PlayerView implements Disposable {
   private static final int FRAME_SIZE = 32;
   private static final float FRAME_SECONDS = 0.15f;
   private static final float FRAME_MARGIN = 2;
   private final Texture idleSheet;
   private final Texture moveSheet;
+  private final Texture attackSheet;
   private final Animation<TextureRegion> idle;
   private final Animation<TextureRegion> move;
+  private final Animation<TextureRegion> attack;
   private float stateTime;
   private boolean lookingLeft;
 
@@ -26,6 +33,8 @@ final class PlayerView implements Disposable {
     this.moveSheet = new Texture(Gdx.files.internal("sprites/player/knight_move.png"));
     this.idle = animation(idleSheet);
     this.move = animation(moveSheet);
+    this.attackSheet = new Texture(Gdx.files.internal("sprites/player/knight_attack.png"));
+    this.attack = animation(attackSheet);
   }
 
   private static Animation<TextureRegion> animation(Texture sheet) {
@@ -56,7 +65,14 @@ final class PlayerView implements Disposable {
    */
   void draw(Batch batch, Player player, Vector2 position, float delta) {
     stateTime += delta;
-    TextureRegion frame = (player.isMoving() ? move : idle).getKeyFrame(stateTime);
+    Optional<Swing> swing = player.getCurrentSwing();
+    TextureRegion frame;
+    if (swing.isPresent()) {
+      lookTowardsAim(swing.get().getAimDegrees());
+      frame = attackFrame(swing.get().getProgress());
+    } else {
+      frame = (player.isMoving() ? move : idle).getKeyFrame(stateTime);
+    }
     float left = position.x + (player.getBodyBox().width() - FRAME_SIZE) / 2f;
     float bottom = position.y - FRAME_MARGIN;
     if (lookingLeft) {
@@ -66,9 +82,22 @@ final class PlayerView implements Disposable {
     }
   }
 
+  /** Picks the attack frame from how far the swing is, so the sprite follows the real blade. */
+  private TextureRegion attackFrame(float progress) {
+    TextureRegion[] frames = attack.getKeyFrames();
+    int index = Math.min(frames.length - 1, (int) (progress * frames.length));
+    return frames[index];
+  }
+
+  /** Turns the sprite towards the side of the aim: left between 90 and 270 degrees. */
+  private void lookTowardsAim(float aimDegrees) {
+    lookingLeft = aimDegrees > 90f && aimDegrees < 270f;
+  }
+
   @Override
   public void dispose() {
     idleSheet.dispose();
     moveSheet.dispose();
+    attackSheet.dispose();
   }
 }

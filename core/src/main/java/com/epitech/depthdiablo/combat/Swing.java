@@ -100,6 +100,15 @@ public final class Swing implements Updatable {
   }
 
   /**
+   * Tells how far the swing is, for the renderer to pick the frame of the attack animation.
+   *
+   * @return from 0 when it starts to 1 once it is over
+   */
+  public float getProgress() {
+    return (float) getTicksElapsed() / weapon.getSwingTicks();
+  }
+
+  /**
    * Runs one tick of the swing: the blade moves to its next step around the holder, then hits each
    * target it touches, once per swing. A hit that lands publishes a DamageDealt event, and an
    * EntityDied event if it kills. A dead holder hits nothing, but its swing still runs to the end.

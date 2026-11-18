@@ -17,8 +17,8 @@
       "price": 30,
       "attackBonus": 2,
       "attackSpeed": 1,
-      "range": 24,
-      "width": 8,
+      "range": 48,
+      "width": 16,
       "arcDegrees": 90,
       "swingTicks": 12
     },
