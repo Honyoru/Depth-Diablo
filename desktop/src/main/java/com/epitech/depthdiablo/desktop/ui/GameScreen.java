@@ -417,6 +417,6 @@ public final class GameScreen extends ScreenAdapter {
     stats.put(Stat.LUCK, 0f);
     Aabb body =
         new Aabb(spawn.x + 2f, spawn.y + 2f, 28f, 28f); // 28 px body centred in a 32 px tile
-    return new Rat(body, new BaseStats(stats), body, 0, false, 4f, world);
+    return new Rat(body, new BaseStats(stats), 4f, body, 0, false, world);
   }
 }

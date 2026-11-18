@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.input.PlayerInput;
+import java.util.Optional;
 
 /** Reads the player's orders from the keyboard: WASD to walk (GDD, Q38). */
 final class KeyboardPlayerInput implements PlayerInput {
@@ -25,5 +26,10 @@ final class KeyboardPlayerInput implements PlayerInput {
       y += 1f;
     }
     return new Vector2(x, y);
+  }
+
+  @Override
+  public Optional<Vector2> attackPoint() {
+    return Optional.empty(); // the left button comes in the next step
   }
 }
