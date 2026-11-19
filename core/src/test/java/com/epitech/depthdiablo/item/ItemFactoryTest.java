@@ -55,6 +55,22 @@ class ItemFactoryTest {
   }
 
   @Test
+  void should_build_the_leather_armor_with_the_values_of_its_entry() throws IOException {
+    DataRegistry items = realItems();
+
+    LeatherArmor armor =
+        assertInstanceOf(LeatherArmor.class, new ItemFactory(items).create("leather_armor"));
+
+    JsonValue entry = items.definition("leather_armor");
+    assertEquals("leather_armor", armor.getId());
+    assertEquals(entry.getString("nameKey"), armor.getNameKey());
+    assertEquals(entry.getString("spriteId"), armor.getSpriteId());
+    assertEquals(Rarity.valueOf(entry.getString("rarity")), armor.getRarity());
+    assertEquals(entry.getInt("price"), armor.getPrice());
+    assertEquals(entry.getInt("defenseBonus"), armor.getDefenseBonus());
+  }
+
+  @Test
   void should_build_a_new_item_on_every_call() throws IOException {
     ItemFactory factory = new ItemFactory(realItems());
 

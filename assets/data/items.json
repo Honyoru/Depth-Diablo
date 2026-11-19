@@ -23,6 +23,15 @@
       "swingTicks": 12
     },
     {
+      "id": "leather_armor",
+      "class": "LeatherArmor",
+      "nameKey": "item.leather_armor.name",
+      "spriteId": "items/leather_armor",
+      "rarity": "COMMON",
+      "price": 10,
+      "defenseBonus": 1
+    },
+    {
       "id": "fire_ring",
       "class": "FireRing",
       "nameKey": "item.fire_ring.name",

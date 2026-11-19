@@ -34,23 +34,41 @@ public final class ItemFactory {
   public Item create(String id) { // ** TO REFACTOR WITH A FACTORY FOR EACH TYPE  */
     ItemSpec spec = ItemSpecReader.read(id, items.definition(id));
     return switch (spec) {
-      case ItemSpec.PotionSpec p ->
-          new Potion(p.id(), p.nameKey(), p.spriteId(), p.price(), p.healAmount());
-      case ItemSpec.SwordSpec s ->
+      case ItemSpec.PotionSpec potion ->
+          new Potion(
+              potion.id(),
+              potion.nameKey(),
+              potion.spriteId(),
+              potion.price(),
+              potion.healAmount());
+      case ItemSpec.SwordSpec sword ->
           new Sword(
-              s.id(),
-              s.nameKey(),
-              s.spriteId(),
-              s.rarity(),
-              s.price(),
-              s.attackBonus(),
-              s.attackSpeed(),
-              s.range(),
-              s.width(),
-              s.arcDegrees(),
-              s.swingTicks());
-      case ItemSpec.FireRingSpec f ->
-          new FireRing(f.id(), f.nameKey(), f.spriteId(), f.price(), f.burn());
+              sword.id(),
+              sword.nameKey(),
+              sword.spriteId(),
+              sword.rarity(),
+              sword.price(),
+              sword.attackBonus(),
+              sword.attackSpeed(),
+              sword.range(),
+              sword.width(),
+              sword.arcDegrees(),
+              sword.swingTicks());
+      case ItemSpec.LeatherArmorSpec armor ->
+          new LeatherArmor(
+              armor.id(),
+              armor.nameKey(),
+              armor.spriteId(),
+              armor.rarity(),
+              armor.price(),
+              armor.defenseBonus());
+      case ItemSpec.FireRingSpec fireRing ->
+          new FireRing(
+              fireRing.id(),
+              fireRing.nameKey(),
+              fireRing.spriteId(),
+              fireRing.price(),
+              fireRing.burn());
     };
   }
 }

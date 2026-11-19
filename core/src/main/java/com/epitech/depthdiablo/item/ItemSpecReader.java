@@ -39,6 +39,15 @@ public final class ItemSpecReader {
                   json.getFloat("width"),
                   json.getFloat("arcDegrees"),
                   json.getInt("swingTicks")),
+          "LeatherArmor",
+          (id, json) ->
+              new ItemSpec.LeatherArmorSpec(
+                  id,
+                  json.getString("nameKey"),
+                  json.getString("spriteId"),
+                  Rarity.valueOf(json.getString("rarity")),
+                  json.getInt("price"),
+                  json.getInt("defenseBonus")),
           "FireRing",
           (id, json) ->
               new ItemSpec.FireRingSpec(

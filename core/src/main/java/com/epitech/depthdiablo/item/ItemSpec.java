@@ -80,6 +80,20 @@ public sealed interface ItemSpec {
       implements ItemSpec {}
 
   /**
+   * A {@code "LeatherArmor"} entry.
+   *
+   * @param id the item's key
+   * @param nameKey the translation key of its name
+   * @param spriteId its picture
+   * @param rarity its loot tier
+   * @param price its shop price in coins
+   * @param defenseBonus the defense it adds to its holder's
+   */
+  record LeatherArmorSpec(
+      String id, String nameKey, String spriteId, Rarity rarity, int price, int defenseBonus)
+      implements ItemSpec {}
+
+  /**
    * A {@code "FireRing"} entry.
    *
    * @param id the item's key

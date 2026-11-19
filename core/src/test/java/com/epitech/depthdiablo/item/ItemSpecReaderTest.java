@@ -29,6 +29,12 @@ class ItemSpecReaderTest {
         "attackSpeed": 1, "range": 24, "width": 8, "arcDegrees": 90, "swingTicks": 12 }
       """;
 
+  private static final String ARMOR =
+      """
+      { "id": "leather_armor", "class": "LeatherArmor", "nameKey": "item.leather_armor.name",
+        "spriteId": "items/leather_armor", "rarity": "COMMON", "price": 10, "defenseBonus": 1 }
+      """;
+
   private static final String FIRE_RING =
       """
       { "id": "fire_ring", "class": "FireRing", "nameKey": "item.fire_ring.name",
@@ -52,6 +58,21 @@ class ItemSpecReaderTest {
     assertEquals(
         new ItemSpec.SwordSpec(
             "sword", "item.sword.name", "items/sword", Rarity.COMMON, 30, 2, 1f, 24f, 8f, 90f, 12),
+        spec);
+  }
+
+  @Test
+  void should_read_an_armor_with_all_its_values() {
+    ItemSpec spec = ItemSpecReader.read("leather_armor", parse(ARMOR));
+
+    assertEquals(
+        new ItemSpec.LeatherArmorSpec(
+            "leather_armor",
+            "item.leather_armor.name",
+            "items/leather_armor",
+            Rarity.COMMON,
+            10,
+            1),
         spec);
   }
 
