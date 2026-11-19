@@ -40,6 +40,8 @@ Status note (Ange, 4 Nov): the team reviewed the whole draft orally, and every "
 - Bosses, one per floor: King of Rats, King of Orcs, King of Skeletons (Q17).
 - The only NPC is the Shopkeeper: does not fight, cannot be hit (Q18).
 - Player actions: move in 8 directions, attack, dash (fast, linear, can be hit), dodge roll (invincible), use consumable (3 hotbar slots), pick up (key press), interact, open inventory (Q40).
+- Character data (19 Nov): players and enemies share `data/characters.json`, told apart by their `"class"`. `CharacterKind` is a sealed interface over one enum per family (`PlayerKind`, `EnemyKind`); each kind holds the constructor of its class (`Knight::new`), so a new class with the same constructor is one enum line. `CharacterFactory.create(id, position, type)` reads the values every character shares, centres the body on the position and hands the entry to the factory of its family: `PlayerFactory` reads the starting `"weapon"`, `EnemyFactory` the `"reach"`. A family whose constructor differs (ranged enemies, bosses) gets its own kind enum. Items stay one spec record per class for now; they get kind enums and family factories once two item classes share a constructor.
+- Spawns (19 Nov): the map's tiles with `spawn` (the player, the first one) and `spawn_enemy` are read in one pass; each character is centred on its tile.
 - Aim: mouse or arrow keys, switched in Options (Q39). Keyboard and mouse plus gamepad, keys remappable (Q38, Q43).
 
 ## 5. Combat and stats
