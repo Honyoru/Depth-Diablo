@@ -189,6 +189,48 @@ class ArenaCycleTest {
     org.junit.jupiter.api.Assertions.assertEquals(1, arena.getScore());
   }
 
+  // ---------- no shop ----------
+
+  @Test
+  void should_start_a_break_instead_of_the_shop_when_the_shop_is_disabled() {
+    ArenaCycle arena = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS, false);
+    clearWaves(arena, 4);
+
+    arena.waveCleared();
+
+    org.junit.jupiter.api.Assertions.assertEquals(ArenaCycle.Phase.BREAK, arena.getPhase());
+    org.junit.jupiter.api.Assertions.assertEquals(5, arena.getScore());
+  }
+
+  @Test
+  void should_start_wave_6_after_the_break_when_the_shop_is_disabled() {
+    ArenaCycle arena = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS, false);
+    clearWaves(arena, 4);
+    arena.waveCleared();
+
+    for (int tick = 0; tick < BREAK_TICKS; tick++) {
+      arena.update();
+    }
+
+    org.junit.jupiter.api.Assertions.assertEquals(ArenaCycle.Phase.WAVE, arena.getPhase());
+    org.junit.jupiter.api.Assertions.assertEquals(6, arena.getWaveNumber());
+  }
+
+  @Test
+  void should_not_start_a_next_cycle_when_the_shop_is_disabled() {
+    ArenaCycle arena = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS, false);
+    clearWaves(arena, 4);
+    arena.waveCleared();
+
+    org.junit.jupiter.api.Assertions.assertFalse(arena.startNextCycle());
+  }
+
+  @Test
+  void should_reject_waves_per_cycle_below_1_when_the_shop_is_disabled() {
+    org.junit.jupiter.api.Assertions.assertThrows(
+        IllegalArgumentException.class, () -> new ArenaCycle(0, BREAK_TICKS, false));
+  }
+
   // ---------- errors ----------
 
   @Test
