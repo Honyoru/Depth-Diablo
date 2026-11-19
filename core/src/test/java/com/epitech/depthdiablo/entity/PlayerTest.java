@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.entity;
 import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,14 +11,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.combat.FireTouch;
 import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerOrders;
+import com.epitech.depthdiablo.item.Armor;
+import com.epitech.depthdiablo.item.FireRing;
+import com.epitech.depthdiablo.item.Inventory;
 import com.epitech.depthdiablo.item.LeatherArmor;
+import com.epitech.depthdiablo.item.Potion;
 import com.epitech.depthdiablo.item.Sword;
+import com.epitech.depthdiablo.item.Weapon;
 import com.epitech.depthdiablo.testdata.Items;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1 and 1.5: the player walks where its input points */
@@ -224,6 +232,134 @@ class PlayerTest {
     tick(player, 12);
 
     assertEquals(7, enemy.getHp());
+  }
+
+  @Test
+  void should_count_its_starting_armor_in_its_defense() {
+    Player player = aKnight();
+
+    assertEquals(1 + Items.leatherArmor().getDefenseBonus(), player.getDefense());
+  }
+
+  @Test
+  void should_put_a_picked_up_consumable_in_its_hotbar() {
+    Player player = aKnight();
+    Potion potion = Items.potion();
+
+    assertEquals(Optional.empty(), player.pickUp(potion));
+    assertSame(potion, player.getInventory().hotbarSlot(0));
+  }
+
+  @Test
+  void should_leave_a_consumable_on_the_ground_when_its_hotbar_is_full() {
+    Player player = aKnight();
+    for (int i = 0; i < Inventory.HOTBAR_SIZE; i++) {
+      player.pickUp(Items.potion());
+    }
+    Potion extra = Items.potion();
+
+    assertEquals(Optional.of(extra), player.pickUp(extra));
+  }
+
+  @Test
+  void should_put_a_picked_up_passive_item_in_its_passive_slots() {
+    Player player = aKnight();
+    FireRing ring = Items.fireRing();
+
+    assertEquals(Optional.empty(), player.pickUp(ring));
+    assertSame(ring, player.getInventory().passiveSlot(0));
+  }
+
+  @Test
+  void should_attack_through_a_picked_up_passive_item() {
+    Player player = aKnight();
+
+    player.pickUp(Items.fireRing());
+
+    assertInstanceOf(FireTouch.class, player.getBuild().attack());
+  }
+
+  @Test
+  void should_leave_a_passive_item_on_the_ground_when_its_passive_slots_are_full() {
+    Player player = aKnight();
+    for (int i = 0; i < Inventory.PASSIVE_SIZE; i++) {
+      player.pickUp(Items.fireRing());
+    }
+    FireRing extra = Items.fireRing();
+
+    assertEquals(Optional.of(extra), player.pickUp(extra));
+  }
+
+  @Test
+  void should_leave_its_old_weapon_on_the_ground_when_it_picks_up_a_weapon() {
+    Player player = aKnight();
+    Weapon old = player.getInventory().getWeapon();
+
+    assertEquals(Optional.of(old), player.pickUp(Items.sword()));
+  }
+
+  @Test
+  void should_attack_with_a_picked_up_weapon() {
+    Player player = aKnight();
+    Sword newSword = Items.sword();
+
+    player.pickUp(newSword);
+
+    assertSame(newSword, player.getBuild().attack());
+  }
+
+  @Test
+  void should_leave_its_old_armor_on_the_ground_when_it_picks_up_an_armor() {
+    Player player = aKnight();
+    Armor old = player.getInventory().getArmor();
+    LeatherArmor newArmor = Items.leatherArmor();
+
+    assertEquals(Optional.of(old), player.pickUp(newArmor));
+    assertSame(newArmor, player.getInventory().getArmor());
+  }
+
+  @Test
+  void should_stop_attacking_through_a_passive_item_it_drops() {
+    Player player = aKnight();
+    FireRing ring = Items.fireRing();
+    player.pickUp(ring);
+
+    assertEquals(Optional.of(ring), player.dropPassive(0));
+    assertSame(player.getInventory().getWeapon(), player.getBuild().attack());
+  }
+
+  @Test
+  void should_give_nothing_when_it_drops_a_free_passive_slot() {
+    assertEquals(Optional.empty(), aKnight().dropPassive(0));
+  }
+
+  @Test
+  void should_give_back_the_consumable_it_drops() {
+    Player player = aKnight();
+    Potion potion = Items.potion();
+    player.pickUp(potion);
+
+    assertEquals(Optional.of(potion), player.dropConsumable(0));
+    assertTrue(player.getInventory().isHotbarSlotFree(0));
+  }
+
+  @Test
+  void should_swap_two_of_its_passive_slots() {
+    Player player = aKnight();
+    FireRing ring = Items.fireRing();
+    player.pickUp(ring);
+
+    player.swapPassiveSlots(0, 4);
+
+    assertSame(ring, player.getInventory().passiveSlot(4));
+    assertInstanceOf(FireTouch.class, player.getBuild().attack());
+  }
+
+  @Test
+  void should_throw_when_the_picked_up_item_is_null() {
+    Player player = aKnight();
+
+    assertThrows(NullPointerException.class, () -> player.pickUp(null));
   }
 
   private Knight aKnight() {

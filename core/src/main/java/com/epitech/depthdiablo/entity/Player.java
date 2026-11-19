@@ -7,9 +7,13 @@ import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
 import com.epitech.depthdiablo.item.Armor;
+import com.epitech.depthdiablo.item.Consumable;
 import com.epitech.depthdiablo.item.Inventory;
+import com.epitech.depthdiablo.item.Item;
+import com.epitech.depthdiablo.item.PassiveItem;
 import com.epitech.depthdiablo.item.Weapon;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * The character the user controls (GDD 1.3.1). Every tick it reads its {@link PlayerInput} and
@@ -58,6 +62,68 @@ public abstract class Player extends Character {
    */
   public Inventory getInventory() {
     return inventory;
+  }
+
+  /**
+   * Picks up an item and rebuilds (GDD 1.4): a consumable goes in the hotbar, a passive item in the
+   * first free passive slot, a weapon or an armor replaces the one held.
+   *
+   * @param item the item the player walks on
+   * @return what is left on the ground: the old weapon or armor, the item itself when no slot takes
+   *     it, or nothing
+   * @throws NullPointerException if {@code item} is {@code null}
+   * @throws IllegalArgumentException if the item is of no kind the inventory takes
+   */
+  public final Optional<Item> pickUp(Item item) {
+    Objects.requireNonNull(item, "item is null");
+    Optional<Item> left =
+        switch (item) {
+          case Consumable consumable ->
+              inventory.add(consumable) ? Optional.empty() : Optional.of(item);
+          case PassiveItem passive -> inventory.add(passive) ? Optional.empty() : Optional.of(item);
+          case Weapon weapon -> Optional.of(inventory.equip(weapon));
+          case Armor armor -> Optional.of(inventory.equip(armor));
+          default ->
+              throw new IllegalArgumentException(item.getId() + " cannot go in an inventory");
+        };
+    rebuild(inventory.getModifiers());
+    return left;
+  }
+
+  /**
+   * Takes the passive item out of a slot and rebuilds without it.
+   *
+   * @param slot the passive slot, from 0 to {@link Inventory#PASSIVE_SIZE} - 1
+   * @return the item to drop on the ground, or nothing if the slot was free
+   * @throws IndexOutOfBoundsException if {@code slot} is outside the passive slots
+   */
+  public final Optional<PassiveItem> dropPassive(int slot) {
+    Optional<PassiveItem> dropped = inventory.removePassive(slot);
+    rebuild(inventory.getModifiers());
+    return dropped;
+  }
+
+  /**
+   * Takes the consumable out of a hotbar slot; consumables do not change the build.
+   *
+   * @param slot the hotbar slot, from 0 to {@link Inventory#HOTBAR_SIZE} - 1
+   * @return the consumable to drop on the ground, or nothing if the slot was free
+   * @throws IndexOutOfBoundsException if {@code slot} is outside the hotbar
+   */
+  public final Optional<Consumable> dropConsumable(int slot) {
+    return inventory.removeConsumable(slot);
+  }
+
+  /**
+   * Swaps two passive slots and rebuilds, since passive items apply in slot order.
+   *
+   * @param first one passive slot, from 0 to {@link Inventory#PASSIVE_SIZE} - 1
+   * @param second the other passive slot, from 0 to {@link Inventory#PASSIVE_SIZE} - 1
+   * @throws IndexOutOfBoundsException if a slot is outside the passive slots
+   */
+  public final void swapPassiveSlots(int first, int second) {
+    inventory.swapPassiveSlots(first, second);
+    rebuild(inventory.getModifiers());
   }
 
   /**
