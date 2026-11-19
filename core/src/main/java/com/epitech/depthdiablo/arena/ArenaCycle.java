@@ -28,14 +28,28 @@ public final class ArenaCycle {
 
   private int score;
 
+  private final boolean shopEnabled;
+
   /**
-   * Creates a new arena cycle.
+   * Creates a new arena cycle whose boss wave opens the shop.
    *
    * @param wavesPerCycle the number of normal waves in the cycle + 1 boss wave
    * @param breakTicks the number of ticks spent between two normal waves
    * @throws IllegalArgumentException if a provided value is lower than 1
    */
   public ArenaCycle(int wavesPerCycle, int breakTicks) {
+    this(wavesPerCycle, breakTicks, true);
+  }
+
+  /**
+   * Creates a new arena cycle.
+   *
+   * @param wavesPerCycle the number of normal waves in the cycle + 1 boss wave
+   * @param breakTicks the number of ticks spent between two waves
+   * @param shopEnabled false: a cleared boss wave starts a break like any wave, no shop
+   * @throws IllegalArgumentException if a provided value is lower than 1
+   */
+  public ArenaCycle(int wavesPerCycle, int breakTicks, boolean shopEnabled) {
     if (wavesPerCycle < 1) {
       throw new IllegalArgumentException("wavesPerCycle must be >= 1: " + wavesPerCycle);
     }
@@ -44,6 +58,7 @@ public final class ArenaCycle {
     }
     this.wavesPerCycle = wavesPerCycle;
     this.breakTicks = breakTicks;
+    this.shopEnabled = shopEnabled;
     this.wave = 1;
     this.phase = Phase.WAVE;
     this.breakTicksLeft = 0;
@@ -101,7 +116,7 @@ public final class ArenaCycle {
           "Cannot clear a wave while the arena phase is " + phase + ".");
     }
     score++;
-    if (isBossWave()) {
+    if (isBossWave() && shopEnabled) {
       phase = Phase.SHOP;
       breakTicksLeft = 0;
       return;
