@@ -48,6 +48,9 @@ public final class GameScreen extends ScreenAdapter {
 
   private static final String DEFAULT_MAP_PATH = "Floor1.tmx";
 
+  /** Name of the map layer that holds the enemy spawn tiles. */
+  private static final String SPAWN_LAYER = "spawn";
+
   private final HudState hudState;
 
   private final Hud hud;
@@ -381,10 +384,14 @@ public final class GameScreen extends ScreenAdapter {
 
   /**
    * Returns the bottom-left corner, in pixels, of every tile whose "spawn_enemy" property is true.
-   * The list is empty when the map has none.
+   * They are read from the "spawn" layer. The list is empty when the map has no such layer or no
+   * such tile.
    */
   private List<Vector2> findEnemySpawns() {
-    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(SPAWN_LAYER);
+    if (layer == null) {
+      return enemies; // a map without a spawn layer has no enemy spawn
+    }
     float tile = GameConstants.TILE_SIZE;
     for (int x = 0; x < layer.getWidth(); x++) {
       for (int y = 0; y < layer.getHeight(); y++) {
