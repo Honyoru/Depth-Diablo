@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.entity;
 
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
+import com.epitech.depthdiablo.item.Armor;
 import com.epitech.depthdiablo.item.Weapon;
 
 /**
@@ -19,6 +20,7 @@ public enum PlayerKind implements CharacterKind {
         Aabb body,
         StatSource stats,
         Weapon startingWeapon,
+        Armor startingArmor,
         Aabb hurtbox,
         int invincibilityTicks,
         PlayerInput input,
@@ -36,11 +38,12 @@ public enum PlayerKind implements CharacterKind {
       Aabb body,
       StatSource stats,
       Weapon startingWeapon,
+      Armor startingArmor,
       Aabb hurtbox,
       int invincibilityTicks,
       PlayerInput input,
       World world) {
     return constructor.create(
-        body, stats, startingWeapon, hurtbox, invincibilityTicks, input, world);
+        body, stats, startingWeapon, startingArmor, hurtbox, invincibilityTicks, input, world);
   }
 }

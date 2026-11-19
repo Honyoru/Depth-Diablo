@@ -4,6 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.item.ItemFactory;
+import com.epitech.depthdiablo.item.LeatherArmor;
 import com.epitech.depthdiablo.item.Potion;
 import com.epitech.depthdiablo.item.Sword;
 import java.io.IOException;
@@ -23,6 +24,15 @@ public final class Items {
    */
   public static Sword sword() {
     return (Sword) factory().create("sword");
+  }
+
+  /**
+   * Builds the leather armor of the data file.
+   *
+   * @return a new armor with the values of its entry
+   */
+  public static LeatherArmor leatherArmor() {
+    return (LeatherArmor) factory().create("leather_armor");
   }
 
   /**

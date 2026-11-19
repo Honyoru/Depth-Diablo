@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerOrders;
+import com.epitech.depthdiablo.item.LeatherArmor;
 import com.epitech.depthdiablo.item.Sword;
 import com.epitech.depthdiablo.testdata.Items;
 import java.io.IOException;
@@ -25,7 +26,8 @@ class PlayerFactoryTest {
       { "id": "knight", "class": "KNIGHT", "spriteId": "player/knight",
         "stats": { "MAX_HP": 100, "ATTACK": 5, "DEFENSE": 1, "SPEED": 120,
                    "ATTACK_SPEED": 1, "LUCK": 0 },
-        "width": 28, "height": 28, "invincibilityTicks": 30, "weapon": "sword" }
+        "width": 28, "height": 28, "invincibilityTicks": 30, "weapon": "sword",
+        "armor": "leather_armor" }
       """;
   private static final Aabb BODY = new Aabb(64, 32, 28, 28);
   private final PlayerFactory factory =
@@ -47,6 +49,13 @@ class PlayerFactoryTest {
     Player knight = create(KNIGHT_TEST);
 
     assertInstanceOf(Sword.class, knight.getInventory().getWeapon());
+  }
+
+  @Test
+  void should_give_the_knight_the_armor_of_its_entry() {
+    Player knight = create(KNIGHT_TEST);
+
+    assertInstanceOf(LeatherArmor.class, knight.getInventory().getArmor());
   }
 
   @Test
@@ -75,6 +84,20 @@ class PlayerFactoryTest {
   @Test
   void should_throw_when_the_weapon_is_not_a_weapon() {
     String entry = KNIGHT_TEST.replace("\"weapon\": \"sword\"", "\"weapon\": \"potion_small\"");
+
+    assertThrows(IllegalArgumentException.class, () -> create(entry));
+  }
+
+  @Test
+  void should_throw_when_the_armor_is_missing() {
+    String entry = KNIGHT_TEST.replace("\"armor\"", "\"coat\"");
+
+    assertThrows(IllegalArgumentException.class, () -> create(entry));
+  }
+
+  @Test
+  void should_throw_when_the_armor_is_not_an_armor() {
+    String entry = KNIGHT_TEST.replace("\"armor\": \"leather_armor\"", "\"armor\": \"sword\"");
 
     assertThrows(IllegalArgumentException.class, () -> create(entry));
   }

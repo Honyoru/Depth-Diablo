@@ -13,6 +13,7 @@ import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerOrders;
+import com.epitech.depthdiablo.item.LeatherArmor;
 import com.epitech.depthdiablo.item.Sword;
 import com.epitech.depthdiablo.testdata.Items;
 import java.util.EnumMap;
@@ -151,9 +152,11 @@ class PlayerTest {
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
     StatSource stats = stats();
     Sword sword = Items.sword();
+    LeatherArmor armor = Items.leatherArmor();
 
     assertThrows(
-        NullPointerException.class, () -> new Knight(box, stats, sword, box, 0, null, world));
+        NullPointerException.class,
+        () -> new Knight(box, stats, sword, armor, box, 0, null, world));
   }
 
   @Test
@@ -168,7 +171,7 @@ class PlayerTest {
     Sword sword = Items.sword();
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
 
-    Player player = new Knight(box, stats(), sword, box, 0, input, world);
+    Player player = new Knight(box, stats(), sword, Items.leatherArmor(), box, 0, input, world);
 
     assertSame(sword, player.getInventory().getWeapon());
   }
@@ -225,7 +228,7 @@ class PlayerTest {
 
   private Knight aKnight() {
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
-    return new Knight(box, stats(), Items.sword(), box, 0, input, world);
+    return new Knight(box, stats(), Items.sword(), Items.leatherArmor(), box, 0, input, world);
   }
 
   private static BaseStats stats() {
@@ -284,7 +287,8 @@ class PlayerTest {
   void should_carry_its_hurtbox_when_it_walks() {
     Aabb body = new Aabb(0f, 0f, 16f, 16f);
     Aabb hurtbox = new Aabb(4f, 8f, 8f, 8f);
-    Player player = new Knight(body, stats(), Items.sword(), hurtbox, 0, input, world);
+    Player player =
+        new Knight(body, stats(), Items.sword(), Items.leatherArmor(), hurtbox, 0, input, world);
     input.walk(1f, 0f);
 
     tick(player, 10);

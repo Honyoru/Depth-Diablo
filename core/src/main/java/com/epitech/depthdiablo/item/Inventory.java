@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The player's bag (GDD 1.4): 3 hotbar slots that take only consumables, and the equipped weapon.
- * Each slot holds one item; items never stack. The player always holds a weapon.
+ * The player's bag (GDD 1.4): 3 hotbar slots that take only consumables, the equipped weapon and
+ * the worn armor. Each slot holds one item; items never stack. The player always holds a weapon and
+ * wears an armor.
  */
 public final class Inventory {
 
@@ -31,14 +32,18 @@ public final class Inventory {
 
   private Weapon weapon;
 
+  private Armor armor;
+
   /**
    * Creates an inventory with an empty hotbar.
    *
    * @param startingWeapon the weapon the player starts with
-   * @throws NullPointerException if {@code startingWeapon} is {@code null}
+   * @param startingArmor the armor the player starts with
+   * @throws NullPointerException if {@code startingWeapon} or {@code startingArmor} is {@code null}
    */
-  public Inventory(Weapon startingWeapon) {
+  public Inventory(Weapon startingWeapon, Armor startingArmor) {
     this.weapon = Objects.requireNonNull(startingWeapon, "startingWeapon is null");
+    this.armor = Objects.requireNonNull(startingArmor, "startingArmor is null");
     Arrays.fill(hotbar, EMPTY);
   }
 
@@ -52,14 +57,23 @@ public final class Inventory {
   }
 
   /**
+   * Returns the worn armor.
+   *
+   * @return the armor on the portrait; never null
+   */
+  public Armor getArmor() {
+    return armor;
+  }
+
+  /**
    * Returns what changes the holder's build, in the order the character applies them (GDD 1.3.1):
-   * the weapon, then the armor, then the passive items in pickup order. Armor and passive items
-   * join this list when they exist.
+   * the weapon, then the armor, then the passive items in pickup order. Passive items join this
+   * list when they exist.
    *
    * @return the modifiers in order; the list cannot be changed
    */
   public List<BuildModifier> getModifiers() {
-    return List.of(weapon);
+    return List.of(weapon, armor);
   }
 
   /**
@@ -129,6 +143,21 @@ public final class Inventory {
     Objects.requireNonNull(newWeapon, "newWeapon is null");
     Weapon old = weapon;
     weapon = newWeapon;
+    return old;
+  }
+
+  /**
+   * Swaps the worn armor for a new one (GDD 1.4). The player always wears an armor, so the old one
+   * is given back for the world to drop on the ground.
+   *
+   * @param newArmor the armor to wear
+   * @return the armor that was worn before
+   * @throws NullPointerException if {@code newArmor} is {@code null}
+   */
+  public Armor equip(Armor newArmor) {
+    Objects.requireNonNull(newArmor, "newArmor is null");
+    Armor old = armor;
+    armor = newArmor;
     return old;
   }
 }

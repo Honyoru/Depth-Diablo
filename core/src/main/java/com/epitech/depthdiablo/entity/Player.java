@@ -6,6 +6,7 @@ import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
+import com.epitech.depthdiablo.item.Armor;
 import com.epitech.depthdiablo.item.Inventory;
 import com.epitech.depthdiablo.item.Weapon;
 import java.util.Objects;
@@ -29,6 +30,7 @@ public abstract class Player extends Character {
    * @param stats where its stats come from; must not be {@code null}
    * @param startingWeapon the weapon it starts with: its base attack and the first item of its
    *     inventory; must not be {@code null}
+   * @param startingArmor the armor it starts with, in its inventory; must not be {@code null}
    * @param hurtbox the player's hurtbox; must not be {@code null}
    * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
    * @param input what the user asks for; must not be {@code null}
@@ -38,18 +40,19 @@ public abstract class Player extends Character {
       Aabb bodyBox,
       StatSource stats,
       Weapon startingWeapon,
+      Armor startingArmor,
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
       PlayerInput input,
       World world) {
     super(bodyBox, stats, startingWeapon, hurtbox, invincibilityTicksAfterHit, world);
     this.input = Objects.requireNonNull(input, "The input of a player must not be null");
-    this.inventory = new Inventory(startingWeapon);
+    this.inventory = new Inventory(startingWeapon, startingArmor);
     rebuild(inventory.getModifiers());
   }
 
   /**
-   * Returns the player's bag: its hotbar and its equipped weapon (GDD 1.4).
+   * Returns the player's bag: its hotbar, its equipped weapon and its worn armor (GDD 1.4).
    *
    * @return the inventory; never null
    */

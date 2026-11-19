@@ -15,7 +15,8 @@
       "width": 28,
       "height": 28,
       "invincibilityTicks": 30,
-      "weapon": "sword"
+      "weapon": "sword",
+      "armor": "leather_armor"
     },
     {
       "id": "rat",

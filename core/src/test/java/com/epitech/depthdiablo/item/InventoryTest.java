@@ -89,12 +89,14 @@ class InventoryTest {
   void should_hold_its_starting_weapon() {
     Sword sword = Items.sword();
 
-    assertSame(sword, new Inventory(sword).getWeapon());
+    assertSame(sword, new Inventory(sword, Items.leatherArmor()).getWeapon());
   }
 
   @Test
   void should_throw_when_the_starting_weapon_is_null() {
-    assertThrows(NullPointerException.class, () -> new Inventory(null));
+    LeatherArmor armor = Items.leatherArmor();
+
+    assertThrows(NullPointerException.class, () -> new Inventory(null, armor));
   }
 
   @Test
@@ -110,7 +112,7 @@ class InventoryTest {
   @Test
   void should_give_back_the_old_weapon_when_equipping_a_new_one() {
     Sword oldSword = Items.sword();
-    Inventory inventory = new Inventory(oldSword);
+    Inventory inventory = new Inventory(oldSword, Items.leatherArmor());
 
     assertSame(oldSword, inventory.equip(Items.sword()));
   }
@@ -118,10 +120,51 @@ class InventoryTest {
   @Test
   void should_keep_its_weapon_when_the_new_one_is_null() {
     Sword sword = Items.sword();
-    Inventory inventory = new Inventory(sword);
+    Inventory inventory = new Inventory(sword, Items.leatherArmor());
 
-    assertThrows(NullPointerException.class, () -> inventory.equip(null));
+    assertThrows(NullPointerException.class, () -> inventory.equip((Weapon) null));
     assertSame(sword, inventory.getWeapon());
+  }
+
+  @Test
+  void should_hold_its_starting_armor() {
+    LeatherArmor armor = Items.leatherArmor();
+
+    assertSame(armor, new Inventory(Items.sword(), armor).getArmor());
+  }
+
+  @Test
+  void should_throw_when_the_starting_armor_is_null() {
+    Sword sword = Items.sword();
+
+    assertThrows(NullPointerException.class, () -> new Inventory(sword, null));
+  }
+
+  @Test
+  void should_hold_the_new_armor_once_equipped() {
+    Inventory inventory = anInventory();
+    LeatherArmor newArmor = Items.leatherArmor();
+
+    inventory.equip(newArmor);
+
+    assertSame(newArmor, inventory.getArmor());
+  }
+
+  @Test
+  void should_give_back_the_old_armor_when_equipping_a_new_one() {
+    LeatherArmor oldArmor = Items.leatherArmor();
+    Inventory inventory = new Inventory(Items.sword(), oldArmor);
+
+    assertSame(oldArmor, inventory.equip(Items.leatherArmor()));
+  }
+
+  @Test
+  void should_keep_its_armor_when_the_new_one_is_null() {
+    LeatherArmor armor = Items.leatherArmor();
+    Inventory inventory = new Inventory(Items.sword(), armor);
+
+    assertThrows(NullPointerException.class, () -> inventory.equip((Armor) null));
+    assertSame(armor, inventory.getArmor());
   }
 
   @Test
@@ -188,10 +231,11 @@ class InventoryTest {
   }
 
   @Test
-  void should_give_its_weapon_as_the_only_modifier_for_now() {
+  void should_give_its_weapon_then_its_armor_as_modifiers() {
     Sword sword = Items.sword();
+    LeatherArmor armor = Items.leatherArmor();
 
-    assertEquals(List.of(sword), new Inventory(sword).getModifiers());
+    assertEquals(List.of(sword, armor), new Inventory(sword, armor).getModifiers());
   }
 
   @Test
@@ -201,7 +245,17 @@ class InventoryTest {
 
     inventory.equip(newSword);
 
-    assertEquals(List.of(newSword), inventory.getModifiers());
+    assertEquals(List.of(newSword, inventory.getArmor()), inventory.getModifiers());
+  }
+
+  @Test
+  void should_give_the_new_armor_as_modifier_once_equipped() {
+    Inventory inventory = anInventory();
+    LeatherArmor newArmor = Items.leatherArmor();
+
+    inventory.equip(newArmor);
+
+    assertEquals(List.of(inventory.getWeapon(), newArmor), inventory.getModifiers());
   }
 
   @Test
@@ -214,6 +268,6 @@ class InventoryTest {
   }
 
   private static Inventory anInventory() {
-    return new Inventory(Items.sword());
+    return new Inventory(Items.sword(), Items.leatherArmor());
   }
 }
