@@ -115,4 +115,10 @@ class MenuFlowStateTest {
     state.startGame();
     return state;
   }
+
+  @Test
+  void eachModeIsPlayedOnItsOwnMap() {
+    assertEquals("arena_mapV1.tmx", MenuFlowState.GameMode.ARENA.getMapPath());
+    assertEquals("Floor1.tmx", MenuFlowState.GameMode.ENDLESS.getMapPath());
+  }
 }
