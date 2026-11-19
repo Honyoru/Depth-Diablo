@@ -5,15 +5,57 @@ import static com.epitech.depthdiablo.testdata.EnemyBuilder.aRat;
 import static com.epitech.depthdiablo.testdata.EnemyBuilder.aZombie;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.engine.StateBuffer;
+import com.epitech.depthdiablo.engine.World;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 /** What every enemy shares, checked on real rats and zombies (GDD 1.3.1, 1.7). */
 class EnemyTest {
+
+  @Test
+  void should_get_back_its_ai_state_and_target_when_its_state_is_read_back() {
+    World world = new World();
+    MeleeEnemy rat = aRat().withWorld(world).build();
+    Character player = aPlayer();
+    world.add(rat);
+    world.add(player);
+    StateBuffer photo = new StateBuffer();
+    rat.writeState(photo);
+    rat.alert(player);
+    world.tick(); // IDLE sees the target and switches to CHASE
+
+    photo.startReading();
+    rat.readState(photo);
+
+    assertEquals(EnemyState.IDLE, rat.getState());
+    assertEquals(Optional.empty(), rat.getTarget());
+  }
+
+  @Test
+  void should_take_the_ai_state_and_target_of_the_photo_before_its_first_update() {
+    World world = new World();
+    MeleeEnemy chasing = aRat().withWorld(world).build();
+    Character player = aPlayer();
+    world.add(chasing);
+    world.add(player);
+    chasing.alert(player);
+    world.tick();
+    StateBuffer photo = new StateBuffer();
+    chasing.writeState(photo);
+    MeleeEnemy fresh = aRat().build(); // never updated: it has no AI yet
+
+    photo.startReading();
+    fresh.readState(photo);
+
+    assertEquals(EnemyState.CHASE, fresh.getState());
+    assertSame(player, fresh.getTarget().orElseThrow());
+  }
 
   private static final float DELTA = 0.001f;
 

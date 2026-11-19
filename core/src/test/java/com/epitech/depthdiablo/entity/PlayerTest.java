@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerOrders;
 import com.epitech.depthdiablo.item.Sword;
@@ -20,6 +21,23 @@ import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1 and 1.5: the player walks where its input points */
 class PlayerTest {
+
+  @Test
+  void should_get_back_its_walking_when_its_state_is_read_back() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    tick(player, 1);
+    StateBuffer photo = new StateBuffer();
+    player.writeState(photo);
+    input.walk(0f, 0f);
+    tick(player, 1);
+
+    photo.startReading();
+    player.readState(photo);
+
+    assertTrue(player.isMoving());
+  }
+
   private static final float SPEED = 120f;
   private static final float TOLERANCE = 0.01f;
   private static final int ONE_SECOND = GameConstants.TICKS_PER_SECOND;

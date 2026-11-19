@@ -6,10 +6,26 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import org.junit.jupiter.api.Test;
 
 class EntityTest {
   private static final Aabb BOX = new Aabb(0, 0, 10, 10);
+
+  @Test
+  void should_get_back_its_position_and_presence_when_its_state_is_read_back() {
+    CountingEntity entity = new CountingEntity(BOX);
+    StateBuffer photo = new StateBuffer();
+    entity.writeState(photo);
+    entity.moveTo(new Vector2(40, 50));
+    entity.remove();
+
+    photo.startReading();
+    entity.readState(photo);
+
+    assertEquals(BOX, entity.getBodyBox());
+    assertFalse(entity.isRemoved());
+  }
 
   @Test
   void should_keep_its_body_box_when_created() {

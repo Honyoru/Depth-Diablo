@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.entity.Aabb;
+import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.entity.Entity;
 import com.epitech.depthdiablo.entity.Wall;
 import java.util.ArrayList;
@@ -17,6 +18,49 @@ import org.junit.jupiter.api.Test;
 /** The tick order of a run: update every entity, deliver events, then add and drop entities. */
 class WorldTest {
   private final World world = new World();
+
+  @Test
+  void should_be_back_as_it_was_when_its_state_is_read_back() {
+    Character rat = aCharacter().withHp(10).withWorld(world).build();
+    world.add(rat);
+    world.tick();
+    StateBuffer photo = new StateBuffer();
+    world.writeState(photo);
+    rat.takeDamage(4);
+    rat.remove();
+    world.tick(); // the rat leaves the world
+    RecordingEntity spawned = new RecordingEntity();
+    world.add(spawned);
+    world.tick();
+
+    photo.startReading();
+    world.readState(photo);
+
+    assertEquals(1, world.getCurrentTick());
+    assertEquals(List.of(rat), world.getEntities());
+    assertEquals(10, rat.getHp());
+    assertFalse(rat.isRemoved());
+  }
+
+  @Test
+  void should_refuse_to_be_saved_during_a_tick() {
+    RecordingEntity entity = new RecordingEntity();
+    entity.onTick = () -> world.writeState(new StateBuffer());
+    world.add(entity);
+
+    assertThrows(IllegalStateException.class, world::tick);
+  }
+
+  @Test
+  void should_refuse_to_be_restored_during_a_tick() {
+    StateBuffer photo = new StateBuffer();
+    world.writeState(photo);
+    RecordingEntity entity = new RecordingEntity();
+    entity.onTick = () -> world.readState(photo);
+    world.add(entity);
+
+    assertThrows(IllegalStateException.class, world::tick);
+  }
 
   @Test
   void should_start_at_tick_0_when_created() {

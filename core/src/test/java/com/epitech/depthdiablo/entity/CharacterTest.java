@@ -19,6 +19,7 @@ import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.EventBus;
 import com.epitech.depthdiablo.engine.GameEvent;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.item.FireRing;
 import com.epitech.depthdiablo.item.Sword;
@@ -34,6 +35,22 @@ import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1 and 1.5: HP, death, invincibility frames and the update template of a Character. */
 class CharacterTest {
+
+  @Test
+  void should_get_back_its_hp_and_timers_when_its_state_is_read_back() {
+    Character character = aCharacter().withHp(10).withInvincibilityAfterHit(30).build();
+    StateBuffer photo = new StateBuffer();
+    character.writeState(photo);
+    character.takeDamage(4);
+    character.startAttackCooldown(12);
+
+    photo.startReading();
+    character.readState(photo);
+
+    assertEquals(10, character.getHp());
+    assertFalse(character.isInvincible());
+    assertTrue(character.canAttack());
+  }
 
   @Test
   void should_start_with_full_hp_when_created() {
