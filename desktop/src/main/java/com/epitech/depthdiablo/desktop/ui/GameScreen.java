@@ -186,7 +186,11 @@ public final class GameScreen extends ScreenAdapter {
     world.getEventBus().subscribeAll(eventLaser);
   }
 
-  /** Returns the mutable HUD state so the game loop can sync HP and coins. */
+  /**
+   * Returns the mutable HUD state so the game loop can sync HP and coins.
+   *
+   * @return the HUD state this screen draws; never null
+   */
   public HudState getHudState() {
     return hudState;
   }
