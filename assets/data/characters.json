@@ -50,6 +50,23 @@
       "height": 28,
       "invincibilityTicks": 18,
       "reach": 6
+    },
+    {
+      "id": "king",
+      "class": "ZOMBIE",
+      "spriteId": "enemies/zombie",
+      "stats": {
+         "MAX_HP": 120,
+        "ATTACK": 12,
+        "DEFENSE": 3,
+        "SPEED": 60,
+        "ATTACK_SPEED": 0.8,
+        "LUCK": 0
+      },
+      "width": 48,
+      "height": 48,
+      "invincibilityTicks": 18,
+      "reach": 8
     }
   ]
 }
