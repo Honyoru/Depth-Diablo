@@ -275,7 +275,7 @@ class SwingTest {
   }
 
   private Swing aSwingAt(Character target) {
-    return new Swing(Items.sword(), holder, 0f, () -> List.of(target), new EventBus());
+    return new Swing(new TestSword(), holder, 0f, () -> List.of(target), new EventBus());
   }
 
   private static Character anEnemyAt(float x, float y, int hp) {
