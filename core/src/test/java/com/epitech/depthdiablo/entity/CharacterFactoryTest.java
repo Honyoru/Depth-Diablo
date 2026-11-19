@@ -43,10 +43,10 @@ class CharacterFactoryTest {
   }
 
   @Test
-  void should_place_the_body_of_its_entry_size_at_the_given_point() {
+  void should_centre_the_body_of_its_entry_size_on_the_given_point() {
     Enemy rat = factory(CHARACTERS_TEST).create("rat", new Vector2(64, 32), Enemy.class);
 
-    assertEquals(new Aabb(64, 32, 16, 16), rat.getBodyBox());
+    assertEquals(new Aabb(56, 24, 16, 16), rat.getBodyBox());
   }
 
   @Test

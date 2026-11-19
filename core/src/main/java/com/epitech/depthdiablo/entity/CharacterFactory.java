@@ -38,7 +38,7 @@ public final class CharacterFactory {
    *
    * @param <T> the type the caller needs
    * @param id the character's id, e.g. {@code "rat"}
-   * @param position the bottom-left corner of its body box, in pixels
+   * @param position the centre of its body box, in pixels
    * @param type the type the caller needs, e.g. {@code Player.class}; any supertype works
    * @return a new character of the class its entry names
    * @throws NullPointerException if an argument is null
@@ -50,7 +50,12 @@ public final class CharacterFactory {
     Objects.requireNonNull(type, "type is null");
     JsonValue entry = characters.definition(id);
     CharacterSpec spec = CharacterSpecReader.read(id, entry);
-    Aabb body = new Aabb(position.x, position.y, spec.width(), spec.height());
+    Aabb body =
+        new Aabb(
+            position.x - spec.width() / 2f,
+            position.y - spec.height() / 2f,
+            spec.width(),
+            spec.height());
     Character character =
         switch (spec.kind()) {
           case PlayerKind kind -> players.create(kind, spec, entry, body);

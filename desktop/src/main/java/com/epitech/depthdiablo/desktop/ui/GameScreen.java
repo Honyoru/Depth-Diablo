@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -24,17 +25,15 @@ import com.epitech.depthdiablo.debug.ViewSwitcher;
 import com.epitech.depthdiablo.engine.FixedTimestep;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.BaseStats;
+import com.epitech.depthdiablo.entity.CharacterFactory;
 import com.epitech.depthdiablo.entity.Enemy;
+import com.epitech.depthdiablo.entity.EnemyFactory;
 import com.epitech.depthdiablo.entity.Entity;
-import com.epitech.depthdiablo.entity.Knight;
 import com.epitech.depthdiablo.entity.Player;
-import com.epitech.depthdiablo.entity.Rat;
-import com.epitech.depthdiablo.entity.Stat;
+import com.epitech.depthdiablo.entity.PlayerFactory;
 import com.epitech.depthdiablo.entity.Wall;
 import com.epitech.depthdiablo.input.PlayerOrders;
 import com.epitech.depthdiablo.item.ItemFactory;
-import com.epitech.depthdiablo.item.Weapon;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -92,6 +91,10 @@ public final class GameScreen extends ScreenAdapter {
 
   private final PlayerOrders orders = new PlayerOrders();
 
+  /** Builds every item of data/items.json: the players' weapons, and later loot and shop items. */
+  private final ItemFactory items =
+      new ItemFactory(new DataRegistry("items", () -> readData("items.json")));
+
   private final SpriteBatch batch;
 
   private final Player player;
@@ -116,9 +119,6 @@ public final class GameScreen extends ScreenAdapter {
   private final EventLaser eventLaser = new EventLaser();
 
   private final EventLaserOverlay eventLaserOverlay = new EventLaserOverlay(eventLaser);
-
-  /** The bottom-left corners, in pixels, of the tiles whose "spawn_enemy" property is true. */
-  private final List<Vector2> enemies = new ArrayList<>();
 
   /** Draws the enemies in the sprite view. */
   private final EnemyView enemyView;
@@ -159,10 +159,12 @@ public final class GameScreen extends ScreenAdapter {
     this.batch = app.getBatch();
     this.worldCamera.zoom = CAMERA_ZOOM;
     addWalls();
-    this.player = spawnKnight(orders, world, findSpawn());
+    CharacterFactory characters = characterFactory();
+    SpawnPoints spawns = findSpawnPoints();
+    this.player = characters.create("knight", spawns.player(), Player.class);
     this.world.add(player);
-    for (Vector2 spawn : findEnemySpawns()) {
-      Rat rat = spawnRat(world, spawn);
+    for (Vector2 spawn : spawns.enemies()) {
+      Enemy rat = characters.create("rat", spawn, Enemy.class);
       rat.alert(player);
       world.add(rat);
     }
@@ -310,43 +312,53 @@ public final class GameScreen extends ScreenAdapter {
     tiledMap.dispose();
   }
 
-  private static Player spawnKnight(PlayerOrders orders, World world, Vector2 spawn) {
-    Map<Stat, Float> stats = new EnumMap<>(Stat.class);
-    stats.put(Stat.MAX_HP, 100f);
-    stats.put(Stat.ATTACK, 200f);
-    stats.put(Stat.DEFENSE, 1f);
-    stats.put(Stat.SPEED, 120f);
-    stats.put(Stat.ATTACK_SPEED, 1f);
-    stats.put(Stat.LUCK, 0f);
-    Aabb body =
-        new Aabb(spawn.x + 2f, spawn.y + 2f, 28f, 28f); // 28 px knight centred in a 32 px tile
-    Weapon sword =
-        (Weapon)
-            new ItemFactory(
-                    new DataRegistry(
-                        "items", () -> Gdx.files.internal("data/items.json").readString("UTF-8")))
-                .create("sword");
-    return new Knight(
-        body, new BaseStats(stats), sword, body, GameConstants.TICKS_PER_SECOND / 2, orders, world);
+  /** Builds the factory of every character, reading data/characters.json. */
+  private CharacterFactory characterFactory() {
+    return new CharacterFactory(
+        new DataRegistry("characters", () -> readData("characters.json")),
+        new PlayerFactory(items, orders, world),
+        new EnemyFactory(world));
   }
 
+  private static String readData(String file) {
+    return Gdx.files.internal("data/" + file).readString("UTF-8");
+  }
+
+  /** Where the player and the enemies start, read from the map: the centres of their tiles. */
+  private record SpawnPoints(Vector2 player, List<Vector2> enemies) {}
+
   /**
-   * Returns the bottom-left corner, in pixels, of the first tile whose "spawn" property is true.
+   * Returns the centre, in pixels, of the first tile whose "spawn" property is true, and of every
+   * tile whose "spawn_enemy" property is true, in one pass over the map.
    */
-  private Vector2 findSpawn() {
-    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+  private SpawnPoints findSpawnPoints() {
+    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(SPAWN_LAYER);
+    if (layer == null) {
+      throw new IllegalStateException("No \"" + SPAWN_LAYER + "\" layer in " + DEFAULT_MAP_PATH);
+    }
     float tile = GameConstants.TILE_SIZE;
+    Vector2 player = null;
+    List<Vector2> enemies = new ArrayList<>();
     for (int x = 0; x < layer.getWidth(); x++) {
       for (int y = 0; y < layer.getHeight(); y++) {
         TiledMapTileLayer.Cell cell = layer.getCell(x, y);
-        if (cell != null
-            && cell.getTile() != null
-            && cell.getTile().getProperties().get("spawn", false, Boolean.class).booleanValue()) {
-          return new Vector2(x * tile, y * tile);
+        if (cell == null || cell.getTile() == null) {
+          continue; // empty tile
+        }
+        MapProperties properties = cell.getTile().getProperties();
+        Vector2 centre = new Vector2((x + 0.5f) * tile, (y + 0.5f) * tile);
+        if (player == null && properties.get("spawn", false, Boolean.class)) {
+          player = centre;
+        }
+        if (properties.get("spawn_enemy", false, Boolean.class)) {
+          enemies.add(centre);
         }
       }
     }
-    throw new IllegalStateException("No tile with spawn=true in " + DEFAULT_MAP_PATH);
+    if (player == null) {
+      throw new IllegalStateException("No tile with spawn=true in " + DEFAULT_MAP_PATH);
+    }
+    return new SpawnPoints(player, List.copyOf(enemies));
   }
 
   /** Adds one blocking {@link Wall} per map tile whose "collides" property is true. */
@@ -380,54 +392,5 @@ public final class GameScreen extends ScreenAdapter {
     if (hex == null) {
       return DEFAULT_CLEAR;
     } else return Color.valueOf(hex);
-  }
-
-  /**
-   * Returns the bottom-left corner, in pixels, of every tile whose "spawn_enemy" property is true.
-   * They are read from the "spawn" layer. The list is empty when the map has no such layer or no
-   * such tile.
-   */
-  private List<Vector2> findEnemySpawns() {
-    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(SPAWN_LAYER);
-    if (layer == null) {
-      return enemies; // a map without a spawn layer has no enemy spawn
-    }
-    float tile = GameConstants.TILE_SIZE;
-    for (int x = 0; x < layer.getWidth(); x++) {
-      for (int y = 0; y < layer.getHeight(); y++) {
-        TiledMapTileLayer.Cell cell = layer.getCell(x, y);
-        if (cell != null
-            && cell.getTile() != null
-            && cell.getTile()
-                .getProperties()
-                .get("spawn_enemy", false, Boolean.class)
-                .booleanValue()) {
-          enemies.add(new Vector2(x * tile, y * tile));
-        }
-      }
-    }
-    return enemies;
-  }
-
-  /**
-   * Creates a rat standing on the given tile. Its stats are placeholders, written here until {@code
-   * EnemyFactory} is wired into the game, and its body has the knight's size so the knight's sprite
-   * fits it.
-   *
-   * @param world the world it lives in
-   * @param spawn the bottom-left corner of its tile, in pixels
-   * @return the new rat, not yet added to the world
-   */
-  private static Rat spawnRat(World world, Vector2 spawn) {
-    Map<Stat, Float> stats = new EnumMap<>(Stat.class);
-    stats.put(Stat.MAX_HP, 10f);
-    stats.put(Stat.ATTACK, 10f);
-    stats.put(Stat.DEFENSE, 1f);
-    stats.put(Stat.SPEED, 100f);
-    stats.put(Stat.ATTACK_SPEED, 1f);
-    stats.put(Stat.LUCK, 0f);
-    Aabb body =
-        new Aabb(spawn.x + 2f, spawn.y + 2f, 28f, 28f); // 28 px body centred in a 32 px tile
-    return new Rat(body, new BaseStats(stats), 4f, body, 0, false, world);
   }
 }
