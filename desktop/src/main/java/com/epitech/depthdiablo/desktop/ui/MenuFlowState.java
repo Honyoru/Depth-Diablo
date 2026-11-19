@@ -14,20 +14,31 @@ public final class MenuFlowState {
     GAME_OVER
   }
 
-  /** Available game modes. */
+  /** Available game modes, each with the map it is played on. */
   public enum GameMode {
-    ARENA("Arena Mode"),
-    ENDLESS("Endless Mode");
+    ARENA("Arena Mode", "arena_mapV1.tmx"),
+    ENDLESS("Endless Mode", "Floor1.tmx");
 
     private final String displayName;
+    private final String mapPath;
 
-    GameMode(String displayName) {
+    GameMode(String displayName, String mapPath) {
       this.displayName = displayName;
+      this.mapPath = mapPath;
     }
 
     /** Returns the human-readable title of the mode. */
     public String getDisplayName() {
       return displayName;
+    }
+
+    /**
+     * Returns the Tiled map this mode is played on.
+     *
+     * @return its path in the assets, e.g. {@code "arena_mapV1.tmx"}
+     */
+    public String getMapPath() {
+      return mapPath;
     }
   }
 
