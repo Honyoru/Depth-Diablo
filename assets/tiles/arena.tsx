@@ -1061,6 +1061,11 @@
    <property name="name" value="floor_broken_both"/>
   </properties>
  </tile>
+ <tile id="244">
+  <properties>
+   <property name="spawn" type="bool" value="true"/>
+  </properties>
+ </tile>
  <tile id="253" type="water">
   <properties>
    <property name="collides" type="bool" value="true"/>
