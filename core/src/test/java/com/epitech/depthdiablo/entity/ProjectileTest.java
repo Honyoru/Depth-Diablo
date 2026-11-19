@@ -16,6 +16,7 @@ import com.epitech.depthdiablo.engine.World;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
 
 
 /** Projectiles (GDD 1.3.1, 1.5): they fly straight and hurt the first enemy they touch. */
@@ -33,6 +34,162 @@ class ProjectileTest {
   }
 
   private final Character characterAt(float x, float y,Faction side) {
-    Aabb box = new Aabb(x, y, 16, 16)
+    Aabb box = new Aabb(x, y, 16, 16);
+    Character character = aCharacter()withBodyBox(box).withHurtbox(box).withFaction(side).withWorld(world).worldBuild();
+    world.add(character);
+    return character;
   }
+
+  @Test
+  void should_move_by_its_speed_towards_its_aim_each_tick() {
+    Arrow arrow = arrowAt(100,100,0);
+
+    world.tick();
+
+    assertEquals(new Vector2(200,100), arrow.position());
+  }
+
+  @Test
+  void should_move_up_when_it_is_aimed_at_90_degrees() {
+    Arrow arrow = arrowAt(100,100,90);
+
+    world.tick();
+
+    assertEquals(100, arrow.position().x,0.001f);
+    assertEquals(100, arrow.position().y,0.001f);
+  }
+
+  @Test
+  void should_be_removed_when_a_wall_is_in_its_way() {
+    world.add(new Wall(new Aabb(112,90,32,32)));
+    Arrow arrow = arrowAt(100,100,0);
+
+    world.tick();
+
+    assertTrue(arrow.isRemoved());
+  }
+
+  @Test
+   void should_hurt_a_character_of_another_side_when_it_touches_it() {
+    arrowAt(100,100,0);
+    Character player = characterAt(15, 96, Faction.PLAYER);
+
+    world.tick();
+
+    assertTrue(player.getHp()<10);
+   }
+
+   @Test
+   void should_publish_the_damage_it_deals() {
+    List<GameEvent> seen = new ArrayList<>();
+    world.getEventBus().subscribeAll(seen :: add);
+    arrowAt(100,100,0);
+    characterAt(115, 96,Faction.PLAYER);
+
+    world.tick();
+
+    assertTrue(seen.stream().anyMatch(DammageDealt.class::isInstance));
+   }
+
+   @Test
+   void should_publish_a_death_when_it_kills() {
+    List<GameEvent> seen = new ArrayList<>();
+    world.getEventBus().subscribeAll(seen :: add);
+    arrowAt(100,100,0);
+    Aabb box = new Aabb(115,96,16,16);
+    world.add(
+      aCharacter()
+      .withBodyBox(box)
+      .withHurtbox(box)
+      .withFaction(Faction.PLAYER)
+      .withHp(1)
+      .withWorld(world)
+      .build());
+
+    world.tick();
+
+    assertTrue(seen.stream().anyMatch(EntityDied.class::isInstance));
+   }
+
+   @Test
+   void should_stop_when_it_hurts_a_character() {
+    Arrow arrow = arrowAt(100, 100, 0);
+    characterAt(115, 96, Faction.PLAYER);
+
+    world.tick();
+
+    assertTrue(arrow.isRemoved());
+   }
+
+   @Test
+   void should_hurt_only_the_first_character_when_two_stand_in_its_way() {
+    arrowAt(100,100,0);
+    Character first = characterAt(115, 96, Faction.PLAYER);
+    Character second = characterAt(115, 96, Faction.PLAYER);
+
+    world.tick();
+
+    assertTrue(first.getHp() <10);
+    assertEquals(10, second.getHp());
+   }
+
+   @Test
+   void should_fly_through_a_character_of_its_own_side() {
+    Arrow arrow = arrowAt(100, 100, 0);
+    Character ally = characterAt(115, 96, Faction.ENEMY);
+
+    world.tick();
+
+    assertEquals(10, ally.getHp());
+    assertFalse(arrow.isRemoved());
+   }
+
+   @Test
+   void should_fly_through_a_character_while_it_is_invincible() {
+    Arrow arrow = arrowAt(100, 100, 0);
+    Aabb box = new Aabb(115,96,16,16);
+    Character dodging = aCharacter().withBodyBox(box).withHurtbox(box).withFaction(Faction.PLAYER).withInvincibilityAfterHit(60).withWorld(world).build();
+    world.add(dodging);
+    dodging.takeDamage(1);
+
+    world.tick();
+
+    assertEquals(9, dodging.getHp());
+    assertFalse(arrow.isRemoved());
+   }
+
+   @Test
+   void should_be_removed_when_its_lifetime_ends() {
+    Arrow arrow = arrowAt(100, 100, 0);
+    for (int tick = 1 ; tick  <LIFETIME_TICKS; tick++) {
+      world.tick();
+    }
+    assertFalse(arrow.isRemoved());
+
+    world.tick();
+
+    assertTrue(arrow.isRemoved());
+   }
+
+   @Test
+   void should_reject_a_speed_of_zero() {
+    Aabb body = new Aabb(0, 0, 8, 4);
+
+    assertThrows(IllegalArgumentException.class, () -> new Arrow(body, owner, 0, 0f, LIFETIME_TICKS, world));
+   }
+
+   @Test
+   void should_reject_an_aim_that_is_not_a_number() {
+    Aabb body = new Aabb(0, 0, 8, 4);
+
+    assertThrows(IllegalArgumentException.class, () -> new Arrow(body, owner, Float.NaN, TEN_PIXELS_PER_TICK, LIFETIME_TICKS, world));
+   }
+
+   @Test
+   void should_reject_a_lifetime_of_zero() {
+    Aabb body = new Aabb(0, 0, 8, 4);
+
+    assertThrows(IllegalArgumentException.class, ()-> new Arrow(body,owner, 0,TEN_PIXELS_PER_TICK,0,world));
+
+   }
 }
