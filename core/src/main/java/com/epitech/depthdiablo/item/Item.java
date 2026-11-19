@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.item;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -94,4 +95,11 @@ public abstract class Item {
     }
     return value;
   }
+
+  /**
+   * Returns what this item gives, one line per effect, for the inventory to show.
+   *
+   * @return its effects, in the order they are shown; empty for an item that gives nothing
+   */
+  public abstract List<ItemEffect> getEffects();
 }

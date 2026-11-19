@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.entity.CharacterBuild;
 import com.epitech.depthdiablo.entity.StatSource;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -61,5 +62,15 @@ public abstract class Armor extends Equipment {
               default -> base.get(stat);
             };
     return build.withStats(withArmor);
+  }
+
+  /**
+   * Returns the defense bonus of this armor, as {@link #modify} applies it.
+   *
+   * @return {@code bonus.defense}
+   */
+  @Override
+  public final List<ItemEffect> getEffects() {
+    return List.of(new ItemEffect("bonus.defense", defenseBonus));
   }
 }

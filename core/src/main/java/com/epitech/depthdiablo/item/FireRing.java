@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.item;
 import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.BurnSpec;
 import com.epitech.depthdiablo.combat.FireTouch;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -49,5 +50,19 @@ public final class FireRing extends PassiveItem {
    */
   public BurnSpec getBurn() {
     return burn;
+  }
+
+  /**
+   * Returns the burn each landed hit applies, its times in ticks (60 per second).
+   *
+   * @return {@code effect.burn_damage}, {@code effect.burn_interval_ticks} then {@code
+   *     effect.burn_duration_ticks}
+   */
+  @Override
+  public List<ItemEffect> getEffects() {
+    return List.of(
+        new ItemEffect("effect.burn_damage", burn.damage()),
+        new ItemEffect("effect.burn_interval_ticks", burn.intervalTicks()),
+        new ItemEffect("effect.burn_duration_ticks", burn.durationTicks()));
   }
 }

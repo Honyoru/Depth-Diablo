@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.item;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1: the values every item shares, checked when the item is created. */
@@ -68,6 +69,11 @@ class ItemTest {
   private static final class FakeItem extends Item {
     FakeItem(String id, String nameKey, String spriteId, Rarity rarity, int price) {
       super(id, nameKey, spriteId, rarity, price);
+    }
+
+    @Override
+    public List<ItemEffect> getEffects() {
+      return List.of();
     }
   }
 }

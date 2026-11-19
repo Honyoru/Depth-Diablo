@@ -28,6 +28,11 @@ public final class Inventory {
         public boolean use(Character user) {
           return false;
         }
+
+        @Override
+        public List<ItemEffect> getEffects() {
+          return List.of();
+        }
       };
 
   /** The number of slots that take only passive items. */
@@ -38,7 +43,12 @@ public final class Inventory {
    * nothing in the build.
    */
   public static final PassiveItem EMPTY_PASSIVE_SLOT =
-      new PassiveItem("empty_passive", "item.empty.name", "items/empty", 0) {};
+      new PassiveItem("empty_passive", "item.empty.name", "items/empty", 0) {
+        @Override
+        public List<ItemEffect> getEffects() {
+          return List.of();
+        }
+      };
 
   private final Consumable[] hotbar = new Consumable[HOTBAR_SIZE];
 

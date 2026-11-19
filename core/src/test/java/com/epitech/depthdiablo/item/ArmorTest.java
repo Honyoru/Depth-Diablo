@@ -9,6 +9,7 @@ import com.epitech.depthdiablo.entity.CharacterBuild;
 import com.epitech.depthdiablo.entity.Stat;
 import com.epitech.depthdiablo.testdata.Items;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -72,6 +73,11 @@ class ArmorTest {
     Armor armor = anArmor(3);
 
     assertThrows(NullPointerException.class, () -> armor.modify(null));
+  }
+
+  @Test
+  void should_give_its_defense_bonus_as_effect() {
+    assertEquals(List.of(new ItemEffect("bonus.defense", 3f)), anArmor(3).getEffects());
   }
 
   /** Every stat at 1, except DEFENSE. */

@@ -10,6 +10,7 @@ import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.entity.CharacterBuild;
 import com.epitech.depthdiablo.entity.StatSource;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -112,6 +113,11 @@ class PassiveItemTest {
   private static final class PlainPassive extends PassiveItem {
     PlainPassive(String id, String nameKey, String spriteId, int price) {
       super(id, nameKey, spriteId, price);
+    }
+
+    @Override
+    public List<ItemEffect> getEffects() {
+      return List.of();
     }
   }
 

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.entity.Character;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1 and 1.4: a potion restores HP when used from the hotbar. */
@@ -74,5 +75,12 @@ class PotionTest {
     Potion potion = new Potion("potion_small", "item.potion_small.name", "potion", 10, 4);
 
     assertThrows(NullPointerException.class, () -> potion.use(null));
+  }
+
+  @Test
+  void should_give_its_heal_as_effect() {
+    Potion potion = new Potion("potion_small", "item.potion_small.name", "potion", 10, 5);
+
+    assertEquals(List.of(new ItemEffect("effect.heal", 5f)), potion.getEffects());
   }
 }

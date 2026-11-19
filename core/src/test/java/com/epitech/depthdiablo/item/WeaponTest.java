@@ -17,6 +17,7 @@ import com.epitech.depthdiablo.entity.Stat;
 import com.epitech.depthdiablo.entity.StatSource;
 import com.epitech.depthdiablo.testdata.Items;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -217,6 +218,13 @@ class WeaponTest {
     Weapon weapon = Items.sword();
 
     assertThrows(NullPointerException.class, () -> weapon.modify(null));
+  }
+
+  @Test
+  void should_give_its_attack_bonus_and_its_attack_speed_as_effects() {
+    assertEquals(
+        List.of(new ItemEffect("bonus.attack", 4f), new ItemEffect("bonus.attack_speed", 1.5f)),
+        aWeapon(Rarity.RARE, 4, 1.5f, 24f).getEffects());
   }
 
   private static CharacterBuild aBuild(float attack, float attackSpeed) {

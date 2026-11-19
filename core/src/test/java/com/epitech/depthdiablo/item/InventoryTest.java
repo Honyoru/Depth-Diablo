@@ -448,6 +448,12 @@ class InventoryTest {
         () -> inventory.swapPassiveSlots(0, Inventory.PASSIVE_SIZE));
   }
 
+  @Test
+  void should_give_no_effect_for_a_free_slot() {
+    assertEquals(List.of(), Inventory.EMPTY_CONSUMABLE_SLOT.getEffects());
+    assertEquals(List.of(), Inventory.EMPTY_PASSIVE_SLOT.getEffects());
+  }
+
   private static Inventory anInventory() {
     return new Inventory(Items.sword(), Items.leatherArmor());
   }

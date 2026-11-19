@@ -1,6 +1,7 @@
 package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.entity.Character;
+import java.util.List;
 import java.util.Objects;
 
 /** A consumable that restores HP to the character who drinks it (GDD 1.3.1, 1.4). */
@@ -52,5 +53,15 @@ public final class Potion extends Consumable {
     Objects.requireNonNull(user, "The character drinking the potion must not be null");
     user.heal(healAmount);
     return true;
+  }
+
+  /**
+   * Returns the HP this potion restores.
+   *
+   * @return {@code effect.heal}
+   */
+  @Override
+  public List<ItemEffect> getEffects() {
+    return List.of(new ItemEffect("effect.heal", healAmount));
   }
 }

@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.item;
 import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.entity.CharacterBuild;
 import com.epitech.depthdiablo.entity.StatSource;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -110,5 +111,17 @@ public abstract class Weapon extends Equipment implements Attack {
               default -> base.get(stat);
             };
     return build.withAttack(this).withStats(withWeapon);
+  }
+
+  /**
+   * Returns the attack bonus and the attack speed of this weapon, as {@link #modify} applies them.
+   *
+   * @return {@code bonus.attack} then {@code bonus.attack_speed}
+   */
+  @Override
+  public final List<ItemEffect> getEffects() {
+    return List.of(
+        new ItemEffect("bonus.attack", attackBonus),
+        new ItemEffect("bonus.attack_speed", attackSpeed));
   }
 }

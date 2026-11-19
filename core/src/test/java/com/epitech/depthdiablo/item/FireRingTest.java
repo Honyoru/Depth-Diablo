@@ -139,6 +139,16 @@ class FireRingTest {
     assertThrows(NullPointerException.class, () -> ring.modify(null));
   }
 
+  @Test
+  void should_give_its_burn_as_effects() {
+    assertEquals(
+        List.of(
+            new ItemEffect("effect.burn_damage", 2f),
+            new ItemEffect("effect.burn_interval_ticks", 1f),
+            new ItemEffect("effect.burn_duration_ticks", 3f)),
+        aFireRing().getEffects());
+  }
+
   private static FireRing aFireRing() {
     return new FireRing("fire_ring", "item.fire_ring.name", "items/fire_ring", 0, BURN);
   }
