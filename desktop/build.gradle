@@ -44,7 +44,6 @@ dependencies {
   implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
   implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
   implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-  implementation "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
   testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
   testImplementation "org.mockito:mockito-core:5.+"
   testImplementation "org.junit.jupiter:junit-jupiter-api:5.+"
@@ -228,18 +227,4 @@ tasks.withType(JavaExec.class).configureEach {
 
 if(enableGraalNative == 'true') {
   apply from: file("nativeimage.gradle")
-}
-
-configurations {
-    hieroRunner
-}
-
-dependencies {
-    hieroRunner "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
-    hieroRunner "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-}
-
-tasks.register('runHieroStandalone', JavaExec) {
-    mainClass = 'com.badlogic.gdx.tools.hiero.Hiero'
-    classpath = configurations.hieroRunner
 }

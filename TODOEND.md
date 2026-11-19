@@ -3,4 +3,4 @@
 Tasks to do before the final delivery.
 
 - [ ] Correct the UML: make the diagrams in `docs/uml` match the code, and regenerate the PNG previews.
-- [ ] Remove Hiero: the font tool (`desktop/.../HieroLauncher.java` and its Gradle task in `desktop/build.gradle`) is for development only.
+- [x] Remove Hiero: the font tool (`desktop/.../HieroLauncher.java` and its Gradle task in `desktop/build.gradle`) is for development only.
