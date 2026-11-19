@@ -179,7 +179,7 @@ What each level adds, and the pattern it shows:
 - **Boss:** phases on top of Enemy (State); each king adds its own patterns (Q53, TBD).
 - **Items:** Strategy for weapons, Command for consumables, Decorator for passive items (1.4). A passive item can wrap any stat or behaviour, not only numbers (see below).
 
-**Passive items as Decorators (decided, Ange, 4 Nov):** a passive item can change any stat and add any effect. Each Character exposes its parts through small interfaces, and a passive item wraps one or more of them. The wrapper calls the wrapped object, then changes the result or adds to it, so items stack by wrapping in pickup order (Q32).
+**Passive items as Decorators (decided, Ange, 4 Nov):** a passive item can change any stat and add any effect. Each Character exposes its parts through small interfaces, and a passive item wraps one or more of them. The wrapper calls the wrapped object, then changes the result or adds to it, so items stack by wrapping in the order of their inventory slots (Q32; slot order since 19 Nov, the player can swap them).
 
 | Component (interface) | What a passive item can change | Example |
 | --- | --- | --- |
@@ -201,11 +201,11 @@ final class FireTouch extends AttackDecorator {
 }
 ```
 
-Testable rules (1.4.1): removing a passive item restores the holder's stats and behaviour exactly; two copies of the same item stack by their rule (additive or multiplicative, per item in JSON); decorator order is the pickup order, and the same order gives the same result; a fire-effect item applies burn on every hit and on nothing else.
+Testable rules (1.4.1): removing a passive item restores the holder's stats and behaviour exactly; two copies of the same item stack by their rule (additive or multiplicative, per item in JSON); decorator order is the slot order (19 Nov), and the same order gives the same result; a fire-effect item applies burn on every hit and on nothing else.
 
 **Item UML (proposal, Ange's Claude, 5 Nov; local file uml/items.drawio):**
 
-- Every Character holds a CharacterBuild record (attack, stats, hurtbox, hitbox, movement). Equipment and PassiveItem implement BuildModifier: modify(build) returns a new build. After every inventory change the character rebuilds: base build (class stats from JSON, Unarmed attack) → weapon → armor → passive items in pickup order. "Removing an item restores stats exactly" and "same order, same result" then hold by construction.
+- Every Character holds a CharacterBuild record (attack, stats, hurtbox, hitbox, movement). Equipment and PassiveItem implement BuildModifier: modify(build) returns a new build. After every inventory change the character rebuilds: base build (class stats from JSON, Unarmed attack) → weapon → armor → passive items in slot order (19 Nov). "Removing an item restores stats exactly" and "same order, same result" then hold by construction.
 - Attack speed: the weapon has a base attack speed (`attackSpeed` in items.json) and the ATTACK\_SPEED stat multiplies it, so passive items can change it; the Character tracks the swing and the cooldown, and weapons stay stateless.
 - equip() lives in Inventory, which owns the weapon and armor slots: equipping swaps and gives the old one back for the world to drop. There is no unequip: the player always holds a weapon and an armor. Slots 0–2 are the hotbar (consumables only), the 18 others take only passive items. A free hotbar slot holds Inventory.EMPTY (Null Object), never null.
 - Hitboxes and projectiles call owner.hit(target); the Player sends it through its Attack chain, so a fire item also burns through arrows and fireballs.
@@ -276,7 +276,7 @@ Every rule below becomes a unit test, written first (Q121), in the rules/ test p
 - Using a consumable from the hotbar applies its effect and empties that slot; using an empty slot does nothing (Q37).
 - In the dungeon run, a passive item never comes from an enemy, a boss or the shop; Arena mode never spawns a chest (1.4).
 - Removing a passive item restores the holder's stats and behaviour exactly (1.3.1).
-- Two copies of the same item stack by their own rule; the same pickup order always gives the same result (1.3.1).
+- Two copies of the same item stack by their own rule; the same slot order always gives the same result (1.3.1).
 - A fire-effect item applies burn on every hit and on nothing else (1.3.1).
 - Two items never share a slot (1.4).
 - When no free slot accepts the item (the 3 hotbar slots for a consumable, the 18 passive slots for a passive item), a pickup fails and the item stays on the ground (1.4).

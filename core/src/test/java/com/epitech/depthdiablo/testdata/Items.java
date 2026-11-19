@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.testdata;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.epitech.depthdiablo.data.DataRegistry;
+import com.epitech.depthdiablo.item.FireRing;
 import com.epitech.depthdiablo.item.ItemFactory;
 import com.epitech.depthdiablo.item.LeatherArmor;
 import com.epitech.depthdiablo.item.Potion;
@@ -24,6 +25,15 @@ public final class Items {
    */
   public static Sword sword() {
     return (Sword) factory().create("sword");
+  }
+
+  /**
+   * Builds the fire ring of the data file.
+   *
+   * @return a new fire ring with the values of its entry
+   */
+  public static FireRing fireRing() {
+    return (FireRing) factory().create("fire_ring");
   }
 
   /**

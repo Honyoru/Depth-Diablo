@@ -66,6 +66,7 @@ Status note (Ange, 4 Nov): the team reviewed the whole draft orally, and every "
 - Passive items spawn only in chests, which open without a key. In Arena mode there are no chests: passive items drop from enemies or bosses (which ones: TBD). Keys only open locked doors (Q80).
 - Loot (Q35): enemies drop consumables, coins and roulette tickets; bosses drop a weapon or armor, consumables and coins.
 - Inventory (changed by Romain, 16 Nov): 21 slots, 3 of them the hotbar (consumables only), 18 take only passive items. The weapon and armor are only in their 2 portrait slots, and the player always has both: picking one up swaps it and the old one drops on the ground. Items never stack, one item per slot. When no free slot accepts an item, it stays on the ground. Two copies of a passive item combine by that item's own rule (additive or multiplicative) (Q31, Q32).
+- Passive item order (changed by Romain, 19 Nov): passive items apply in the order of their slots (0 to 17), not in pickup order, so the inventory shows the real order of the build. The player can swap two passive slots in the inventory (Switch), which changes that order; a passive item picked up goes into the first free slot.
 - Shop: coins from enemies. Shopkeeper has 2 vending slots (weapon or armor; consumable) plus a roulette. A spin costs coins; a roulette ticket gives a free spin (Q14, Q34).
 - Coin drop rates, prices and roulette odds are TBD during balancing.
 - Weapons (16 Nov): a weapon's values come only from `data/items.json`; `Sword` has a package-private constructor that only `ItemFactory` calls. `ItemFactory` maps each `"class"` to a builder instead of a switch, so a new item type is one more line. Placeholder sword: COMMON, 30 coins, +2 attack, attack speed 1, reach 24, width 8, arc 90°, 12 ticks. The player gets its sword through the inventory's weapon slot.
@@ -150,7 +151,7 @@ All four ship in the full game. Each is a separate module behind one small inter
 
 - Default controls: WASD move, Shift dash, Space dodge roll, 1 / 2 / 3 consumables, E interact, F pick up, I inventory, Esc pause; gamepad equivalents (GDD 2.4). Debug keys R, F1, F2, F5 / TAB are decided.
 - Own AABB code in core rather than Box2D; walls block a separate body box at the feet.
-- Item UML: `CharacterBuild` record rebuilt after every inventory change (base build -> weapon -> armor -> passive items in pickup order); `LootTable` shared by enemies, bosses, chests and roulette; coins and keys are counters on the Player (Ange's Claude, 5 Nov; files `uml/items.drawio` and `uml/entities.drawio`).
+- Item UML: `CharacterBuild` record rebuilt after every inventory change (base build -> weapon -> armor -> passive items in slot order, changed 19 Nov); `LootTable` shared by enemies, bosses, chests and roulette; coins and keys are counters on the Player (Ange's Claude, 5 Nov; files `uml/items.drawio` and `uml/entities.drawio`).
 - The shopkeeper as a long-trapped adventurer; sample EN / FR text lines in GDD 5.4.
 
 ## 15. Still open

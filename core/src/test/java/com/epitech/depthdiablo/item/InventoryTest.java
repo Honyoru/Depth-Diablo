@@ -11,6 +11,7 @@ import com.epitech.depthdiablo.entity.BuildModifier;
 import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.testdata.Items;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.4: the 3 hotbar slots take only consumables, one per slot; a weapon is always held. */
@@ -21,7 +22,7 @@ class InventoryTest {
     Inventory inventory = anInventory();
 
     for (int i = 0; i < Inventory.HOTBAR_SIZE; i++) {
-      assertSame(Inventory.EMPTY, inventory.hotbarSlot(i));
+      assertSame(Inventory.EMPTY_CONSUMABLE_SLOT, inventory.hotbarSlot(i));
     }
   }
 
@@ -67,7 +68,8 @@ class InventoryTest {
   void should_refuse_the_empty_slot_marker() {
     Inventory inventory = anInventory();
 
-    assertThrows(IllegalArgumentException.class, () -> inventory.add(Inventory.EMPTY));
+    assertThrows(
+        IllegalArgumentException.class, () -> inventory.add(Inventory.EMPTY_CONSUMABLE_SLOT));
   }
 
   @Test
@@ -186,7 +188,7 @@ class InventoryTest {
 
     inventory.use(0, aCharacter().build());
 
-    assertSame(Inventory.EMPTY, inventory.hotbarSlot(0));
+    assertSame(Inventory.EMPTY_CONSUMABLE_SLOT, inventory.hotbarSlot(0));
   }
 
   @Test
@@ -265,6 +267,185 @@ class InventoryTest {
     Sword other = Items.sword();
 
     assertThrows(UnsupportedOperationException.class, () -> modifiers.add(other));
+  }
+
+  @Test
+  void should_have_free_passive_slots_when_created() {
+    Inventory inventory = anInventory();
+
+    for (int i = 0; i < Inventory.PASSIVE_SIZE; i++) {
+      assertSame(Inventory.EMPTY_PASSIVE_SLOT, inventory.passiveSlot(i));
+      assertTrue(inventory.isPassiveSlotFree(i));
+    }
+  }
+
+  @Test
+  void should_put_a_passive_item_in_the_first_free_passive_slot() {
+    Inventory inventory = anInventory();
+    FireRing ring = Items.fireRing();
+
+    assertTrue(inventory.add(ring));
+    assertSame(ring, inventory.passiveSlot(0));
+    assertFalse(inventory.isPassiveSlotFree(0));
+  }
+
+  @Test
+  void should_refuse_a_passive_item_when_the_passive_slots_are_full() {
+    Inventory inventory = anInventory();
+    for (int i = 0; i < Inventory.PASSIVE_SIZE; i++) {
+      inventory.add(Items.fireRing());
+    }
+
+    assertFalse(inventory.add(Items.fireRing()));
+  }
+
+  @Test
+  void should_throw_when_the_passive_item_is_null() {
+    Inventory inventory = anInventory();
+
+    assertThrows(NullPointerException.class, () -> inventory.add((PassiveItem) null));
+  }
+
+  @Test
+  void should_refuse_the_free_passive_slot_marker() {
+    Inventory inventory = anInventory();
+
+    assertThrows(IllegalArgumentException.class, () -> inventory.add(Inventory.EMPTY_PASSIVE_SLOT));
+  }
+
+  @Test
+  void should_throw_when_the_passive_slot_is_past_the_last_one() {
+    Inventory inventory = anInventory();
+
+    assertThrows(
+        IndexOutOfBoundsException.class, () -> inventory.passiveSlot(Inventory.PASSIVE_SIZE));
+  }
+
+  @Test
+  void should_give_back_the_passive_item_it_removes() {
+    Inventory inventory = anInventory();
+    FireRing ring = Items.fireRing();
+    inventory.add(ring);
+
+    assertEquals(Optional.of(ring), inventory.removePassive(0));
+  }
+
+  @Test
+  void should_free_the_slot_of_the_removed_passive_item() {
+    Inventory inventory = anInventory();
+    inventory.add(Items.fireRing());
+
+    inventory.removePassive(0);
+
+    assertTrue(inventory.isPassiveSlotFree(0));
+  }
+
+  @Test
+  void should_give_nothing_when_removing_from_a_free_passive_slot() {
+    assertEquals(Optional.empty(), anInventory().removePassive(0));
+  }
+
+  @Test
+  void should_give_back_the_consumable_it_removes() {
+    Inventory inventory = anInventory();
+    Potion potion = Items.potion();
+    inventory.add(potion);
+
+    assertEquals(Optional.of(potion), inventory.removeConsumable(0));
+    assertTrue(inventory.isHotbarSlotFree(0));
+  }
+
+  @Test
+  void should_give_nothing_when_removing_from_a_free_hotbar_slot() {
+    assertEquals(Optional.empty(), anInventory().removeConsumable(0));
+  }
+
+  @Test
+  void should_give_the_passive_items_as_modifiers_after_the_armor() {
+    Inventory inventory = anInventory();
+    FireRing ring = Items.fireRing();
+    inventory.add(ring);
+
+    assertEquals(
+        List.of(inventory.getWeapon(), inventory.getArmor(), ring), inventory.getModifiers());
+  }
+
+  @Test
+  void should_give_the_passive_items_in_slot_order() {
+    Inventory inventory = anInventory();
+    FireRing first = Items.fireRing();
+    FireRing second = Items.fireRing();
+    FireRing third = Items.fireRing();
+    inventory.add(first);
+    inventory.add(second);
+    inventory.removePassive(0);
+
+    inventory.add(third); // picked up last, but put in slot 0
+
+    assertEquals(
+        List.of(inventory.getWeapon(), inventory.getArmor(), third, second),
+        inventory.getModifiers());
+  }
+
+  @Test
+  void should_swap_two_passive_items() {
+    Inventory inventory = anInventory();
+    FireRing first = Items.fireRing();
+    FireRing second = Items.fireRing();
+    inventory.add(first);
+    inventory.add(second);
+
+    inventory.swapPassiveSlots(0, 1);
+
+    assertSame(second, inventory.passiveSlot(0));
+    assertSame(first, inventory.passiveSlot(1));
+  }
+
+  @Test
+  void should_move_a_passive_item_to_a_free_slot() {
+    Inventory inventory = anInventory();
+    FireRing ring = Items.fireRing();
+    inventory.add(ring);
+
+    inventory.swapPassiveSlots(0, 5);
+
+    assertTrue(inventory.isPassiveSlotFree(0));
+    assertSame(ring, inventory.passiveSlot(5));
+  }
+
+  @Test
+  void should_change_the_order_of_the_modifiers_when_two_passive_items_are_swapped() {
+    Inventory inventory = anInventory();
+    FireRing first = Items.fireRing();
+    FireRing second = Items.fireRing();
+    inventory.add(first);
+    inventory.add(second);
+
+    inventory.swapPassiveSlots(0, 1);
+
+    assertEquals(
+        List.of(inventory.getWeapon(), inventory.getArmor(), second, first),
+        inventory.getModifiers());
+  }
+
+  @Test
+  void should_keep_the_slot_when_swapped_with_itself() {
+    Inventory inventory = anInventory();
+    FireRing ring = Items.fireRing();
+    inventory.add(ring);
+
+    inventory.swapPassiveSlots(0, 0);
+
+    assertSame(ring, inventory.passiveSlot(0));
+  }
+
+  @Test
+  void should_throw_when_a_swapped_passive_slot_is_past_the_last_one() {
+    Inventory inventory = anInventory();
+
+    assertThrows(
+        IndexOutOfBoundsException.class,
+        () -> inventory.swapPassiveSlots(0, Inventory.PASSIVE_SIZE));
   }
 
   private static Inventory anInventory() {
