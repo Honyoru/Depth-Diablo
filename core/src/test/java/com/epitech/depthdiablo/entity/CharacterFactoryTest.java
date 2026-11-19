@@ -3,12 +3,17 @@ package com.epitech.depthdiablo.entity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerOrders;
 import com.epitech.depthdiablo.testdata.Items;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
 /** Building any character of data/characters.json from its id (Q23, Q129). */
@@ -160,6 +165,32 @@ class CharacterFactoryTest {
     factory.reload();
 
     assertEquals(1, rat.getAttack());
+  }
+
+  @Test
+  void should_build_the_king_of_the_arena_from_the_real_file() throws IOException {
+    CharacterFactory factory = factory(realCharactersFile());
+
+    Enemy king = factory.create("king", new Vector2(), Enemy.class);
+
+    assertInstanceOf(Zombie.class, king);
+  }
+
+  @Test
+  void should_make_the_king_bigger_and_tougher_than_a_rat() throws IOException {
+    CharacterFactory factory = factory(realCharactersFile());
+
+    Enemy king = factory.create("king", new Vector2(), Enemy.class);
+    Enemy rat = factory.create("rat", new Vector2(), Enemy.class);
+
+    assertTrue(king.getMaxHp() > rat.getMaxHp());
+    assertTrue(king.getBodyBox().width() > rat.getBodyBox().width());
+  }
+
+  private static String realCharactersFile() throws IOException {
+    return Files.readString(
+        Path.of(System.getProperty("assets.dir"), "data", "characters.json"),
+        StandardCharsets.UTF_8);
   }
 
   private CharacterFactory factory(String file) {
