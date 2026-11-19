@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 /**
@@ -21,7 +22,7 @@ import java.util.function.Supplier;
  *
  * <p>Pattern: Registry, read by the EnemyFactory and the ItemFactory (Simple Factory).
  */
-public final class DataRegistry {
+public final class DataRegistry implements Reloadable {
 
   private final String category;
 
@@ -55,14 +56,35 @@ public final class DataRegistry {
   }
 
   /**
-   * Reads the file again. If the new text is invalid, the call throws and the registry keeps the
-   * entries it had, so a typo during a hot reload never empties the game.
+   * Reads the file again, with no check on the values of the entries. If the new text is invalid,
+   * the call throws and the registry keeps the entries it had, so a typo during a hot reload never
+   * empties the game.
    *
    * @throws IllegalArgumentException if the text has no such array, or an entry has no id or the
    *     same id as another
    * @throws SerializationException if the text is not valid JSON
    */
+  @Override
   public void reload() {
+    reload((id, entry) -> {});
+  }
+
+  /**
+   * Reads the file again and runs the check on every new entry before keeping any of them. If the
+   * text or one entry is invalid, the call throws and the registry keeps the entries it had, so a
+   * bad value during a hot reload never reaches the game.
+   *
+   * @param check called with the id and the entry of every new entry, in file order; it throws to
+   *     refuse the whole file
+   * @throws NullPointerException if {@code check} is null
+   * @throws IllegalArgumentException if the text has no such array, or an entry has no id or the
+   *     same id as another
+   * @throws SerializationException if the text is not valid JSON
+   * @throws RuntimeException whatever {@code check} throws, e.g. an {@link
+   *     IllegalArgumentException} for an invalid value
+   */
+  public void reload(BiConsumer<String, JsonValue> check) {
+    Objects.requireNonNull(check, "The object check must not be null");
     JsonValue entries = new JsonReader().parse(source.get()).get(category);
     if (entries == null || !entries.isArray()) {
       throw new IllegalArgumentException("No \"" + category + "\" array in the data file");
@@ -74,6 +96,7 @@ public final class DataRegistry {
         throw new IllegalArgumentException("Duplicate id in " + category + ": " + id);
       }
     }
+    read.forEach(check);
     definitions = Collections.unmodifiableMap(read);
   }
 

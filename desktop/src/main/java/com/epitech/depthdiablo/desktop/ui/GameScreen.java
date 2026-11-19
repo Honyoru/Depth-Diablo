@@ -20,6 +20,7 @@ import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.arena.ArenaCycle;
 import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.debug.EventLaser;
+import com.epitech.depthdiablo.debug.HotReload;
 import com.epitech.depthdiablo.debug.ViewMode;
 import com.epitech.depthdiablo.debug.ViewSwitcher;
 import com.epitech.depthdiablo.engine.FixedTimestep;
@@ -91,9 +92,11 @@ public final class GameScreen extends ScreenAdapter {
 
   private final PlayerOrders orders = new PlayerOrders();
 
+  /** The entries of data/items.json; F5 reads them again. */
+  private final DataRegistry itemData = new DataRegistry("items", () -> readData("items.json"));
+
   /** Builds every item of data/items.json: the players' weapons, and later loot and shop items. */
-  private final ItemFactory items =
-      new ItemFactory(new DataRegistry("items", () -> readData("items.json")));
+  private final ItemFactory items = new ItemFactory(itemData);
 
   private final SpriteBatch batch;
 
@@ -114,6 +117,9 @@ public final class GameScreen extends ScreenAdapter {
   private final ViewSwitcher viewSwitcher = new ViewSwitcher();
 
   private final Map<ViewMode, Renderer> renderers = new EnumMap<>(ViewMode.class);
+
+  /** F5 debug feature (GDD 1.1.2): reads the data files again, live characters included. */
+  private final HotReload hotReload;
 
   /** F2 debug feature (GDD 1.1.2): one line per event, drawn over any view. */
   private final EventLaser eventLaser = new EventLaser();
@@ -159,9 +165,12 @@ public final class GameScreen extends ScreenAdapter {
     this.batch = app.getBatch();
     this.worldCamera.zoom = CAMERA_ZOOM;
     addWalls();
+
     CharacterFactory characters = characterFactory();
+    this.hotReload = new HotReload(List.of(itemData, characters));
     SpawnPoints spawns = findSpawnPoints();
     this.player = characters.create(hero.getCharacterId(), spawns.player(), Player.class);
+
     this.world.add(player);
     for (Vector2 spawn : spawns.enemies()) {
       Enemy rat = characters.create("rat", spawn, Enemy.class);
@@ -200,6 +209,10 @@ public final class GameScreen extends ScreenAdapter {
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
       toggleEventLaser();
+    }
+    if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
+      hotReload.request();
+      LOG.info("Hot reload requested");
     }
     input.readInto(orders, worldCamera);
     playerView.lookTowards(orders.moveDirection().x);
@@ -255,6 +268,9 @@ public final class GameScreen extends ScreenAdapter {
   private void runLogic(float delta) {
     int ticks = timestep.advance(delta);
     for (int i = 0; i < ticks; i++) {
+      if (hotReload.isEnabled()) {
+        hotReload.onTick(world.getCurrentTick());
+      }
       previousPosition.set(player.position());
       world.tick();
       if (eventLaser.isEnabled()) {

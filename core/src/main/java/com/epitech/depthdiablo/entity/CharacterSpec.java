@@ -11,7 +11,8 @@ import java.util.Objects;
  * @param id the character's id, e.g. {@code "rat"}
  * @param kind the class it is built as
  * @param spriteId the picture the renderer draws for it, e.g. {@code "enemies/rat"}
- * @param stats its stats before any item (GDD 1.6); BaseStats checks every value
+ * @param stats its stats before any item (GDD 1.6): the {@link BaseStats} read from the file, which
+ *     checks every value, or the {@link ReloadableStats} the factory shares for F5
  * @param width the width of its body box, in pixels
  * @param height the height of its body box, in pixels
  * @param invincibilityTicks how many ticks it cannot be hurt after a hit (Q28); 0 or more
@@ -20,7 +21,7 @@ public record CharacterSpec(
     String id,
     CharacterKind kind,
     String spriteId,
-    BaseStats stats,
+    StatSource stats,
     float width,
     float height,
     int invincibilityTicks) {
@@ -50,5 +51,17 @@ public record CharacterSpec(
       throw new IllegalArgumentException(
           "The invincibility of " + id + " must not be negative, was " + invincibilityTicks);
     }
+  }
+
+  /**
+   * Returns a copy of this spec with other stats; every other value stays the same. The {@link
+   * CharacterFactory} uses it to give a character the stats F5 can swap.
+   *
+   * @param newStats the stats of the copy
+   * @return a new spec; this one is not changed
+   * @throws NullPointerException if {@code newStats} is null
+   */
+  public CharacterSpec withStats(StatSource newStats) {
+    return new CharacterSpec(id, kind, spriteId, newStats, width, height, invincibilityTicks);
   }
 }
