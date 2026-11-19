@@ -161,7 +161,7 @@ public final class GameScreen extends ScreenAdapter {
     addWalls();
     CharacterFactory characters = characterFactory();
     SpawnPoints spawns = findSpawnPoints();
-    this.player = characters.create("knight", spawns.player(), Player.class);
+    this.player = characters.create(hero.getCharacterId(), spawns.player(), Player.class);
     this.world.add(player);
     for (Vector2 spawn : spawns.enemies()) {
       Enemy rat = characters.create("rat", spawn, Enemy.class);

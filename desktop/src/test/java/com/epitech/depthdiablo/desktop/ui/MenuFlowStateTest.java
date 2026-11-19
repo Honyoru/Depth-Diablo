@@ -103,6 +103,11 @@ class MenuFlowStateTest {
     assertEquals(0, score);
   }
 
+  @Test
+  void should_give_the_knight_id_for_the_warrior() {
+    assertEquals("knight", MenuFlowState.HeroType.WARRIOR.getCharacterId());
+  }
+
   private static MenuFlowState aStateInGame(MenuFlowState.GameMode mode) {
     MenuFlowState state = new MenuFlowState();
     state.openModeSelection();

@@ -33,16 +33,18 @@ public final class MenuFlowState {
 
   /** Character archetypes displayed on the selection screen (1 playable in PoC). */
   public enum HeroType {
-    WARRIOR("Knight", true),
-    MAGE("Mage (Locked)", false),
-    ROGUE("Archer (Locked)", false);
+    WARRIOR("Knight", true, "knight"),
+    MAGE("Mage (Locked)", false, "mage"),
+    ROGUE("Archer (Locked)", false, "archer");
 
     private final String displayName;
     private final boolean playable;
+    private final String characterId;
 
-    HeroType(String displayName, boolean playable) {
+    HeroType(String displayName, boolean playable, String characterId) {
       this.displayName = displayName;
       this.playable = playable;
+      this.characterId = characterId;
     }
 
     /** Returns the display label of the hero. */
@@ -53,6 +55,15 @@ public final class MenuFlowState {
     /** Returns whether this hero can be selected in the current PoC. */
     public boolean isPlayable() {
       return playable;
+    }
+
+    /**
+     * Returns the id of this hero in {@code data/characters.json}.
+     *
+     * @return its character id, e.g. {@code "knight"}
+     */
+    public String getCharacterId() {
+      return characterId;
     }
   }
 
