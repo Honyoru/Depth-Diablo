@@ -3,8 +3,11 @@ package com.epitech.depthdiablo.data;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.SerializationException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import org.junit.jupiter.api.Test;
 
 /** Reading one json data file by id, and reading it aganf for F5. */
@@ -80,6 +83,42 @@ class DataRegistryTest {
     assertThrows(SerializationException.class, registry::reload);
 
     assertEquals(3, registry.definition("rat").getInt("maxHp"));
+  }
+
+  @Test
+  void should_check_every_new_entry_with_its_id_when_reloaded() {
+    DataRegistry registry = new DataRegistry("enemies", () -> file);
+    file =
+        "{ \"enemies\": [ { \"id\": \"rat\", \"maxHp\": 5 }, { \"id\": \"bat\", \"maxHp\": 2 } ] }";
+    List<String> checked = new ArrayList<>();
+
+    registry.reload((id, entry) -> checked.add(id + "=" + entry.getInt("maxHp")));
+
+    assertEquals(List.of("rat=5", "bat=2"), checked);
+  }
+
+  @Test
+  void should_keep_the_old_entries_when_the_check_refuses_a_new_entry() {
+    DataRegistry registry = new DataRegistry("enemies", () -> file);
+    file = "{ \"enemies\": [ { \"id\": \"rat\", \"maxHp\": -1 } ] }";
+    BiConsumer<String, JsonValue> positiveHp =
+        (id, entry) -> {
+          if (entry.getInt("maxHp") <= 0) {
+            throw new IllegalArgumentException(id + " must have HP above 0");
+          }
+        };
+
+    assertThrows(IllegalArgumentException.class, () -> registry.reload(positiveHp));
+
+    assertEquals(3, registry.definition("rat").getInt("maxHp"));
+    assertEquals(List.of("rat", "giant_rat"), registry.getIds());
+  }
+
+  @Test
+  void should_reject_a_missing_check() {
+    DataRegistry registry = new DataRegistry("enemies", () -> file);
+
+    assertThrows(NullPointerException.class, () -> registry.reload(null));
   }
 
   @Test

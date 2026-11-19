@@ -28,6 +28,9 @@ class CharacterFactoryTest {
       """;
   private final World world = new World();
 
+  /** The text F5 reads again: a test changes it, then calls reload(). */
+  private String file = CHARACTERS_TEST;
+
   @Test
   void should_create_a_player_when_its_entry_is_a_player_kind() {
     Player knight = factory(CHARACTERS_TEST).create("knight", new Vector2(64, 32), Player.class);
@@ -98,7 +101,76 @@ class CharacterFactoryTest {
     assertThrows(NullPointerException.class, () -> factory.create("rat", position, null));
   }
 
+  @Test
+  void should_give_the_new_stats_to_every_live_character_when_reloaded() {
+    CharacterFactory factory = reloadingFactory();
+    Enemy first = factory.create("rat", new Vector2(), Enemy.class);
+    Enemy second = factory.create("rat", new Vector2(), Enemy.class);
+    file = CHARACTERS_TEST.replace("\"ATTACK\": 1,", "\"ATTACK\": 7,");
+
+    factory.reload();
+
+    assertEquals(7, first.getAttack());
+    assertEquals(7, second.getAttack());
+  }
+
+  @Test
+  void should_keep_the_weapon_bonus_on_the_new_stats_when_reloaded() {
+    CharacterFactory factory = reloadingFactory();
+    Player knight = factory.create("knight", new Vector2(), Player.class);
+    file = CHARACTERS_TEST.replace("\"ATTACK\": 5,", "\"ATTACK\": 8,");
+
+    factory.reload();
+
+    assertEquals(8 + Items.sword().getAttackBonus(), knight.getAttack());
+  }
+
+  @Test
+  void should_give_the_new_stats_to_characters_created_after_a_reload() {
+    CharacterFactory factory = reloadingFactory();
+    factory.create("rat", new Vector2(), Enemy.class);
+    file = CHARACTERS_TEST.replace("\"ATTACK\": 1,", "\"ATTACK\": 7,");
+
+    factory.reload();
+
+    assertEquals(7, factory.create("rat", new Vector2(), Enemy.class).getAttack());
+  }
+
+  @Test
+  void should_keep_the_old_stats_when_a_reloaded_value_is_invalid() {
+    CharacterFactory factory = reloadingFactory();
+    Enemy rat = factory.create("rat", new Vector2(), Enemy.class);
+    file = CHARACTERS_TEST.replace("\"SPEED\": 90,", "\"SPEED\": -5,");
+
+    assertThrows(IllegalArgumentException.class, factory::reload);
+
+    assertEquals(90f, rat.getSpeed());
+    assertEquals(90f, factory.create("rat", new Vector2(), Enemy.class).getSpeed());
+  }
+
+  @Test
+  void should_keep_the_old_stats_of_a_character_removed_from_the_file_when_reloaded() {
+    CharacterFactory factory = reloadingFactory();
+    Enemy rat = factory.create("rat", new Vector2(), Enemy.class);
+    file =
+        CHARACTERS_TEST
+            .replace("\"id\": \"rat\"", "\"id\": \"rat_renamed\"")
+            .replace("\"ATTACK\": 1,", "\"ATTACK\": 7,");
+
+    factory.reload();
+
+    assertEquals(1, rat.getAttack());
+  }
+
   private CharacterFactory factory(String file) {
+    return new CharacterFactory(
+        new DataRegistry("characters", () -> file),
+        new PlayerFactory(Items.factory(), new PlayerOrders(), world),
+        new EnemyFactory(world));
+  }
+
+  /** A factory reading the {@code file} field each time, so a test can change it before F5. */
+  private CharacterFactory reloadingFactory() {
     return new CharacterFactory(
         new DataRegistry("characters", () -> file),
         new PlayerFactory(Items.factory(), new PlayerOrders(), world),
