@@ -26,7 +26,7 @@ public final class CharacterSpecReader {
     Objects.requireNonNull(entry, "entry of " + id + " is null");
     return new CharacterSpec(
         id,
-        CharacterKind.valueOf(entry.getString("class")),
+        CharacterKind.of(entry.getString("class")),
         entry.getString("spriteId"),
         readStats(id, entry.get("stats")),
         entry.getFloat("width"),

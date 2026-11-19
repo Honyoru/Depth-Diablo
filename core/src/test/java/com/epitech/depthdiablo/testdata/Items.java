@@ -34,7 +34,12 @@ public final class Items {
     return (Potion) factory().create("potion_small");
   }
 
-  private static ItemFactory factory() {
+  /**
+   * Builds the real item factory, reading the data file.
+   *
+   * @return a factory for every item of the data file
+   */
+  public static ItemFactory factory() {
     Path file = Path.of(System.getProperty("assets.dir"), "data", "items.json");
     return new ItemFactory(new DataRegistry("items", () -> read(file)));
   }

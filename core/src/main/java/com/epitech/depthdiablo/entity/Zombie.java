@@ -5,7 +5,7 @@ import com.epitech.depthdiablo.engine.World;
 
 /**
  * The rat (fast, weak; bites at contact; GDD 1.3). It has no code of its own: its values come from
- * {@code data/enemies.json} (GDD 1.3.1).
+ * {@code data/characters.json} (GDD 1.3.1).
  */
 public final class Zombie extends MeleeEnemy {
 

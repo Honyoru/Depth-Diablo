@@ -219,7 +219,7 @@ Testable rules (1.4.1): every Character dies at HP ≤ 0; a non-Damageable entit
 - Capabilities go only where they apply: Entity implements Updatable, Collidable and Rewindable; Character implements Damageable, so chests and the shopkeeper can never be hit; ItemPickup, Coin and Key implement Pickable (team); Chest, Door and Shopkeeper implement Interactable (new: what the interact key opens).
 - Combat: a Hitbox (shape, owner, ticks left, targets already hit) hits a Damageable hurtbox, then calls owner.hit(target). The Player goes through its Attack chain; enemies use the damage formula directly (1.6). Projectiles own a Hitbox.
 - Enemy families fix how they attack: MeleeEnemy uses a contact hitbox; RangedEnemy.createProjectile() is a Factory Method (Arrow, Fireball + burn, PoisonZone); SummonerEnemy summons through the EnemyFactory with summoned = true; Boss runs BossPhase objects (State, Q53 TBD). The roster's states live in one EnemyState enum (gdx-ai State).
-- Rat, Zombie, Orc, RatNest and Necromancer have no code of their own (data/enemies.json); the Rat Nest is static because its speed is 0.
+- Rat, Zombie, Orc, RatNest and Necromancer have no code of their own (data/characters.json); the Rat Nest is static because its speed is 0.
 - Status effects: StatusEffect.tick() (Template Method), with Burn (BurnSpec) and Poison (PoisonSpec).
 - Door states: OPEN, CLOSED, KEY\_LOCKED (opens with a key, Q80), SEALED (arena room, Q13). Coins and keys go to counters on the Player when touched (proposal).
 - Rewind: every tick, each entity writes its own state into a primitive-array StateBuffer (Memento, Q86).

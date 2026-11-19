@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * Every enemy and boss (GDD 1.3.1). Its gdx-ai state machine decides what it does each tick (GDD
  * 1.7); each family fixes how it attacks in {@link #attackTarget} and how far in {@link #canReach}.
- * Its values come from {@code data/enemies.json} (Q93) through the EnemyFactory.
+ * Its values come from {@code data/characters.json} (Q93) through the {@link CharacterFactory}.
  *
  * <p>Pattern: State ({@link EnemyState} on the gdx-ai state machine) and Template Method ({@link
  * #attackTarget} and {@link #canReach} are the hooks each family fills).

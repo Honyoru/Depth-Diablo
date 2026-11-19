@@ -1,69 +1,47 @@
 package com.epitech.depthdiablo.entity;
 
-import com.badlogic.gdx.math.Vector2;
-import com.epitech.depthdiablo.data.DataRegistry;
+import com.badlogic.gdx.utils.JsonValue;
 import com.epitech.depthdiablo.engine.World;
 import java.util.Objects;
 
 /**
- * Builds enemies from {@code data/enemies.json} (Q23, Q129): {@link EnemySpecReader} reads the
- * entry of an id, including the class it is built as, and {@link #create} builds that class with
- * those values. After F5 the next call uses the new values.
+ * Builds the enemies of {@code data/characters.json} for the {@link CharacterFactory} (Q23, Q129).
+ * On top of the values every character shares, it reads the {@code "reach"} of their contact
+ * attack. The floor multiplier (GDD 1.6) and summoned enemies are still to come: every enemy it
+ * builds has its base stats and is not summoned.
  *
  * <p>Pattern: Simple Factory.
  */
 public final class EnemyFactory {
-  private final DataRegistry enemies;
   private final World world;
 
   /**
-   * Creates a factory that reads its values from the given registry.
+   * Creates a factory for the enemies of the given world.
    *
-   * @param enemies the entries of {@code data/enemies.json}
    * @param world the world the enemies it creates live in
-   * @throws NullPointerException if {@code enemies} or {@code world} is null
+   * @throws NullPointerException if {@code world} is null
    */
-  public EnemyFactory(DataRegistry enemies, World world) {
-    this.enemies = Objects.requireNonNull(enemies, "The enemy data registry must not be null");
-    this.world = Objects.requireNonNull(world, "World must not be null");
+  public EnemyFactory(World world) {
+    this.world = Objects.requireNonNull(world, "world is null");
   }
 
   /**
-   * Returns the base values of an enemy type.
+   * Builds an idle enemy with no target. The caller adds it to the world and alerts it.
    *
-   * @param id the enemy's id ex {@code "rat"}
-   * @return its values
+   * @param kind the class to build
+   * @param spec the values every character shares, read from its entry
+   * @param entry its whole entry, for its {@code "reach"}
+   * @param body its body box, already placed in the world; also its hurtbox
+   * @return a new enemy of the given kind
+   * @throws NullPointerException if an argument is null
+   * @throws IllegalArgumentException if the reach is missing, negative or not a finite number
    */
-  public EnemySpec spec(String id) {
-    return EnemySpecReader.read(id, enemies.definition(id));
-  }
-
-  /**
-   * Creates an enemy of the given type, idle and with no target. The caller adds it to the world
-   * and alerts it. The floor multiplier (GDD 1.6) is still to set: every floorgive the base stats
-   * for now.
-   *
-   * @param id the enemy's id, e.g. {@code "rat"}
-   * @param floor the floor it spawns on, 1 or more
-   * @param summoned true if a summoner spawns it; a summoned enemy never drops loot
-   * @param position the bottom-left corner of its body box, in pixels
-   * @return a new enemy of the class its entry names
-   * @throws IllegalArgumentException if the floor is below 1, the id is unknown, or a value is
-   *     missing or invalid
-   * @throws NullPointerException if the floor is below 1, the id is null
-   */
-  public Enemy create(String id, int floor, boolean summoned, Vector2 position) {
-    if (floor < 1) {
-      throw new IllegalArgumentException("The floor must be 1 or more, was " + floor);
-    }
-    Objects.requireNonNull(position, "The position of a new enemy must not be null");
-    EnemySpec spec = spec(id);
-    Aabb body = new Aabb(position.x, position.y, spec.width(), spec.height());
-    int invincibility = spec.invincibilityTicks();
-    return switch (spec.kind()) {
-      case RAT -> new Rat(body, spec.stats(), spec.reach(), body, invincibility, summoned, world);
-      case ZOMBIE ->
-          new Zombie(body, spec.stats(), spec.reach(), body, invincibility, summoned, world);
-    };
+  public Enemy create(EnemyKind kind, CharacterSpec spec, JsonValue entry, Aabb body) {
+    Objects.requireNonNull(kind, "kind is null");
+    Objects.requireNonNull(spec, "spec is null");
+    Objects.requireNonNull(entry, "entry is null");
+    Objects.requireNonNull(body, "body is null");
+    float reach = entry.getFloat("reach");
+    return kind.create(body, spec.stats(), reach, body, spec.invincibilityTicks(), false, world);
   }
 }

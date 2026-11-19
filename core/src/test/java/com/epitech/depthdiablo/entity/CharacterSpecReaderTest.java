@@ -49,7 +49,7 @@ class CharacterSpecReaderTest {
   void should_read_the_class_of_the_entry() {
     CharacterSpec rat = CharacterSpecReader.read("rat", parse(RAT));
 
-    assertEquals(CharacterKind.RAT, rat.kind());
+    assertEquals(EnemyKind.RAT, rat.kind());
   }
 
   @Test
@@ -57,7 +57,7 @@ class CharacterSpecReaderTest {
     CharacterSpec knight =
         CharacterSpecReader.read("knight", parse(RAT.replace("\"RAT\"", "\"KNIGHT\"")));
 
-    assertEquals(CharacterKind.KNIGHT, knight.kind());
+    assertEquals(PlayerKind.KNIGHT, knight.kind());
   }
 
   @Test
