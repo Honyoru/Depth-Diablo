@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.entity;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
 import com.epitech.depthdiablo.item.Inventory;
@@ -126,5 +127,28 @@ public abstract class Player extends Character {
    */
   public boolean isMoving() {
     return moving;
+  }
+
+  /**
+   * Writes the character part, then whether the player walks, so the rewind shows the right
+   * animation even though no tick runs while R is held.
+   *
+   * @param out the photo being taken
+   */
+  @Override
+  public void writeState(StateBuffer out) {
+    super.writeState(out);
+    out.writeBoolean(moving);
+  }
+
+  /**
+   * Puts back what {@link #writeState} wrote, in the same order.
+   *
+   * @param in the photo being restored
+   */
+  @Override
+  public void readState(StateBuffer in) {
+    super.readState(in);
+    moving = in.readBoolean();
   }
 }

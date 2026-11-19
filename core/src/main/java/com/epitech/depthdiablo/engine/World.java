@@ -11,7 +11,7 @@ import java.util.Objects;
  * Holds everything alive during one run and advances it, one logic tick at a time. Owns the {@link
  * EventBus} of the run (GDD 1.1.2).
  */
-public final class World {
+public final class World implements Rewindable {
 
   private final EventBus eventBus = new EventBus();
 
@@ -129,5 +129,52 @@ public final class World {
     return !first.isRemoved()
         && !second.isRemoved()
         && first.getBodyBox().overlaps(second.getBodyBox());
+  }
+
+  /**
+   * Takes the photo of the whole world for R (GDD 1.1.2): the tick number, then for every entity
+   * the entity itself and its own state. Keeping the entities themselves is what lets a rewind
+   * bring back a dead one and drop one spawned since.
+   *
+   * @param out the photo being taken
+   * @throws IllegalStateException if called during a tick, when the world is half updated
+   */
+  @Override
+  public void writeState(StateBuffer out) {
+    if (ticking) {
+      throw new IllegalStateException(
+          "The world cannot be saved during a tick: take the photo between two ticks");
+    }
+    out.writeLong(tick);
+    out.writeInt(entities.size());
+    for (Entity entity : entities) {
+      out.writeRef(entity);
+      entity.writeState(out);
+    }
+  }
+
+  /**
+   * Puts the world back as it was in the photo: the tick number, the list of entities rebuilt from
+   * the photo, each with its state. Events still queued belong to the undone future, so they are
+   * dropped.
+   *
+   * @param in the photo being restored
+   * @throws IllegalStateException if called during a tick
+   */
+  @Override
+  public void readState(StateBuffer in) {
+    if (ticking) {
+      throw new IllegalStateException(
+          "The world cannot be restored during a tick: rewind between two ticks");
+    }
+    tick = in.readLong();
+    int count = in.readInt();
+    entities.clear();
+    for (int i = 0; i < count; i++) {
+      Entity entity = in.readRef(Entity.class);
+      entity.readState(in);
+      entities.add(entity);
+    }
+    eventBus.clear();
   }
 }

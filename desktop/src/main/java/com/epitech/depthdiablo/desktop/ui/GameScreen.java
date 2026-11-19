@@ -21,6 +21,7 @@ import com.epitech.depthdiablo.arena.ArenaCycle;
 import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.debug.EventLaser;
 import com.epitech.depthdiablo.debug.HotReload;
+import com.epitech.depthdiablo.debug.Rewind;
 import com.epitech.depthdiablo.debug.ViewMode;
 import com.epitech.depthdiablo.debug.ViewSwitcher;
 import com.epitech.depthdiablo.engine.FixedTimestep;
@@ -123,6 +124,9 @@ public final class GameScreen extends ScreenAdapter {
 
   /** F2 debug feature (GDD 1.1.2): one line per event, drawn over any view. */
   private final EventLaser eventLaser = new EventLaser();
+
+  /** R debug feature (GDD 1.1.2): hold R to play the last 5 seconds backwards. */
+  private final Rewind rewind = new Rewind(world, Rewind.CAPACITY);
 
   private final EventLaserOverlay eventLaserOverlay = new EventLaserOverlay(eventLaser);
 
@@ -270,13 +274,21 @@ public final class GameScreen extends ScreenAdapter {
   }
 
   private void runLogic(float delta) {
+    boolean rewinding = rewind.isEnabled() && Gdx.input.isKeyPressed(Input.Keys.R);
     int ticks = timestep.advance(delta);
     for (int i = 0; i < ticks; i++) {
+      previousPosition.set(player.position());
+      if (rewinding) {
+        rewind.stepBack(); // false at the oldest photo: the game stays there until R is released
+        continue; // no normal tick while R is held
+      }
       if (hotReload.isEnabled()) {
         hotReload.onTick(world.getCurrentTick());
       }
-      previousPosition.set(player.position());
       world.tick();
+      if (rewind.isEnabled()) {
+        rewind.onTick(world.getCurrentTick()); // photo of the tick that just ran
+      }
       if (eventLaser.isEnabled()) {
         eventLaser.onTick(world.getCurrentTick());
       }

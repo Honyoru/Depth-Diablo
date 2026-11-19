@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import java.util.Objects;
 import java.util.Optional;
@@ -248,5 +249,36 @@ public abstract class Enemy extends Character {
    */
   public boolean isSummoned() {
     return summoned;
+  }
+
+  /**
+   * Writes the character part, then the AI state (its number in {@link EnemyState}) and the target
+   * itself, or null when it has none.
+   *
+   * @param out the photo being taken
+   */
+  @Override
+  public void writeState(StateBuffer out) {
+    super.writeState(out);
+    out.writeInt(getState().ordinal());
+    out.writeRef(target.orElse(null));
+  }
+
+  /**
+   * Puts back what {@link #writeState} wrote, in the same order. The AI state is set without its
+   * enter and exit steps: a rewind puts the enemy back, it does not make it decide anything.
+   *
+   * @param in the photo being restored
+   */
+  @Override
+  public void readState(StateBuffer in) {
+    super.readState(in);
+    EnemyState state = EnemyState.values()[in.readInt()];
+    if (ai == null) {
+      ai = new DefaultStateMachine<>(this, state);
+    } else {
+      ai.setInitialState(state);
+    }
+    target = Optional.ofNullable(in.readRef(Character.class));
   }
 }

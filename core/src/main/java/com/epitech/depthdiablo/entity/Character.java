@@ -8,6 +8,7 @@ import com.epitech.depthdiablo.combat.StatusEffect;
 import com.epitech.depthdiablo.combat.Swing;
 import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import java.util.ArrayList;
 import java.util.List;
@@ -388,6 +389,40 @@ public abstract class Character extends Entity implements Damageable {
     }
     build = result;
     hp = Math.min(hp, getMaxHp());
+  }
+
+  /**
+   * Writes the entity part, then the HP, the i-frames left, the time left on the attack and on its
+   * cooldown, and the swing in progress itself (GDD 1.1.2).
+   *
+   * @param out the photo being taken
+   */
+  @Override
+  public void writeState(StateBuffer out) {
+    super.writeState(out);
+    out.writeInt(hp);
+    out.writeInt(invincibilityTicksLeft);
+    out.writeInt(swingTicksLeft);
+    out.writeInt(attackCooldownTicksLeft);
+    out.writeRef(currentSwing);
+  }
+
+  /**
+   * Puts back what {@link #writeState} wrote, in the same order: a swing started after the photo is
+   * gone, one already running goes on. The status effects are not in the photo: they are dropped, a
+   * choice made to keep the rewind simple (a burn stops when R is used).
+   *
+   * @param in the photo being restored
+   */
+  @Override
+  public void readState(StateBuffer in) {
+    super.readState(in);
+    hp = in.readInt();
+    invincibilityTicksLeft = in.readInt();
+    swingTicksLeft = in.readInt();
+    attackCooldownTicksLeft = in.readInt();
+    currentSwing = in.readRef(Swing.class);
+    statuses.clear();
   }
 
   /**

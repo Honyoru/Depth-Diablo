@@ -1,6 +1,8 @@
 package com.epitech.depthdiablo.entity;
 
 import com.badlogic.gdx.math.Vector2;
+import com.epitech.depthdiablo.engine.Rewindable;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import java.util.Objects;
 
 /**
@@ -9,7 +11,7 @@ import java.util.Objects;
  * <p>Pattern: Template Method. {@link #update(long)} is final and calls {@link #onUpdate(long)},
  * the step each subclass fills in.
  */
-public abstract class Entity implements Updatable, Collidable {
+public abstract class Entity implements Updatable, Collidable, Rewindable {
 
   private Aabb bodyBox;
 
@@ -111,5 +113,32 @@ public abstract class Entity implements Updatable, Collidable {
    */
   public final boolean isRemoved() {
     return removed;
+  }
+
+  /**
+   * Writes the part of the R photo every entity has: its position and whether it is removed. The
+   * size of the body never changes, so it is not saved. A subclass calls this first.
+   *
+   * @param out the photo being taken
+   */
+  @Override
+  public void writeState(StateBuffer out) {
+    out.writeFloat(bodyBox.x());
+    out.writeFloat(bodyBox.y());
+    out.writeBoolean(removed);
+  }
+
+  /**
+   * Puts back the position and the removed flag, so an entity removed since the photo comes back. A
+   * subclass calls this first.
+   *
+   * @param in the photo being restored
+   */
+  @Override
+  public void readState(StateBuffer in) {
+    float x = in.readFloat();
+    float y = in.readFloat();
+    bodyBox = new Aabb(x, y, bodyBox.width(), bodyBox.height());
+    removed = in.readBoolean();
   }
 }
