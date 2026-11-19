@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -18,6 +19,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.arena.ArenaCycle;
+import com.epitech.depthdiablo.arena.WaveDirector;
+import com.epitech.depthdiablo.arena.WavePlan;
 import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.debug.EventLaser;
 import com.epitech.depthdiablo.debug.HotReload;
@@ -47,10 +50,27 @@ import org.slf4j.LoggerFactory;
 /** Main gameplay screen rendering the TiledMap arena, minimap pass, and the Scene2D {@link Hud}. */
 public final class GameScreen extends ScreenAdapter {
 
-  private static final String DEFAULT_MAP_PATH = "Floor1.tmx";
-
   /** Name of the map layer that holds the enemy spawn tiles. */
   private static final String SPAWN_LAYER = "spawn";
+
+  /** Name of the map layer that holds the boss spawn tiles. */
+  private static final String BOSS_LAYER = "spawner_boss";
+
+  /** Name of the map layer that draws the merchant; hidden while there is no shop. */
+  private static final String MERCHANT_LAYER = "merchant";
+
+  /** The Tiled map of the selected mode. */
+  private final String mapPath;
+
+  private final CharacterFactory characters;
+
+  private final SpawnPoints spawns;
+
+  /** Arena mode only: spawns the waves. Null in Endless mode. */
+  private final WaveDirector waveDirector;
+
+  /** Next enemy spawn tile, round-robin. */
+  private int nextEnemySpawn;
 
   private final HudState hudState;
 
@@ -82,7 +102,7 @@ public final class GameScreen extends ScreenAdapter {
 
   private final FixedTimestep timestep = new FixedTimestep();
 
-  private final ArenaCycle arenaCycle = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS);
+  private final ArenaCycle arenaCycle = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS, false);
 
   private final boolean arenaMode;
 
@@ -148,9 +168,10 @@ public final class GameScreen extends ScreenAdapter {
     Objects.requireNonNull(skin, "The UI skin must not be null");
     Objects.requireNonNull(hero, "The selected hero must not be null");
 
-    this.arenaMode =
-        Objects.requireNonNull(mode, "The selected game mode must not be null")
-            == MenuFlowState.GameMode.ARENA;
+    MenuFlowState.GameMode selectedMode =
+        Objects.requireNonNull(mode, "The selected game mode must not be null");
+    this.arenaMode = selectedMode == MenuFlowState.GameMode.ARENA;
+    this.mapPath = selectedMode.getMapPath();
 
     this.app = Objects.requireNonNull(app, "The game application must not be null");
     this.hudState = new HudState();
@@ -162,24 +183,32 @@ public final class GameScreen extends ScreenAdapter {
     this.minimapCamera = new OrthographicCamera();
     this.minimapCamera.setToOrtho(false, MINIMAP_WORLD_SIZE, MINIMAP_WORLD_SIZE);
 
-    this.tiledMap = new TmxMapLoader().load(DEFAULT_MAP_PATH);
+    this.tiledMap = new TmxMapLoader().load(mapPath);
     this.clearColor = readBackgroundColor(tiledMap);
+    MapLayer merchant = tiledMap.getLayers().get(MERCHANT_LAYER);
+    if (merchant != null) {
+      merchant.setVisible(false); // no shop for now
+    }
 
     this.mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, app.getBatch());
     this.batch = app.getBatch();
     this.worldCamera.zoom = CAMERA_ZOOM;
     addWalls();
 
-    CharacterFactory characters = characterFactory();
+    this.characters = characterFactory();
     this.hotReload = new HotReload(List.of(itemData, characters));
-    SpawnPoints spawns = findSpawnPoints();
+    this.spawns = findSpawnPoints();
     this.player = characters.create(hero.getCharacterId(), spawns.player(), Player.class);
-
     this.world.add(player);
-    for (Vector2 spawn : spawns.enemies()) {
-      Enemy rat = characters.create("rat", spawn, Enemy.class);
-      rat.alert(player);
-      world.add(rat);
+
+    if (arenaMode) {
+      // the first tick spawns wave 1
+      this.waveDirector = new WaveDirector(arenaCycle, new WavePlan(), this::spawnEnemy);
+    } else {
+      this.waveDirector = null;
+      for (int i = 0; i < spawns.enemies().size(); i++) {
+        spawnEnemy("rat", false); // one rat per enemy tile, in turn
+      }
     }
     this.playerView = new PlayerView();
     this.enemyView = new EnemyView();
@@ -292,8 +321,8 @@ public final class GameScreen extends ScreenAdapter {
       if (eventLaser.isEnabled()) {
         eventLaser.onTick(world.getCurrentTick());
       }
-      if (arenaMode) {
-        arenaCycle.update();
+      if (waveDirector != null) {
+        waveDirector.onTick(countLivingEnemies());
       }
     }
     drawPosition.set(previousPosition).lerp(player.position(), timestep.getAlpha());
@@ -356,41 +385,98 @@ public final class GameScreen extends ScreenAdapter {
     return Gdx.files.internal("data/" + file).readString("UTF-8");
   }
 
-  /** Where the player and the enemies start, read from the map: the centres of their tiles. */
-  private record SpawnPoints(Vector2 player, List<Vector2> enemies) {}
+  /** Where the player, the enemies and the boss start, read from the map: tile centres. */
+  private record SpawnPoints(Vector2 player, List<Vector2> enemies, List<Vector2> bosses) {}
 
   /**
-   * Returns the centre, in pixels, of the first tile whose "spawn" property is true, and of every
-   * tile whose "spawn_enemy" property is true, in one pass over the map.
+   * Returns the centre, in pixels, of the first tile whose "spawn" property is true and of every
+   * tile whose "spawn_enemy" property is true on the spawn layer, and of every "spawn_boss" tile on
+   * the boss layer (none when the map has no boss layer).
    */
   private SpawnPoints findSpawnPoints() {
     TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(SPAWN_LAYER);
     if (layer == null) {
-      throw new IllegalStateException("No \"" + SPAWN_LAYER + "\" layer in " + DEFAULT_MAP_PATH);
+      throw new IllegalStateException("No \"" + SPAWN_LAYER + "\" layer in " + mapPath);
     }
-    float tile = GameConstants.TILE_SIZE;
     Vector2 player = null;
     List<Vector2> enemies = new ArrayList<>();
     for (int x = 0; x < layer.getWidth(); x++) {
       for (int y = 0; y < layer.getHeight(); y++) {
-        TiledMapTileLayer.Cell cell = layer.getCell(x, y);
-        if (cell == null || cell.getTile() == null) {
+        MapProperties properties = tileProperties(layer, x, y);
+        if (properties == null) {
           continue; // empty tile
         }
-        MapProperties properties = cell.getTile().getProperties();
-        Vector2 centre = new Vector2((x + 0.5f) * tile, (y + 0.5f) * tile);
         if (player == null && properties.get("spawn", false, Boolean.class)) {
-          player = centre;
+          player = tileCentre(x, y);
         }
         if (properties.get("spawn_enemy", false, Boolean.class)) {
-          enemies.add(centre);
+          enemies.add(tileCentre(x, y));
         }
       }
     }
     if (player == null) {
-      throw new IllegalStateException("No tile with spawn=true in " + DEFAULT_MAP_PATH);
+      throw new IllegalStateException("No tile with spawn=true in " + mapPath);
     }
-    return new SpawnPoints(player, List.copyOf(enemies));
+    return new SpawnPoints(player, List.copyOf(enemies), findBossSpawns());
+  }
+
+  /** The centres of the "spawn_boss" tiles of the boss layer, empty when there is no such layer. */
+  private List<Vector2> findBossSpawns() {
+    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(BOSS_LAYER);
+    if (layer == null) {
+      return List.of();
+    }
+    List<Vector2> bosses = new ArrayList<>();
+    for (int x = 0; x < layer.getWidth(); x++) {
+      for (int y = 0; y < layer.getHeight(); y++) {
+        MapProperties properties = tileProperties(layer, x, y);
+        if (properties != null && properties.get("spawn_boss", false, Boolean.class)) {
+          bosses.add(tileCentre(x, y));
+        }
+      }
+    }
+    return List.copyOf(bosses);
+  }
+
+  /** The properties of the tile at (x, y), or null when the cell is empty. */
+  private static MapProperties tileProperties(TiledMapTileLayer layer, int x, int y) {
+    TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+    return cell == null || cell.getTile() == null ? null : cell.getTile().getProperties();
+  }
+
+  private static Vector2 tileCentre(int x, int y) {
+    float tile = GameConstants.TILE_SIZE;
+    return new Vector2((x + 0.5f) * tile, (y + 0.5f) * tile);
+  }
+
+  /**
+   * Puts one enemy in the world, alerted to the player: the king on a boss tile, the others on the
+   * enemy tiles in turn.
+   */
+  private void spawnEnemy(String characterId, boolean boss) {
+    List<Vector2> tiles = boss && !spawns.bosses().isEmpty() ? spawns.bosses() : spawns.enemies();
+    if (tiles.isEmpty()) {
+      throw new IllegalStateException("No tile to spawn \"" + characterId + "\" in " + mapPath);
+    }
+    Vector2 position = tiles.get(0);
+    if (!boss) {
+      position = tiles.get(nextEnemySpawn % tiles.size());
+      nextEnemySpawn++;
+    }
+    Enemy enemy = characters.create(characterId, position, Enemy.class);
+    enemy.alert(player);
+    world.add(enemy);
+  }
+
+  /** The enemies of the world that are not dead: 0 means the wave is cleared. */
+  private int countLivingEnemies() {
+    int alive = 0;
+    for (Entity entity : world.getEntities()) {
+      if (entity instanceof Enemy enemy && !enemy.isDead()) {
+        alive++;
+      }
+    }
+    return alive;
   }
 
   /** Adds one blocking {@link Wall} per map tile whose "collides" property is true. */
