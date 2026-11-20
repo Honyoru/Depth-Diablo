@@ -207,7 +207,7 @@ Testable rules (1.4.1): removing a passive item restores the holder's stats and 
 
 - Every Character holds a CharacterBuild record (attack, stats, hurtbox, hitbox, movement). Equipment and PassiveItem implement BuildModifier: modify(build) returns a new build. After every inventory change the character rebuilds: base build (class stats from JSON, Unarmed attack) → weapon → armor → passive items in slot order (19 Nov). "Removing an item restores stats exactly" and "same order, same result" then hold by construction.
 - Attack speed: the weapon has a base attack speed (`attackSpeed` in items.json) and the ATTACK\_SPEED stat multiplies it, so passive items can change it; the Character tracks the swing and the cooldown, and weapons stay stateless.
-- equip() lives in Inventory, which owns the weapon and armor slots: equipping swaps and gives the old one back for the world to drop. There is no unequip: the player always holds a weapon and an armor. Slots 0–2 are the hotbar (consumables only), the 18 others take only passive items. A free hotbar slot holds Inventory.EMPTY (Null Object), never null.
+- equip() lives in Inventory, which owns the weapon and armor slots: equipping swaps and gives the old one back for the world to drop. There is no unequip: the player always holds a weapon and an armor. Slots 0–2 are the hotbar (consumables only), the 18 others take only passive items. A free hotbar slot holds Inventory.EMPTY_CONSUMABLE_SLOT and a free passive slot Inventory.EMPTY_PASSIVE_SLOT (Null Objects), never null.
 - Hitboxes and projectiles call owner.hit(target); the Player sends it through its Attack chain, so a fire item also burns through arrows and fireballs.
 - A LootTable (weighted entries, a no-drop weight, the seeded RandomSource) serves enemies, bosses, chests and the roulette. The roulette screen spends the RouletteTicket; using it from the hotbar does nothing.
 - Coins are pickups, not Items: a counter on the Player. There is a single key, for the boss door: a boolean on the Player, not an Item, so a full bag can never block it.
@@ -425,10 +425,11 @@ Default controls. Decided (Ange, 4 Nov): standard keyboard + mouse, and the same
 | Aim and attack | mouse + left click, or arrow keys (Options) | right stick | decided: aim mode switched in Options (4 Nov) |
 | Dash | Shift | RB | proposal |
 | Dodge roll | Space | A | proposal |
-| Use consumable 1 / 2 / 3 | 1 / 2 / 3 | d-pad | proposal |
-| Interact (chest, door, shop) | E | X | proposal |
-| Pick up item | F | Y | pickup on a key decided (4 Nov); the key is a proposal |
-| Inventory | I | Select | proposal; TAB is taken by the editor |
+| Select consumable 1 / 2 / 3 | 1 / 2 / 3 | d-pad | decided (20 Nov) |
+| Use the selected consumable | A (AZERTY) / Q (QWERTY) | B | decided (20 Nov); keys are positions on the keyboard |
+| Interact (chest, door, shop) | E | X | proposal; E also picks up items, to decide when interactions exist |
+| Pick up item | E | Y | decided (20 Nov): the nearest item within 32 px, once per press |
+| Inventory | I | Select | decided (20 Nov): opens the inventory page and pauses the game |
 | Pause | Esc | Start | proposal |
 | Rewind (hold) | R | none | decided (1.1.2) |
 | View switcher / event laser | F1 / F2 | none | decided (1.1.2) |

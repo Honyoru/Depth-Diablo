@@ -56,7 +56,7 @@ Loïc's day-by-day plan, for the team to validate. Two points conflict with earl
 | Fri 13 Nov | B | 3 classes + 3 weapons | To do |
 | Fri 13 Nov | C | Floors 1–2 in Tiled | To do |
 | Mon 16 Nov | A | F2 event laser | Done early (Ange, 15 Nov, `feature/event-laser`): `EventLaser` (`DebugFeature`, listens to every event) turns each event into a half-second line from its emitter to its receiver, drawn over any F1 view and toggled with F2. `GameEvent.receiver()` added (the target of `DamageDealt`, empty for a death); 12 new tests. Lines show in game once combat and enemies publish events |
-| Mon 16 Nov | B | 20-slot inventory + pickup | In progress (Romain, `feature/inventory`): `Inventory` with 3 hotbar slots for consumables only (`add`, `use`; a free slot holds `Inventory.EMPTY`, never null) and the equipped weapon (the player always has one; `equip` swaps and gives the old one back to drop). Layout changed to 3 hotbar + 18 passive slots (GDD 1.4). `CharacterBuild` (attack + stats, never changed) and `BuildModifier`: `Weapon.modify` makes the weapon the attack and multiplies ATTACK\_SPEED by its speed; `Inventory.modifiers()` gives the modifiers in rebuild order. Done: the character holds and rebuilds its build (18 Nov). To do: passive slots (with the passive items, 17 Nov), starting armor, pickup in the world |
+| Mon 16 Nov | B | 20-slot inventory + pickup | Done (Romain, 17–20 Nov, `feature/inventory`): `Inventory` holds the weapon, the armor (`Armor` / `LeatherArmor`, the knight starts with `leather_armor`), 3 consumable slots and 18 passive slots; passive items apply in slot order and two slots can be swapped (Switch). `Player.pickUp(item)` takes any item and rebuilds; the old weapon or armor, or an item that does not fit, falls back on the ground. Items on the ground: `ItemDrop`, put there only by `ItemDropper` (`drop` / `spawn`, and the `ItemDropped` event); E picks up the nearest one within 32 px. The R rewind also saves the inventory |
 | Mon 16 Nov | C | Floor 3 + chests, doors, keys | To do |
 | Sun 15 Nov | All | Janitor pass (Ange, `fix/janitor`): test fakes written before the real classes replaced by `Wall` and `Potion`; every null and argument check gets a full-sentence message with the bad value; `Wall` made `final`; `resume.md` no longer tracked | Done |
 | Tue 17 → Wed 18 Nov | A | R rewind (SnapshotRing) | To do (Ange, next) |
@@ -65,7 +65,7 @@ Loïc's day-by-day plan, for the team to validate. Two points conflict with earl
 | Wed 18 Nov | B | Shop, roulette, coins, loot | To do |
 | Thu 19 Nov | A | F5 JSON hot reload | To do |
 | Thu 19 Nov | B | Orc + Dark Mage | To do |
-| Thu 19 Nov | C | Inventory, shop and options UI | To do |
+| Thu 19 Nov | C | Inventory, shop and options UI | Inventory done (Romain, 20 Nov, `feature/inventory`): the HUD hotbar shows the consumables, 1/2/3 select one and A (Q in QWERTY) uses it; I opens the inventory page and pauses the game: equipment, stats and consumables on the left, the 18 passive slots on the right, a click shows an item's effects with Drop and Switch. Shop and options UI to do |
 | Fri 20 Nov | All | **Javadoc, 70 % coverage, bugs, final UML, CREDITS, rehearsal, delivery** | To do |
 
 ### Rotation (Loïc's Claude, 6 Nov) \[OPEN\]
