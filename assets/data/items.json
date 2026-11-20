@@ -12,7 +12,7 @@
       "id": "sword",
       "class": "Sword",
       "nameKey": "item.sword.name",
-      "spriteId": "items/sword",
+      "spriteId": "items/swords/short_sword",
       "rarity": "COMMON",
       "price": 30,
       "attackBonus": 2,
@@ -26,7 +26,7 @@
       "id": "leather_armor",
       "class": "LeatherArmor",
       "nameKey": "item.leather_armor.name",
-      "spriteId": "items/leather_armor",
+      "spriteId": "items/shields/round_shield",
       "rarity": "COMMON",
       "price": 10,
       "defenseBonus": 1
@@ -35,7 +35,7 @@
       "id": "fire_ring",
       "class": "FireRing",
       "nameKey": "item.fire_ring.name",
-      "spriteId": "items/fire_ring",
+      "spriteId": "items/rings/flame_ring",
       "price": 0,
       "burn": { "damage": 1, "intervalTicks": 30, "durationTicks": 120 }
     }

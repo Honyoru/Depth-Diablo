@@ -30,12 +30,14 @@ import com.epitech.depthdiablo.debug.ViewSwitcher;
 import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.FixedTimestep;
+import com.epitech.depthdiablo.engine.ItemDropped;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.CharacterFactory;
 import com.epitech.depthdiablo.entity.Enemy;
 import com.epitech.depthdiablo.entity.EnemyFactory;
 import com.epitech.depthdiablo.entity.Entity;
+import com.epitech.depthdiablo.entity.ItemDropper;
 import com.epitech.depthdiablo.entity.Player;
 import com.epitech.depthdiablo.entity.PlayerFactory;
 import com.epitech.depthdiablo.entity.Wall;
@@ -120,6 +122,12 @@ public final class GameScreen extends ScreenAdapter {
 
   /** Builds every item of data/items.json: the players' weapons, and later loot and shop items. */
   private final ItemFactory items = new ItemFactory(itemData);
+
+  /** Puts items on the ground: monster loot, room items, what the player leaves behind. */
+  private final ItemDropper dropper = new ItemDropper(items, world);
+
+  /** Draws the items on the ground in the sprite view. */
+  private final ItemView itemView = new ItemView();
 
   private final SpriteBatch batch;
 
@@ -215,12 +223,18 @@ public final class GameScreen extends ScreenAdapter {
     this.playerView = new PlayerView();
     this.enemyView = new EnemyView();
     this.previousPosition.set(player.position());
-    renderers.put(ViewMode.SPRITES, new SpriteRenderer(mapRenderer, batch, playerView, enemyView));
+    renderers.put(
+        ViewMode.SPRITES, new SpriteRenderer(mapRenderer, batch, playerView, enemyView, itemView));
     renderers.put(ViewMode.XRAY, new XRayRenderer());
     renderers.put(ViewMode.HIGH_CONTRAST, new HighContrastRenderer());
     world.getEventBus().subscribeAll(eventLaser);
     world.getEventBus().subscribe(DamageDealt.class, enemyView); // hit animation
     world.getEventBus().subscribe(EntityDied.class, enemyView); // death animation
+    world.getEventBus().subscribe(ItemDropped.class, dropper);
+    // TEMPORARY: items next to the spawn to try the pickup, until loot and rooms exist
+    dropper.spawn("fire_ring", new Vector2(spawns.player()).add(48, 0));
+    dropper.spawn("potion_small", new Vector2(spawns.player()).add(0, 48));
+    dropper.spawn("sword", new Vector2(spawns.player()).add(-48, 0));
   }
 
   /**
@@ -373,6 +387,7 @@ public final class GameScreen extends ScreenAdapter {
     eventLaserOverlay.dispose();
     playerView.dispose();
     enemyView.dispose();
+    itemView.dispose();
     mapRenderer.dispose();
     tiledMap.dispose();
   }

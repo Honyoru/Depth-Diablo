@@ -6,7 +6,7 @@
       "spriteId": "player/knight",
       "stats": {
         "MAX_HP": 100,
-        "ATTACK": 15,
+        "ATTACK": 5,
         "DEFENSE": 1,
         "SPEED": 1200,
         "ATTACK_SPEED": 1,
