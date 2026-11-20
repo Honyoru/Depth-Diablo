@@ -12,6 +12,7 @@ import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.GameEvent;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import java.util.ArrayList;
 import java.util.List;
@@ -204,5 +205,45 @@ class ProjectileTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> new Arrow(body, owner, 0, TEN_PIXELS_PER_TICK, 0, world));
+  }
+
+  private StateBuffer photoOfTheWorld() {
+    StateBuffer photo = new StateBuffer();
+    world.writeState(photo);
+    return photo;
+  }
+
+  private void rewindTo(StateBuffer photo) {
+    photo.startReading();
+    world.readState(photo);
+  }
+
+  @Test
+  void should_get_its_whole_lifetime_back_when_the_world_is_rewound() {
+    Arrow arrow = arrowAt(100, 100, 0);
+    StateBuffer photo = photoOfTheWorld();
+    for (int tick = 1; tick < LIFETIME_TICKS; tick++) {
+      world.tick();
+    }
+    rewindTo(photo);
+
+    for (int tick = 1; tick < LIFETIME_TICKS; tick++) {
+      world.tick();
+    }
+
+    assertFalse(arrow.isRemoved());
+  }
+
+  @Test
+  void should_hurt_again_when_the_world_is_rewound_to_before_its_hit() {
+    arrowAt(100, 100, 0);
+    Character player = characterAt(115, 96, Faction.PLAYER);
+    StateBuffer photo = photoOfTheWorld();
+    world.tick();
+    rewindTo(photo);
+
+    world.tick();
+
+    assertTrue(player.getHp() < 10);
   }
 }

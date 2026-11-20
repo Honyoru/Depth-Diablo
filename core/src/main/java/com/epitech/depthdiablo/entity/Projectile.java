@@ -59,6 +59,15 @@ public abstract class Projectile extends Entity {
     this.hitbox = new Hitbox(shapeOf(bodyBox, velocity), owner, owner.getFaction(), lifetimeTicks);
   }
 
+    /**
+   * Returns the character who shot this projectile.
+   *
+   * @return its owner, whose attack and side the projectile uses
+   */
+  protected final Character getOwner() {
+    return owner;
+  }
+
   /**
    * Flies one tick: moves by its velocity, then hurts every character its hitbox touches. A wall in
    * the way removes it, and so does the end of its lifetime.
