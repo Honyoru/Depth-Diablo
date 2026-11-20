@@ -248,7 +248,8 @@ public abstract class Player extends Character {
 
   /**
    * Writes the character part, then whether the player walks, so the rewind shows the right
-   * animation even though no tick runs while R is held.
+   * animation even though no tick runs while R is held, then its inventory, so an item picked up
+   * after the photo leaves the bag again.
    *
    * @param out the photo being taken
    */
@@ -256,10 +257,12 @@ public abstract class Player extends Character {
   public void writeState(StateBuffer out) {
     super.writeState(out);
     out.writeBoolean(moving);
+    inventory.writeState(out);
   }
 
   /**
-   * Puts back what {@link #writeState} wrote, in the same order.
+   * Puts back what {@link #writeState} wrote, in the same order, then rebuilds from the inventory
+   * put back: the build is not in the photo, it follows the inventory.
    *
    * @param in the photo being restored
    */
@@ -267,5 +270,7 @@ public abstract class Player extends Character {
   public void readState(StateBuffer in) {
     super.readState(in);
     moving = in.readBoolean();
+    inventory.readState(in);
+    rebuild(inventory.getModifiers());
   }
 }

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.entity.BuildModifier;
 import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.testdata.Items;
@@ -452,6 +453,33 @@ class InventoryTest {
   void should_give_no_effect_for_a_free_slot() {
     assertEquals(List.of(), Inventory.EMPTY_CONSUMABLE_SLOT.getEffects());
     assertEquals(List.of(), Inventory.EMPTY_PASSIVE_SLOT.getEffects());
+  }
+
+  @Test
+  void should_get_back_its_slots_when_its_state_is_read_back() {
+    Inventory inventory = anInventory();
+    Weapon weapon = inventory.getWeapon();
+    Armor armor = inventory.getArmor();
+    Potion potion = Items.potion();
+    FireRing ring = Items.fireRing();
+    inventory.add(potion);
+    inventory.add(ring);
+    inventory.swapPassiveSlots(0, 2);
+    StateBuffer photo = new StateBuffer();
+    inventory.writeState(photo);
+    inventory.removeConsumable(0);
+    inventory.removePassive(2);
+    inventory.equip(Items.sword());
+    inventory.equip(Items.leatherArmor());
+
+    photo.startReading();
+    inventory.readState(photo);
+
+    assertSame(weapon, inventory.getWeapon());
+    assertSame(armor, inventory.getArmor());
+    assertSame(potion, inventory.hotbarSlot(0));
+    assertSame(ring, inventory.passiveSlot(2));
+    assertTrue(inventory.isPassiveSlotFree(0));
   }
 
   private static Inventory anInventory() {

@@ -1,5 +1,7 @@
 package com.epitech.depthdiablo.item;
 
+import com.epitech.depthdiablo.engine.Rewindable;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.entity.BuildModifier;
 import com.epitech.depthdiablo.entity.Character;
 import java.util.ArrayList;
@@ -13,7 +15,7 @@ import java.util.Optional;
  * passive items, the equipped weapon and the worn armor. Each slot holds one item; items never
  * stack. The player always holds a weapon and wears an armor.
  */
-public final class Inventory {
+public final class Inventory implements Rewindable {
 
   /** The number of hotbar slots; they take only consumables. */
   public static final int HOTBAR_SIZE = 3;
@@ -296,5 +298,40 @@ public final class Inventory {
     Armor old = armor;
     armor = newArmor;
     return old;
+  }
+
+  /**
+   * Writes the weapon, the armor, then every hotbar and passive slot (GDD 1.1.2): the items
+   * themselves, so a rewind gives the bag back as it was.
+   *
+   * @param out the photo being taken
+   */
+  @Override
+  public void writeState(StateBuffer out) {
+    out.writeRef(weapon);
+    out.writeRef(armor);
+    for (Consumable consumable : hotbar) {
+      out.writeRef(consumable);
+    }
+    for (PassiveItem item : passives) {
+      out.writeRef(item);
+    }
+  }
+
+  /**
+   * Puts back what {@link #writeState} wrote, in the same order.
+   *
+   * @param in the photo being restored
+   */
+  @Override
+  public void readState(StateBuffer in) {
+    weapon = in.readRef(Weapon.class);
+    armor = in.readRef(Armor.class);
+    for (int i = 0; i < HOTBAR_SIZE; i++) {
+      hotbar[i] = in.readRef(Consumable.class);
+    }
+    for (int i = 0; i < PASSIVE_SIZE; i++) {
+      passives[i] = in.readRef(PassiveItem.class);
+    }
   }
 }

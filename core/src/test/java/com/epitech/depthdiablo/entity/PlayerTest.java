@@ -481,6 +481,20 @@ class PlayerTest {
         .anyMatch(e -> e instanceof ItemDrop drop && drop.getItem() == item && !drop.isRemoved());
   }
 
+  @Test
+  void should_drop_a_passive_item_picked_up_after_the_photo_when_its_state_is_read_back() {
+    Player player = aKnight();
+    StateBuffer photo = new StateBuffer();
+    player.writeState(photo);
+    player.pickUp(Items.fireRing());
+
+    photo.startReading();
+    player.readState(photo);
+
+    assertTrue(player.getInventory().isPassiveSlotFree(0));
+    assertSame(player.getInventory().getWeapon(), player.getBuild().attack());
+  }
+
   private Knight aKnight() {
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
     return new Knight(box, stats(), Items.sword(), Items.leatherArmor(), box, 0, input, world);
