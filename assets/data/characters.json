@@ -5,7 +5,7 @@
       "class": "KNIGHT",
       "spriteId": "player/knight",
       "stats": {
-        "MAX_HP": 100,
+        "MAX_HP": 1000,
         "ATTACK": 5,
         "DEFENSE": 1,
         "SPEED": 250,
@@ -55,7 +55,7 @@
     {
       "id": "king",
       "class": "ZOMBIE",
-      "spriteId": "enemies/zombie",
+      "spriteId": "enemies/zombie_king",
       "stats": {
          "MAX_HP": 120,
         "ATTACK": 12,

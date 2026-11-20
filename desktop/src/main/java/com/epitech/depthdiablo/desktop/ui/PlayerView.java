@@ -16,7 +16,7 @@ import java.util.Optional;
  * left.
  */
 final class PlayerView implements Disposable {
-  private static final int FRAME_SIZE = 32;
+  private static final int FRAME_SIZE = 64;
   private static final float FRAME_SECONDS = 0.15f;
   private static final float FRAME_MARGIN = 2;
   private final Texture idleSheet;
