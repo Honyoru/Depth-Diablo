@@ -128,6 +128,12 @@ class EnemyTest {
   }
 
   @Test
+  void should_carry_the_sprite_id_of_its_setup() {
+    assertEquals("enemies/rat", aRat().build().getSpriteId());
+    assertEquals("enemies/zombie", aZombie().build().getSpriteId());
+  }
+
+  @Test
   void should_reject_a_missing_target() {
     Enemy rat = aRat().build();
 

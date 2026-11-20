@@ -1,14 +1,17 @@
 package com.epitech.depthdiablo.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
+import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerOrders;
+import com.epitech.depthdiablo.testdata.CharacterBuilder;
 import com.epitech.depthdiablo.testdata.Items;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -186,6 +189,76 @@ class CharacterFactoryTest {
 
     assertTrue(king.getMaxHp() > rat.getMaxHp());
     assertTrue(king.getBodyBox().width() > rat.getBodyBox().width());
+  }
+
+  @Test
+  void should_give_each_enemy_the_sprite_id_of_its_entry() {
+    CharacterFactory factory = factory(CHARACTERS_TEST);
+
+    assertEquals("enemies/rat", factory.create("rat", new Vector2(), Enemy.class).getSpriteId());
+  }
+
+  @Test
+  void should_create_enemies_that_are_not_summoned() {
+    CharacterFactory factory = factory(CHARACTERS_TEST);
+
+    assertFalse(factory.create("rat", new Vector2(), Enemy.class).isSummoned());
+  }
+
+  @Test
+  void should_summon_an_enemy_marked_as_summoned() {
+    CharacterFactory factory = factory(CHARACTERS_TEST);
+
+    Enemy rat = factory.summon("rat", new Vector2());
+
+    assertInstanceOf(Rat.class, rat);
+    assertTrue(rat.isSummoned());
+  }
+
+  @Test
+  void should_summon_an_enemy_centred_on_the_given_point() {
+    CharacterFactory factory = factory(CHARACTERS_TEST);
+
+    Enemy rat = factory.summon("rat", new Vector2(50, 60));
+
+    assertEquals(new Aabb(42, 52, 16, 16), rat.getBodyBox());
+  }
+
+  @Test
+  void should_refuse_to_summon_a_player() {
+    CharacterFactory factory = factory(CHARACTERS_TEST);
+
+    assertThrows(IllegalArgumentException.class, () -> factory.summon("knight", new Vector2()));
+  }
+
+  @Test
+  void should_build_the_rat_nest_of_the_real_file_as_a_still_summoner() throws IOException {
+    CharacterFactory factory = factory(realCharactersFile());
+
+    Enemy nest = factory.create("rat_nest", new Vector2(), Enemy.class);
+
+    assertInstanceOf(RatNest.class, nest);
+    assertEquals(0f, nest.getSpeed());
+    assertEquals("enemies/rat_nest", nest.getSpriteId());
+  }
+
+  @Test
+  void should_let_the_rat_nest_of_the_real_file_summon_summoned_rats() throws IOException {
+    CharacterFactory factory = factory(realCharactersFile());
+    Enemy nest = factory.create("rat_nest", new Vector2(100, 100), Enemy.class);
+    world.add(nest);
+    nest.alert(CharacterBuilder.aCharacter().withFaction(Faction.PLAYER).build());
+
+    world.tick(); // IDLE -> SUMMON
+    world.tick(); // the first summon, added to the world at the end of the tick
+
+    Enemy rat =
+        world.getEntities().stream()
+            .filter(Rat.class::isInstance)
+            .map(Enemy.class::cast)
+            .findFirst()
+            .orElseThrow();
+    assertTrue(rat.isSummoned());
   }
 
   private static String realCharactersFile() throws IOException {
