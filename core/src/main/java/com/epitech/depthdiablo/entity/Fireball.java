@@ -22,8 +22,8 @@ public final class Fireball extends Projectile {
    * @param lifetimeTicks how many ticks it flies before it is removed; above 0
    * @param burn the burn it leaves on the character it hurts, read from the data files (Q93)
    * @param world the world it flies in
-   * @throws NullPointerException if {@code bodyBox}, {@code owner}, {@code burn} or {@code world} is
-   *     {@code null}
+   * @throws NullPointerException if {@code bodyBox}, {@code owner}, {@code burn} or {@code world}
+   *     is {@code null}
    * @throws IllegalArgumentException if the aim or the speed is not a finite number, the speed is 0
    *     or less, or the lifetime is 0 or less
    */
