@@ -16,7 +16,7 @@ import com.epitech.depthdiablo.engine.World;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestTemplate;
+
 
 
 /** Projectiles (GDD 1.3.1, 1.5): they fly straight and hurt the first enemy they touch. */
@@ -26,7 +26,7 @@ class ProjectileTest {
   private final World world = new World();
 
   /** Shoots every arrow; on the ENEMY side, like the Skeleton Archer. */
-  private final Character owner = aCharacter()withWorld(world).worldBuild();
+  private final Character owner = aCharacter().withWorld(world).build();
   private Arrow arrowAt(float x, float y, float aimDegrees) {
     Arrow arrow = new Arrow( new Aabb (x,y,16,16), owner,aimDegrees,TEN_PIXELS_PER_TICK,LIFETIME_TICKS,world);
     world.add(arrow);
@@ -35,7 +35,7 @@ class ProjectileTest {
 
   private final Character characterAt(float x, float y,Faction side) {
     Aabb box = new Aabb(x, y, 16, 16);
-    Character character = aCharacter()withBodyBox(box).withHurtbox(box).withFaction(side).withWorld(world).worldBuild();
+    Character character = aCharacter().withBodyBox(box).withHurtbox(box).withFaction(side).withWorld(world).build();
     world.add(character);
     return character;
   }
@@ -88,7 +88,7 @@ class ProjectileTest {
 
     world.tick();
 
-    assertTrue(seen.stream().anyMatch(DammageDealt.class::isInstance));
+    assertTrue(seen.stream().anyMatch(DamageDealt.class::isInstance));
    }
 
    @Test
