@@ -72,6 +72,21 @@ public final class UiSkinFactory {
           "inventory_bg", new NinePatchDrawable(new NinePatch(tex, 1, 1, 1, 1)), Drawable.class);
     }
 
+    if (!skin.has("inventory_card_bg", Drawable.class)) {
+      Pixmap pixmap = new Pixmap(16, 16, Pixmap.Format.RGBA8888);
+      pixmap.setColor(0.02f, 0.02f, 0.04f, 0.96f); // a little darker than the page
+      pixmap.fill();
+      pixmap.setColor(gold);
+      pixmap.drawRectangle(0, 0, 16, 16);
+      Texture tex = new Texture(pixmap);
+      pixmap.dispose();
+      skin.add("inventory_card_tex", tex);
+      skin.add(
+          "inventory_card_bg",
+          new NinePatchDrawable(new NinePatch(tex, 1, 1, 1, 1)),
+          Drawable.class);
+    }
+
     if (!skin.has("gold_line", Drawable.class)) {
       Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
       pixmap.setColor(gold);

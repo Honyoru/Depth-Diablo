@@ -42,12 +42,14 @@ import com.epitech.depthdiablo.entity.Player;
 import com.epitech.depthdiablo.entity.PlayerFactory;
 import com.epitech.depthdiablo.entity.Wall;
 import com.epitech.depthdiablo.input.PlayerOrders;
+import com.epitech.depthdiablo.item.Item;
 import com.epitech.depthdiablo.item.ItemFactory;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,7 +197,14 @@ public final class GameScreen extends ScreenAdapter {
     this.app = Objects.requireNonNull(app, "The game application must not be null");
     this.hudState = new HudState();
     this.hud = new Hud(skin, hudState, app.getBatch(), itemTextures);
-    this.inventoryView = new InventoryPage(skin, app.getBatch(), itemTextures);
+    this.inventoryView =
+        new InventoryPage(
+            skin,
+            app.getBatch(),
+            itemTextures,
+            inventoryPage,
+            this::dropFromPage,
+            this::swapFromPage);
 
     this.worldCamera = new OrthographicCamera();
     this.worldCamera.setToOrtho(false, GameConstants.VIRTUAL_WIDTH, GameConstants.VIRTUAL_HEIGHT);
@@ -281,6 +290,8 @@ public final class GameScreen extends ScreenAdapter {
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.I)) {
       inventoryPage.toggle();
+      Gdx.input.setInputProcessor(
+          inventoryPage.isOpen() ? inventoryView.getStage() : hud.getStage());
     }
     if (inventoryPage.isOpen()) {
       holdStill();
@@ -343,6 +354,25 @@ public final class GameScreen extends ScreenAdapter {
     } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
       hudState.selectSlot(2);
     }
+  }
+
+  /** Drops the item of a page slot at the player's feet; the weapon and the armor stay. */
+  private void dropFromPage(PageSlot slot) {
+    Optional<? extends Item> dropped =
+        switch (slot.kind()) {
+          case HOTBAR -> player.dropConsumable(slot.index());
+          case PASSIVE -> player.dropPassive(slot.index());
+          case WEAPON, ARMOR -> Optional.empty();
+        };
+    Aabb body = player.getBodyBox();
+    Vector2 feet = new Vector2(body.x() + body.width() / 2f, body.y() + body.height() / 2f);
+    dropped.ifPresent(item -> dropper.drop(item, feet));
+    inventoryPage.click(slot, true); // the slot is free now: nothing stays selected
+  }
+
+  /** Swaps two passive slots asked by a Switch; the build follows the new order. */
+  private void swapFromPage(PassiveSwap swap) {
+    player.swapPassiveSlots(swap.from(), swap.to());
   }
 
   /**
