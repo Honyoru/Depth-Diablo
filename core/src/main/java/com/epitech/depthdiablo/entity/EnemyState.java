@@ -4,18 +4,19 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 
 /**
- * What an enemy is doing (GDD 1.3 roster, 1.7). The states do nothing yet: their behaviour comes
- * with the enemy AI.
+ * What an enemy is doing (GDD 1.3 roster, 1.7). Idle, chase, attack, summon and dead have their
+ * behaviour; keep distance, flee and hit wait for the ranged enemies and the Necromancer.
  *
  * <p>Pattern: State, on the gdx-ai state machine (Q49).
  */
 public enum EnemyState implements State<Enemy> {
-  /** Waits until it sees a target or is alerted. */
+
+  /** Waits until it sees a target or is alerted, then fights the way its family does. */
   IDLE {
     @Override
     public void update(Enemy enemy) {
       if (enemy.seesTarget()) {
-        enemy.changeState(CHASE);
+        enemy.changeState(enemy.engagedState());
       }
     }
   },
@@ -49,8 +50,17 @@ public enum EnemyState implements State<Enemy> {
       }
     }
   },
-  /** Spawns other enemies (summoners). */
-  SUMMON,
+  /** Spawns other enemies while it sees its target, at its attack speed (summoners). */
+  SUMMON {
+    @Override
+    public void update(Enemy enemy) {
+      if (!enemy.seesTarget()) {
+        enemy.changeState(IDLE);
+      } else {
+        enemy.attackWhenReady();
+      }
+    }
+  },
   /** Has just been hit. */
   HIT,
   /** HP at 0. */

@@ -26,6 +26,13 @@ class EnemyFactoryTest {
         "width": 16, "height": 16, "invincibilityTicks": 18, "reach": 4 }
       """;
   private static final Aabb BODY = new Aabb(64, 32, 16, 16);
+
+  /** Fails the test if it is ever asked: building an enemy must not summon anything. */
+  private static final Summoner NO_SUMMONER =
+      (id, centre) -> {
+        throw new AssertionError("Building an enemy must not summon " + id);
+      };
+
   private final EnemyFactory factory = new EnemyFactory(new World());
 
   @Test
@@ -80,7 +87,7 @@ class EnemyFactoryTest {
       JsonValue entry = characters.definition(id);
       CharacterSpec spec = CharacterSpecReader.read(id, entry);
       if (spec.kind() instanceof EnemyKind kind) {
-        assertEquals(EnemyState.IDLE, factory.create(kind, spec, entry, BODY).getState());
+        assertEquals(EnemyState.IDLE, factory.create(kind, spec, entry, BODY, false, NO_SUMMONER).getState());
       }
     }
   }
@@ -89,6 +96,6 @@ class EnemyFactoryTest {
   private Enemy create(String json) {
     JsonValue entry = new JsonReader().parse(json);
     CharacterSpec spec = CharacterSpecReader.read("rat", entry);
-    return factory.create((EnemyKind) spec.kind(), spec, entry, BODY);
+    return factory.create((EnemyKind) spec.kind(), spec, entry, BODY, false, NO_SUMMONER);
   }
 }

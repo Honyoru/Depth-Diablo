@@ -26,6 +26,8 @@ public abstract class Enemy extends Character {
 
   private final boolean summoned;
 
+  private final String spriteId;
+
   /**
    * Creates an enemy. It starts {@link EnemyState#IDLE}, with no target.
    *
@@ -40,16 +42,16 @@ public abstract class Enemy extends Character {
    *     hurtbox} or {@code world} is {@code null}
    * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} is negative
    */
-  protected Enemy(
-      Aabb bodyBox,
-      StatSource stats,
-      Attack baseAttack,
-      Aabb hurtbox,
-      int invincibilityTicksAfterHit,
-      boolean summoned,
-      World world) {
-    super(bodyBox, stats, baseAttack, hurtbox, invincibilityTicksAfterHit, world);
-    this.summoned = summoned;
+  protected Enemy(EnemySetup setup, Attack baseAttack) {
+    super(
+        Objects.requireNonNull(setup, "setup is null").body(),
+        setup.stats(),
+        baseAttack,
+        setup.body(),
+        setup.invincibilityTicks(),
+        setup.world());
+    this.summoned = setup.summoned();
+    this.spriteId = setup.spriteId();
   }
 
   /**
@@ -249,6 +251,26 @@ public abstract class Enemy extends Character {
    */
   public boolean isSummoned() {
     return summoned;
+  }
+
+  /**
+   * Returns the picture the renderer draws for this enemy, from its entry in {@code
+   * data/characters.json}.
+   *
+   * @return its sprite id, e.g. {@code "enemies/rat"}
+   */
+  public String getSpriteId() {
+    return spriteId;
+  }
+
+  /**
+   * Returns the state this enemy goes to when it sees a target: how its family fights (GDD 1.7).
+   * Melee enemies chase; a summoner overrides it with {@link EnemyState#SUMMON}.
+   *
+   * @return {@link EnemyState#CHASE}
+   */
+  protected EnemyState engagedState() {
+    return EnemyState.CHASE;
   }
 
   /**

@@ -8,7 +8,7 @@
         "MAX_HP": 100,
         "ATTACK": 15,
         "DEFENSE": 1,
-        "SPEED": 120,
+        "SPEED": 1200,
         "ATTACK_SPEED": 1,
         "LUCK": 0
       },
@@ -68,6 +68,41 @@
       "height": 48,
       "invincibilityTicks": 18,
       "reach": 8
+    },
+    {
+      "id": "rat_nest",
+      "class": "RAT_NEST",
+      "spriteId": "enemies/rat_nest",
+      "stats": {
+        "MAX_HP": 25,
+        "ATTACK": 0,
+        "DEFENSE": 2,
+        "SPEED": 0,
+        "ATTACK_SPEED": 0.25,
+        "LUCK": 0
+      },
+      "summons": "rat",
+      "maxSummons": 3,
+      "width": 28,
+      "height": 28,
+      "invincibilityTicks": 0
+    },
+    {
+      "id": "skeleton_archer",
+      "class": "RAT",
+      "spriteId": "enemies/skeleton_archer",
+      "stats": {
+        "MAX_HP": 8,
+        "ATTACK": 6,
+        "DEFENSE": 3,
+        "SPEED": 80,
+        "ATTACK_SPEED": 0.6,
+        "LUCK": 0
+      },
+      "width": 28,
+      "height": 28,
+      "invincibilityTicks": 0,
+      "reach": 4
     }
   ]
 }

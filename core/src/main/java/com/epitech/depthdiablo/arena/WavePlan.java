@@ -14,6 +14,10 @@ public final class WavePlan {
 
   private static final String RAT_ID = "rat";
   private static final String ZOMBIE_ID = "zombie";
+  private static final String SKELLETON_ID = "skeleton_archer";
+  private static final String RAT_NEST_ID = "rat_nest";
+  private static final int FIRST_WAVE_NEST = 2;
+  private static final int FIRST_WAVE_SKELETON = 4;
   private static final int FIRST_WAVE_RATS = 6;
   private static final int FIRST_ZOMBIE_WAVE = 2;
   private static final int KING_ESCORT = 6;
@@ -45,6 +49,14 @@ public final class WavePlan {
     int zombies = Math.max(0, wave - FIRST_ZOMBIE_WAVE + 1);
     for (int i = 0; i < zombies; i++) {
       enemies.add(ZOMBIE_ID);
+    }
+    int skeletons = Math.max(0, wave - FIRST_WAVE_SKELETON + 1);
+    for (int i = 0; i < skeletons; i++) {
+      enemies.add(SKELLETON_ID);
+    }
+    int nests = Math.max(0, wave - FIRST_WAVE_NEST + 1);
+    for (int i = 0; i < nests; i++) {
+      enemies.add(RAT_NEST_ID);
     }
     return List.copyOf(enemies);
   }

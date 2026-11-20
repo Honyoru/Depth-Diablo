@@ -18,9 +18,12 @@ import java.util.Objects;
  * #reload()} changes the stats of the live characters, and the next ones are built with the new
  * values.
  *
+ * <p>It is also the {@link Summoner} of the summoners it builds: what they spawn comes from the
+ * same file, with {@code summoned} set.
+ *
  * <p>Pattern: Simple Factory, as a facade over one factory per family.
  */
-public final class CharacterFactory implements Reloadable {
+public final class CharacterFactory implements Reloadable, Summoner {
   private final DataRegistry characters;
   private final PlayerFactory players;
   private final EnemyFactory enemies;
@@ -57,6 +60,27 @@ public final class CharacterFactory implements Reloadable {
    *     character is not of the given type
    */
   public <T extends Character> T create(String id, Vector2 position, Class<T> type) {
+    return build(id, position, type, false);
+  }
+
+  /**
+   * Creates a summoned enemy of the given id, standing at the given point. The summoner alerts it
+   * and adds it to the world.
+   *
+   * @param characterId the enemy's id, e.g. {@code "rat"}
+   * @param centre the centre of its body box, in pixels
+   * @return a new enemy whose {@link Enemy#isSummoned()} is true
+   * @throws NullPointerException if {@code centre} is null
+   * @throws IllegalArgumentException if the id is unknown, a value is missing or invalid, or the
+   *     character is not an enemy
+   */
+  @Override
+  public Enemy summon(String characterId, Vector2 centre) {
+    return build(characterId, centre, Enemy.class, true);
+  }
+
+  private <T extends Character> T build(
+      String id, Vector2 position, Class<T> type, boolean summoned) {
     Objects.requireNonNull(position, "position is null");
     Objects.requireNonNull(type, "type is null");
     JsonValue entry = characters.definition(id);
@@ -72,7 +96,7 @@ public final class CharacterFactory implements Reloadable {
     Character character =
         switch (spec.kind()) {
           case PlayerKind kind -> players.create(kind, liveSpec, entry, body);
-          case EnemyKind kind -> enemies.create(kind, liveSpec, entry, body);
+          case EnemyKind kind -> enemies.create(kind, liveSpec, entry, body, summoned, this);
         };
     if (!type.isInstance(character)) {
       throw new IllegalArgumentException(

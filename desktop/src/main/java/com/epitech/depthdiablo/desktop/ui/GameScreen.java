@@ -27,6 +27,8 @@ import com.epitech.depthdiablo.debug.HotReload;
 import com.epitech.depthdiablo.debug.Rewind;
 import com.epitech.depthdiablo.debug.ViewMode;
 import com.epitech.depthdiablo.debug.ViewSwitcher;
+import com.epitech.depthdiablo.engine.DamageDealt;
+import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.FixedTimestep;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
@@ -217,6 +219,8 @@ public final class GameScreen extends ScreenAdapter {
     renderers.put(ViewMode.XRAY, new XRayRenderer());
     renderers.put(ViewMode.HIGH_CONTRAST, new HighContrastRenderer());
     world.getEventBus().subscribeAll(eventLaser);
+    world.getEventBus().subscribe(DamageDealt.class, enemyView); // hit animation
+    world.getEventBus().subscribe(EntityDied.class, enemyView); // death animation
   }
 
   /**

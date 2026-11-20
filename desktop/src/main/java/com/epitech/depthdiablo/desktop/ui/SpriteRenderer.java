@@ -6,7 +6,10 @@ import com.epitech.depthdiablo.entity.Enemy;
 import com.epitech.depthdiablo.entity.Entity;
 import java.util.Objects;
 
-/** The normal view: the Tiled map, then the enemies, then the player's sprite on top of them. */
+/**
+ * The normal view: the Tiled map, then the dying enemies, the living ones, and the player's sprite
+ * on top of them.
+ */
 final class SpriteRenderer implements Renderer {
   private final OrthogonalTiledMapRenderer mapRenderer;
   private final Batch batch;
@@ -41,6 +44,7 @@ final class SpriteRenderer implements Renderer {
     batch.setProjectionMatrix(frame.camera().combined);
     batch.begin();
     enemyView.advance(frame.delta());
+    enemyView.drawCorpses(batch); // under the living enemies
     for (Entity entity : frame.world().getEntities()) {
       if (entity instanceof Enemy enemy) {
         enemyView.draw(batch, enemy);

@@ -17,27 +17,13 @@ public abstract class MeleeEnemy extends Enemy {
   /**
    * Creates a melee enemy.
    *
-   * @param bodyBox the box the enemy occupies in the world; must not be {@code null}
-   * @param stats where its stats come from (GDD 1.6); must not be {@code null}
+   * @param setup the values every enemy shares; must not be {@code null}
    * @param attack its contact attack, which holds its reach; it is also its base attack; must not
    *     be {@code null}
-   * @param hurtbox the enemy's hurtbox; must not be {@code null}
-   * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
-   * @param summoned true if a summoner spawned it
-   * @param world the world it lives in; must not be {@code null}
-   * @throws NullPointerException if {@code bodyBox}, {@code stats}, {@code attack}, {@code hurtbox}
-   *     or {@code world} is {@code null}
-   * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} is negative
+   * @throws NullPointerException if {@code setup} or {@code attack} is {@code null}
    */
-  protected MeleeEnemy(
-      Aabb bodyBox,
-      StatSource stats,
-      ContactAttack attack,
-      Aabb hurtbox,
-      int invincibilityTicksAfterHit,
-      boolean summoned,
-      World world) {
-    super(bodyBox, stats, attack, hurtbox, invincibilityTicksAfterHit, summoned, world);
+  protected MeleeEnemy(EnemySetup setup, ContactAttack attack) {
+    super(setup, attack);
     this.attack = Objects.requireNonNull(attack, "attack is null");
   }
 

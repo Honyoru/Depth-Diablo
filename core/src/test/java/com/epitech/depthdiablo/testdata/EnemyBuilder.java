@@ -3,10 +3,10 @@ package com.epitech.depthdiablo.testdata;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.BaseStats;
+import com.epitech.depthdiablo.entity.EnemySetup;
 import com.epitech.depthdiablo.entity.MeleeEnemy;
 import com.epitech.depthdiablo.entity.Rat;
 import com.epitech.depthdiablo.entity.Stat;
-import com.epitech.depthdiablo.entity.StatSource;
 import com.epitech.depthdiablo.entity.Zombie;
 import java.util.EnumMap;
 import java.util.Map;
@@ -14,14 +14,16 @@ import java.util.Map;
 /** Test data builder (Q116) for real enemies: a rat or a zombie, changed one value at a time. */
 public final class EnemyBuilder {
   private final Kind kind;
+  private final String spriteId;
   private final Map<Stat, Float> stats = new EnumMap<>(Stat.class);
   private Aabb bodyBox = new Aabb(0, 0, 16, 16);
   private float reach = 4;
   private boolean summoned;
   private World world = new World();
 
-  private EnemyBuilder(Kind kind, float maxHp, float attack) {
+  private EnemyBuilder(Kind kind, String spriteId, float maxHp, float attack) {
     this.kind = kind;
+    this.spriteId = spriteId;
     stats.put(Stat.MAX_HP, maxHp);
     stats.put(Stat.ATTACK, attack);
     stats.put(Stat.DEFENSE, 1f);
@@ -32,21 +34,22 @@ public final class EnemyBuilder {
 
   /**
    * Starts a rat: 3 HP, 2 attack, 1 defense, a 16 x 16 body box and hurtbox at the origin, a reach
-   * of 4, not summoned.
+   * of 4, the sprite {@code "enemies/rat"}, not summoned.
    *
    * @return a new builder
    */
   public static EnemyBuilder aRat() {
-    return new EnemyBuilder(Rat::new, 3f, 2f);
+    return new EnemyBuilder(Rat::new, "enemies/rat", 3f, 2f);
   }
 
   /**
-   * Starts a zombie: 8 HP, 3 attack, otherwise like {@link #aRat()}.
+   * Starts a zombie: 8 HP, 3 attack, the sprite {@code "enemies/zombie"}, otherwise like {@link
+   * #aRat()}.
    *
    * @return a new builder
    */
   public static EnemyBuilder aZombie() {
-    return new EnemyBuilder(Zombie::new, 8f, 3f);
+    return new EnemyBuilder(Zombie::new, "enemies/zombie", 8f, 3f);
   }
 
   /**
@@ -99,19 +102,13 @@ public final class EnemyBuilder {
    * @return a new rat or zombie
    */
   public MeleeEnemy build() {
-    return kind.create(bodyBox, new BaseStats(stats), reach, bodyBox, 0, summoned, world);
+    EnemySetup setup = new EnemySetup(bodyBox, new BaseStats(stats), spriteId, 0, summoned, world);
+    return kind.create(setup, reach);
   }
 
   /** The constructor of a real melee enemy: {@code Rat::new} or {@code Zombie::new}. */
   @FunctionalInterface
   private interface Kind {
-    MeleeEnemy create(
-        Aabb bodyBox,
-        StatSource stats,
-        float reach,
-        Aabb hurtbox,
-        int invincibilityTicksAfterHit,
-        boolean summoned,
-        World world);
+    MeleeEnemy create(EnemySetup setup, float reach);
   }
 }
