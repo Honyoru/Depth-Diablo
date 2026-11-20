@@ -33,6 +33,9 @@ public abstract class Player extends Character {
   /** How many times the blocked part of a step is halved: under 1/100 px for a 10 px step. */
   private static final int CONTACT_SEARCH_STEPS = 10;
 
+  /** What the photo holds when no quick move is in progress. */
+  private static final int NO_EVADE = -1;
+
   private boolean moving;
 
   /** Whether the pickup key was held on the previous tick: one pickup per press. */
@@ -362,8 +365,8 @@ public abstract class Player extends Character {
 
   /**
    * Writes the character part, then whether the player walks, so the rewind shows the right
-   * animation even though no tick runs while R is held, then its inventory, so an item picked up
-   * after the photo leaves the bag again.
+   * animation even though no tick runs while R is held, then the quick move in progress and the
+   * cooldowns, then its inventory, so an item picked up after the photo leaves the bag again.
    *
    * @param out the photo being taken
    */
@@ -371,6 +374,13 @@ public abstract class Player extends Character {
   public void writeState(StateBuffer out) {
     super.writeState(out);
     out.writeBoolean(moving);
+    out.writeInt(evade.map(Evade::ordinal).orElse(NO_EVADE));
+    out.writeInt(evadeTicksLeft);
+    out.writeFloat(evadeDirection.x);
+    out.writeFloat(evadeDirection.y);
+    for (int ticks : evadeCooldownTicksLeft) {
+      out.writeInt(ticks);
+    }
     inventory.writeState(out);
   }
 
@@ -384,6 +394,13 @@ public abstract class Player extends Character {
   public void readState(StateBuffer in) {
     super.readState(in);
     moving = in.readBoolean();
+    int ordinal = in.readInt();
+    evade = ordinal == NO_EVADE ? Optional.empty() : Optional.of(Evade.values()[ordinal]);
+    evadeTicksLeft = in.readInt();
+    evadeDirection.set(in.readFloat(), in.readFloat());
+    for (int i = 0; i < evadeCooldownTicksLeft.length; i++) {
+      evadeCooldownTicksLeft[i] = in.readInt();
+    }
     inventory.readState(in);
     rebuild(inventory.getModifiers());
   }

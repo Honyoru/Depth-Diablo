@@ -770,6 +770,45 @@ class PlayerTest {
   }
 
   @Test
+  void should_finish_its_dash_from_where_the_photo_was_taken() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDash();
+    tick(player, 4);
+    StateBuffer photo = new StateBuffer();
+    player.writeState(photo);
+    tick(player, 8);
+
+    photo.startReading();
+    player.readState(photo);
+    assertEquals(Optional.of(Evade.DASH), player.getEvade());
+    input.walk(0f, 1f);
+    tick(player, 8);
+
+    assertEquals(72f, player.position().x, TOLERANCE);
+    assertEquals(0f, player.position().y, TOLERANCE);
+  }
+
+  @Test
+  void should_get_its_dash_cooldown_back_when_its_state_is_read_back() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDash();
+    tick(player, 12);
+    StateBuffer photo = new StateBuffer();
+    player.writeState(photo);
+    input.releaseDash();
+    tick(player, 30);
+
+    photo.startReading();
+    player.readState(photo);
+    input.holdDash();
+    tick(player, 1);
+
+    assertTrue(player.getEvade().isEmpty());
+  }
+
+  @Test
   void should_walk_up_to_a_wall_even_when_its_steps_do_not_fit_the_gap() {
     world.add(new Wall(new Aabb(21f, 0f, 32f, 32f)));
     Player player = aKnight();
