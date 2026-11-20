@@ -19,6 +19,8 @@ class PlayerOrdersTest {
     assertEquals(new Vector2(0f, 0f), orders.moveDirection());
     assertTrue(orders.attackPoint().isEmpty());
     assertFalse(orders.wantsPickUp());
+    assertFalse(orders.wantsDash());
+    assertFalse(orders.wantsDodgeRoll());
   }
 
   @Test
@@ -111,5 +113,27 @@ class PlayerOrdersTest {
     orders.releaseUse();
 
     assertFalse(orders.wantsToUse());
+  }
+
+  @Test
+  void should_want_to_dash_while_held_and_stop_once_released() {
+    PlayerOrders orders = new PlayerOrders();
+    orders.holdDash();
+    assertTrue(orders.wantsDash());
+
+    orders.releaseDash();
+
+    assertFalse(orders.wantsDash());
+  }
+
+  @Test
+  void should_want_to_roll_while_held_and_stop_once_released() {
+    PlayerOrders orders = new PlayerOrders();
+    orders.holdDodgeRoll();
+    assertTrue(orders.wantsDodgeRoll());
+
+    orders.releaseDodgeRoll();
+
+    assertFalse(orders.wantsDodgeRoll());
   }
 }

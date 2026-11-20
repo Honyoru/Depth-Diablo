@@ -44,4 +44,19 @@ public interface PlayerInput {
    * @return true while the key is held
    */
   boolean wantsToUse();
+
+  /**
+   * Tells whether the user holds the dash key (GDD 2.4, Q40). The player dashes once per press.
+   *
+   * @return true while the key is held
+   */
+  boolean wantsDash();
+
+  /**
+   * Tells whether the user holds the dodge roll key (GDD 2.4, Q40). The player rolls once per
+   * press.
+   *
+   * @return true while the key is held
+   */
+  boolean wantsDodgeRoll();
 }

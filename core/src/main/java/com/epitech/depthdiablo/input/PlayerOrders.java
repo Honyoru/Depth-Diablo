@@ -22,6 +22,10 @@ public final class PlayerOrders implements PlayerInput {
 
   private boolean use;
 
+  private boolean dash;
+
+  private boolean dodgeRoll;
+
   @Override
   public Vector2 moveDirection() {
     return new Vector2(direction);
@@ -45,6 +49,16 @@ public final class PlayerOrders implements PlayerInput {
   @Override
   public boolean wantsToUse() {
     return use;
+  }
+
+  @Override
+  public boolean wantsDash() {
+    return dash;
+  }
+
+  @Override
+  public boolean wantsDodgeRoll() {
+    return dodgeRoll;
   }
 
   /**
@@ -100,5 +114,25 @@ public final class PlayerOrders implements PlayerInput {
   /** The user lets go of the use key. */
   public void releaseUse() {
     use = false;
+  }
+
+  /** The user holds the dash key. */
+  public void holdDash() {
+    dash = true;
+  }
+
+  /** The user lets go of the dash key. */
+  public void releaseDash() {
+    dash = false;
+  }
+
+  /** The user holds the dodge roll key. */
+  public void holdDodgeRoll() {
+    dodgeRoll = true;
+  }
+
+  /** The user lets go of the dodge roll key. */
+  public void releaseDodgeRoll() {
+    dodgeRoll = false;
   }
 }
