@@ -692,6 +692,84 @@ class PlayerTest {
   }
 
   @Test
+  void should_roll_seventy_two_pixels_in_twenty_four_ticks() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDodgeRoll();
+
+    tick(player, 24);
+
+    assertEquals(72f, player.position().x, TOLERANCE);
+  }
+
+  @Test
+  void should_take_no_damage_while_rolling() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDodgeRoll();
+    tick(player, 1);
+    int hpBefore = player.getHp();
+
+    player.takeDamage(3);
+
+    assertEquals(hpBefore, player.getHp());
+  }
+
+  @Test
+  void should_be_open_to_hits_again_once_the_roll_is_over() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDodgeRoll();
+    tick(player, 24);
+    assertTrue(player.isInvincible()); // its last rolling tick, still covered
+
+    tick(player, 1);
+
+    assertFalse(player.isInvincible());
+  }
+
+  @Test
+  void should_roll_rather_than_dash_when_both_are_pressed_on_the_same_tick() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDodgeRoll();
+    input.holdDash();
+
+    tick(player, 1);
+
+    assertEquals(Optional.of(Evade.DODGE_ROLL), player.getEvade());
+  }
+
+  @Test
+  void should_dash_right_after_a_roll_as_their_cooldowns_are_apart() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDodgeRoll();
+    tick(player, 24);
+
+    input.holdDash();
+    tick(player, 1);
+
+    assertEquals(Optional.of(Evade.DASH), player.getEvade());
+  }
+
+  @Test
+  void should_dash_when_both_are_pressed_while_the_roll_cools_down() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDodgeRoll();
+    tick(player, 24);
+    input.releaseDodgeRoll();
+    tick(player, 1);
+
+    input.holdDodgeRoll();
+    input.holdDash();
+    tick(player, 1);
+
+    assertEquals(Optional.of(Evade.DASH), player.getEvade());
+  }
+
+  @Test
   void should_walk_up_to_a_wall_even_when_its_steps_do_not_fit_the_gap() {
     world.add(new Wall(new Aabb(21f, 0f, 32f, 32f)));
     Player player = aKnight();

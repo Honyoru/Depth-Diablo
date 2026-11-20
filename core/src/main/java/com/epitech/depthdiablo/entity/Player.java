@@ -56,6 +56,9 @@ public abstract class Player extends Character {
   /** Whether the dash key was held on the previous tick: one dash per press. */
   private boolean dashHeld;
 
+  /** Whether the dodge roll key was held on the previous tick: one roll per press. */
+  private boolean rollHeld;
+
   /**
    * Creates a player that stands still.
    *
@@ -166,16 +169,22 @@ public abstract class Player extends Character {
   }
 
   /**
-   * Starts a dash when its key is pressed, then either moves one tick of the quick move in progress
-   * or walks in the direction of the input and, while the user attacks, starts an attack towards
-   * the point as soon as it can (see {@link #canAttack()}). Then picks up and uses, once per press.
+   * Starts a dodge roll or a dash when its key is pressed, then either moves one tick of the quick
+   * move in progress or walks in the direction of the input and, while the user attacks, starts an
+   * attack towards the point as soon as it can (see {@link #canAttack()}). Then picks up and uses,
+   * once per press.
    */
   @Override
   protected final void think(long tick) {
     boolean dashPressed = input.wantsDash() && !dashHeld;
     dashHeld = input.wantsDash();
+    boolean rollPressed = input.wantsDodgeRoll() && !rollHeld;
+    rollHeld = input.wantsDodgeRoll();
+    if (evade.isEmpty() && rollPressed) {
+      startEvade(Evade.DODGE_ROLL); // the roll wins: it is the safe one
+    }
     if (evade.isEmpty() && dashPressed) {
-      startEvade(Evade.DASH);
+      startEvade(Evade.DASH); // also when the roll is cooling down
     }
     countDownEvadeCooldowns();
     evade.ifPresentOrElse(this::evadeStep, this::walkAndAttack);
