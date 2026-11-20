@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.epitech.depthdiablo.GameConstants;
@@ -32,6 +33,9 @@ public final class Hud implements Disposable {
   private final ImageTextButton coinCounter;
 
   private final ImageButton[] slotButtons = new ImageButton[HudState.SLOT_COUNT];
+
+  /** Each slot: its frame button with the picture of its consumable over it, scaled as one. */
+  private final Stack[] slotStacks = new Stack[HudState.SLOT_COUNT];
 
   /** The picture of the consumable in each slot, drawn over the slot frame. */
   private final Image[] slotIcons = new Image[HudState.SLOT_COUNT];
@@ -82,7 +86,8 @@ public final class Hud implements Disposable {
       Table iconCell = new Table();
       iconCell.add(icon).size(28f, 28f);
       iconCell.setTouchable(Touchable.disabled);
-      quickAccessTable.add(new Stack(slotBtn, iconCell)).size(40f, 40f).pad(4f);
+      slotStacks[i] = new Stack(slotBtn, iconCell);
+      quickAccessTable.add(slotStacks[i]).size(40f, 40f).pad(4f);
     }
 
     this.minimapBox = new Image(skin.get("minimap_bg", TextureRegionDrawable.class));
@@ -123,8 +128,9 @@ public final class Hud implements Disposable {
     coinCounter.setText(String.valueOf(state.getCoins()));
     for (int i = 0; i < HudState.SLOT_COUNT; i++) {
       float scale = (i == state.getActiveSlot()) ? 1.15f : 1.0f;
-      slotButtons[i].setTransform(true);
-      slotButtons[i].setScale(scale);
+      slotStacks[i].setTransform(true);
+      slotStacks[i].setOrigin(Align.center); // grows from its centre, not from its corner
+      slotStacks[i].setScale(scale);
       showHotbarIcon(i);
     }
     stage.act(delta);

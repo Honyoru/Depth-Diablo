@@ -132,6 +132,9 @@ public final class GameScreen extends ScreenAdapter {
   /** The inventory page (key I): the game is paused while it is open. */
   private final InventoryPageState inventoryPage = new InventoryPageState();
 
+  /** Draws the inventory page while it is open. */
+  private final InventoryPage inventoryView;
+
   /** Draws the items on the ground in the sprite view. */
   private final ItemView itemView = new ItemView(itemTextures);
 
@@ -192,6 +195,7 @@ public final class GameScreen extends ScreenAdapter {
     this.app = Objects.requireNonNull(app, "The game application must not be null");
     this.hudState = new HudState();
     this.hud = new Hud(skin, hudState, app.getBatch(), itemTextures);
+    this.inventoryView = new InventoryPage(skin, app.getBatch(), itemTextures);
 
     this.worldCamera = new OrthographicCamera();
     this.worldCamera.setToOrtho(false, GameConstants.VIRTUAL_WIDTH, GameConstants.VIRTUAL_HEIGHT);
@@ -314,6 +318,12 @@ public final class GameScreen extends ScreenAdapter {
 
     // 3. Render live minimap pass in bottom-right viewport
     renderMinimapPass();
+
+    // 4. The inventory page over everything, while it is open
+    if (inventoryPage.isOpen()) {
+      inventoryView.refresh(player);
+      inventoryView.render(delta);
+    }
   }
 
   private void toggleEventLaser() {
@@ -403,12 +413,14 @@ public final class GameScreen extends ScreenAdapter {
   @Override
   public void resize(int width, int height) {
     hud.resize(width, height);
+    inventoryView.resize(width, height);
   }
 
   @Override
   public void dispose() {
     LOG.info("Game screen closed after {} ticks", world.getCurrentTick());
     hud.dispose();
+    inventoryView.dispose();
     renderers.values().forEach(Renderer::dispose);
     eventLaserOverlay.dispose();
     playerView.dispose();

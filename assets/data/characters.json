@@ -8,7 +8,7 @@
         "MAX_HP": 100,
         "ATTACK": 5,
         "DEFENSE": 1,
-        "SPEED": 1200,
+        "SPEED": 250,
         "ATTACK_SPEED": 1,
         "LUCK": 0
       },
