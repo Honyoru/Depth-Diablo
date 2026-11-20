@@ -1,6 +1,5 @@
 package com.epitech.depthdiablo.entity;
 
-import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.HitResult;
@@ -40,7 +39,7 @@ public abstract class Projectile extends Entity {
    * @throws IllegalArgumentException if the aim or the speed is not a finite number, the speed is 0
    *     or less, or the lifetime is 0 or less
    */
-  protected Projectile(Aabb bodyBox, Character owner, float aimDegrees, float speed, int lifetimeTicks, Worl world) {
+  protected Projectile(Aabb bodyBox, Character owner, float aimDegrees, float speed, int lifetimeTicks, World world) {
     super(bodyBox);
     if (!Float.isFinite(aimDegrees)) {
       throw new IllegalArgumentException("The aim must be a finite number, was "+aimDegrees);
@@ -70,7 +69,7 @@ public abstract class Projectile extends Entity {
     moveTo(new Vector2(next.x() ,next.y()));
     hitbox.reshape(shapeOf(getBodyBox(), velocity));
     for (Entity entity : world.getEntities()) {
-      if (entity instantOf Character target && !isRemoved() && hitbox.canHit(target)) {
+      if (entity instanceof Character target && !isRemoved() && hitbox.canHit(target)) {
         strike(target);
       }
     }
@@ -78,6 +77,7 @@ public abstract class Projectile extends Entity {
     if (hitbox.isExpired()) {
       remove();
     }
+  }
     /**
    * What the projectile does once it hurt a character. A hit on an invincible character, such as
    * one rolling, lands nothing and does not call it.
@@ -86,10 +86,25 @@ public abstract class Projectile extends Entity {
    */
   protected abstract void onHit(Character target);
   private void strike(Character target) {
-
+    HitResult result = owner.hit(target);
+    hitbox.recordHit(target, result);
+    if(result.landed()) {
+      world.getEventBus().publish(new DamageDealt(owner, target, result.damage()));
+      if (result.killed()) {
+        world.getEventBus().publish(new EntityDied(target, Optional.of(owner)));
+      }
+      onHit(target);
+    }
   }
+
+  /** The hitbox over the given body box, its length pointing where the projectile flies. */
+  private static Obb shapeOf(Aabb body, Vector2 velocity) {
+    return new Obb(
+      body.x() + body.width()/2,
+      body.y() + body.height()/2,
+      velocity.angleDeg(),
+      body.width(),
+      body.height());
   }
-
-
-
 }
+
