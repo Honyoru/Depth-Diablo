@@ -7,7 +7,7 @@ import com.epitech.depthdiablo.engine.World;
  * character it hurts.
  */
 public final class Arrow extends Projectile {
-   /**
+  /**
    * Creates an arrow. Its length along its flight is the width of its body box.
    *
    * @param bodyBox where it starts; must not be {@code null}
@@ -20,16 +20,17 @@ public final class Arrow extends Projectile {
    * @throws IllegalArgumentException if the aim or the speed is not a finite number, the speed is 0
    *     or less, or the lifetime is 0 or less
    */
-   public Arrow(
-    Aabb bodyBox,
-    Character owner,
-    float aimDegrees,
-    float speed,
-    int lifetimeTicks,
-    World world) {
-      super(bodyBox, owner, aimDegrees, speed, lifetimeTicks, world);
-    }
-    /**
+  public Arrow(
+      Aabb bodyBox,
+      Character owner,
+      float aimDegrees,
+      float speed,
+      int lifetimeTicks,
+      World world) {
+    super(bodyBox, owner, aimDegrees, speed, lifetimeTicks, world);
+  }
+
+  /**
    * Stops the arrow: it does not go through the character it hurt.
    *
    * @param target the character it just hurt
@@ -38,5 +39,4 @@ public final class Arrow extends Projectile {
   protected void onHit(Character target) {
     remove();
   }
-
 }
