@@ -126,8 +126,11 @@ public final class GameScreen extends ScreenAdapter {
   /** Puts items on the ground: monster loot, room items, what the player leaves behind. */
   private final ItemDropper dropper = new ItemDropper(items, world);
 
+  /** The item pictures, shared by the items on the ground, the HUD and the inventory page. */
+  private final ItemTextures itemTextures = new ItemTextures();
+
   /** Draws the items on the ground in the sprite view. */
-  private final ItemView itemView = new ItemView();
+  private final ItemView itemView = new ItemView(itemTextures);
 
   private final SpriteBatch batch;
 
@@ -185,7 +188,7 @@ public final class GameScreen extends ScreenAdapter {
 
     this.app = Objects.requireNonNull(app, "The game application must not be null");
     this.hudState = new HudState();
-    this.hud = new Hud(skin, hudState, app.getBatch());
+    this.hud = new Hud(skin, hudState, app.getBatch(), itemTextures);
 
     this.worldCamera = new OrthographicCamera();
     this.worldCamera.setToOrtho(false, GameConstants.VIRTUAL_WIDTH, GameConstants.VIRTUAL_HEIGHT);
@@ -270,6 +273,7 @@ public final class GameScreen extends ScreenAdapter {
       LOG.info("Hot reload requested");
     }
     input.readInto(orders, worldCamera);
+    orders.selectHotbarSlot(hudState.getActiveSlot());
     playerView.lookTowards(orders.moveDirection().x);
 
     runLogic(delta);
@@ -282,6 +286,7 @@ public final class GameScreen extends ScreenAdapter {
     }
 
     hudState.syncFromCharacter(player);
+    hudState.syncHotbar(player.getInventory());
 
     Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -387,7 +392,7 @@ public final class GameScreen extends ScreenAdapter {
     eventLaserOverlay.dispose();
     playerView.dispose();
     enemyView.dispose();
-    itemView.dispose();
+    itemTextures.dispose();
     mapRenderer.dispose();
     tiledMap.dispose();
   }

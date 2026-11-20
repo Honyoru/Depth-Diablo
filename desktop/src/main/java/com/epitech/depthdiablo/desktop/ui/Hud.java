@@ -5,11 +5,13 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -31,6 +33,14 @@ public final class Hud implements Disposable {
 
   private final ImageButton[] slotButtons = new ImageButton[HudState.SLOT_COUNT];
 
+  /** The picture of the consumable in each slot, drawn over the slot frame. */
+  private final Image[] slotIcons = new Image[HudState.SLOT_COUNT];
+
+  /** The sprite id each icon shows, to change its picture only when it changes. */
+  private final String[] shownSpriteIds = new String[HudState.SLOT_COUNT];
+
+  private final ItemTextures textures;
+
   private final Image minimapBox;
 
   /**
@@ -39,10 +49,12 @@ public final class Hud implements Disposable {
    * @param skin the loaded UI skin; must not be {@code null}
    * @param state the HUD state model; must not be {@code null}
    * @param batch the shared sprite batch; must not be {@code null}
+   * @param textures the item pictures; the game screen owns and disposes them
    */
-  public Hud(Skin skin, HudState state, Batch batch) {
+  public Hud(Skin skin, HudState state, Batch batch, ItemTextures textures) {
     Objects.requireNonNull(skin, "The UI skin must not be null");
     this.state = Objects.requireNonNull(state, "The HUD state must not be null");
+    this.textures = Objects.requireNonNull(textures, "textures is null");
     this.stage =
         new Stage(
             new FitViewport(GameConstants.VIRTUAL_WIDTH, GameConstants.VIRTUAL_HEIGHT),
@@ -64,7 +76,13 @@ public final class Hud implements Disposable {
             }
           });
       slotButtons[i] = slotBtn;
-      quickAccessTable.add(slotBtn).size(40f, 40f).pad(4f);
+      Image icon = new Image();
+      icon.setTouchable(Touchable.disabled);
+      slotIcons[i] = icon;
+      Table iconCell = new Table();
+      iconCell.add(icon).size(28f, 28f);
+      iconCell.setTouchable(Touchable.disabled);
+      quickAccessTable.add(new Stack(slotBtn, iconCell)).size(40f, 40f).pad(4f);
     }
 
     this.minimapBox = new Image(skin.get("minimap_bg", TextureRegionDrawable.class));
@@ -107,9 +125,19 @@ public final class Hud implements Disposable {
       float scale = (i == state.getActiveSlot()) ? 1.15f : 1.0f;
       slotButtons[i].setTransform(true);
       slotButtons[i].setScale(scale);
+      showHotbarIcon(i);
     }
     stage.act(delta);
     stage.draw();
+  }
+
+  /** Changes the picture of a slot icon when its consumable changed. */
+  private void showHotbarIcon(int slot) {
+    String spriteId = state.getHotbarSpriteId(slot);
+    if (!spriteId.equals(shownSpriteIds[slot])) {
+      slotIcons[slot].setDrawable(new TextureRegionDrawable(textures.get(spriteId)));
+      shownSpriteIds[slot] = spriteId;
+    }
   }
 
   /**
