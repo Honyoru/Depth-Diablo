@@ -97,7 +97,7 @@ public final class PlayerOrders implements PlayerInput {
   }
 
   /**
-   * The user selects a hotbar slot (keys 1, 2, 3).
+   * The user selects a hotbar slot (keys 1, 2, 3)
    *
    * @param slot the slot, from 0 to {@link Inventory#HOTBAR_SIZE} - 1
    * @throws IndexOutOfBoundsException if {@code slot} is outside the hotbar
