@@ -129,6 +129,9 @@ public final class GameScreen extends ScreenAdapter {
   /** The item pictures, shared by the items on the ground, the HUD and the inventory page. */
   private final ItemTextures itemTextures = new ItemTextures();
 
+  /** The inventory page (key I): the game is paused while it is open. */
+  private final InventoryPageState inventoryPage = new InventoryPageState();
+
   /** Draws the items on the ground in the sprite view. */
   private final ItemView itemView = new ItemView(itemTextures);
 
@@ -272,11 +275,17 @@ public final class GameScreen extends ScreenAdapter {
       hotReload.request();
       LOG.info("Hot reload requested");
     }
-    input.readInto(orders, worldCamera);
-    orders.selectHotbarSlot(hudState.getActiveSlot());
-    playerView.lookTowards(orders.moveDirection().x);
-
-    runLogic(delta);
+    if (Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+      inventoryPage.toggle();
+    }
+    if (inventoryPage.isOpen()) {
+      holdStill();
+    } else {
+      input.readInto(orders, worldCamera);
+      orders.selectHotbarSlot(hudState.getActiveSlot());
+      playerView.lookTowards(orders.moveDirection().x);
+      runLogic(delta); // the world only ticks while the page is closed
+    }
 
     // HP at 0 ends the run (GDD 1.1 step 5): show the game over menu.
     if (player.isDead()) {
@@ -291,12 +300,13 @@ public final class GameScreen extends ScreenAdapter {
     Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-    // 1. The world, drawn by the renderer of the current F1 view
+    // 1. The world, drawn by the renderer of the current F1 view; frozen animations while paused
+    float worldDelta = inventoryPage.isOpen() ? 0f : delta;
     followPlayer();
     velocity.set(player.position()).sub(previousPosition);
     renderers
         .get(viewSwitcher.getMode())
-        .render(new Frame(worldCamera, world, player, drawPosition, velocity, delta));
+        .render(new Frame(worldCamera, world, player, drawPosition, velocity, worldDelta));
     eventLaserOverlay.render(worldCamera);
 
     // 2. Render HUD overlay
@@ -323,6 +333,17 @@ public final class GameScreen extends ScreenAdapter {
     } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
       hudState.selectSlot(2);
     }
+  }
+
+  /**
+   * Gives the player no order while the inventory page is open: it stands still and does not
+   * attack, and nothing held before the pause is still held when it ends.
+   */
+  private void holdStill() {
+    orders.walk(0f, 0f);
+    orders.releaseAttack();
+    orders.releasePickUp();
+    orders.releaseUse();
   }
 
   private void runLogic(float delta) {
