@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.entity;
 
+import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.HitResult;
@@ -42,9 +43,53 @@ public abstract class Projectile extends Entity {
   protected Projectile(Aabb bodyBox, Character owner, float aimDegrees, float speed, int lifetimeTicks, Worl world) {
     super(bodyBox);
     if (!Float.isFinite(aimDegrees)) {
-      throw IllegalArgumentException()
+      throw new IllegalArgumentException("The aim must be a finite number, was "+aimDegrees);
     }
+    if (!Float.isFinite(speed) || speed<=0) {
+       throw new IllegalArgumentException("The speed must be above 0, was "+speed);
+    }
+    this.owner = Objects.requireNonNull(owner, "The owner of a projectile must not be null");
+    this.world = Objects.requireNonNull(world, "The world of a projectile must not be null");
+    this.velocity= new Vector2(speed/GameConstants.TICKS_PER_SECOND,0f).setAngleDeg(aimDegrees);
+    this.hitbox = new Hitbox(shapeOf(bodyBox,velocity), owner,owner.getFaction(),lifetimeTicks);
   }
+
+  /**
+   * Flies one tick: moves by its velocity, then hurts every character its hitbox touches. A wall in
+   * the way removes it, and so does the end of its lifetime.
+   *
+   * @param tick the number of the current logic tick
+   */
+  @Override
+  protected final void onUpdate(long tick) {
+    Aabb next = getBodyBox().translated(velocity.x, velocity.y);
+    if (!world.isFree(next,this)) {
+      remove();
+      return;
+    }
+    moveTo(new Vector2(next.x() ,next.y()));
+    hitbox.reshape(shapeOf(getBodyBox(), velocity));
+    for (Entity entity : world.getEntities()) {
+      if (entity instantOf Character target && !isRemoved() && hitbox.canHit(target)) {
+        strike(target);
+      }
+    }
+    hitbox.update(tick);
+    if (hitbox.isExpired()) {
+      remove();
+    }
+    /**
+   * What the projectile does once it hurt a character. A hit on an invincible character, such as
+   * one rolling, lands nothing and does not call it.
+   *
+   * @param target the character it just hurt
+   */
+  protected abstract void onHit(Character target);
+  private void strike(Character target) {
+
+  }
+  }
+
 
 
 }
