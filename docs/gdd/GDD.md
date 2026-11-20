@@ -315,7 +315,7 @@ Every rule below becomes a unit test, written first (Q121), in the rules/ test p
 - **Time step:** fixed 60 logic updates per second, separate from rendering (Q42); needed by rewind and determinism.
 - **Movement:** 8 directions on the keyboard, or the gamepad stick (Q38, Q43). Keys can be remapped (Q43).
 - **Aim:** mouse or arrow keys, switched in Options (decided, 4 Nov; Q39); right stick on the gamepad.
-- **Dash:** fast, straight-line move; the player can still be hit. **Dodge roll:** normal speed, invincible. Different effects and distances; durations and cooldowns are placeholders (Q40).
+- **Dash:** fast, straight-line move; the player can still be hit. **Dodge roll:** a bit faster than walking, invincible. Values (20 Nov, tuned during balancing): dash 0.2 s at 3x SPEED, cooldown 0.5 s; roll 0.4 s at 1.5x SPEED, cooldown 0.8 s; each cooldown starts once the move is over (Q40, DECISIONS §4).
 - **Collision:** axis-aligned bounding boxes (AABB) (Q41). Decided (Ange, 4 Nov): hurtbox and hitbox are separate. The **hurtbox** is where a Character can be hit; the **hitbox** is the area of an attack (melee swing, projectile, contact attack) that deals damage. Damage happens only when an attacker's hitbox overlaps a target's hurtbox. Walls block a separate body box at the feet (proposal). Proposal: our own AABB code in core rather than Box2D, so it stays simple and testable.
 - **Knockback:** a push on every hit, for feedback (Q29). Open: does it depend on weight?
 - **Projectiles:** move every tick; their hitbox hits the first Damageable hurtbox it touches (proposal).
@@ -423,8 +423,8 @@ Default controls. Decided (Ange, 4 Nov): standard keyboard + mouse, and the same
 | --- | --- | --- | --- |
 | Move (8 directions) | WASD | left stick | proposal (Q38) |
 | Aim and attack | mouse + left click, or arrow keys (Options) | right stick | decided: aim mode switched in Options (4 Nov) |
-| Dash | Shift | RB | proposal |
-| Dodge roll | Space | A | proposal |
+| Dash | Shift | RB | decided (20 Nov): once per press, in the walking direction |
+| Dodge roll | Space | A | decided (20 Nov): once per press, in the walking direction |
 | Select consumable 1 / 2 / 3 | 1 / 2 / 3 | d-pad | decided (20 Nov) |
 | Use the selected consumable | A (AZERTY) / Q (QWERTY) | B | decided (20 Nov); keys are positions on the keyboard |
 | Interact (chest, door, shop) | E | X | proposal; E also picks up items, to decide when interactions exist |
