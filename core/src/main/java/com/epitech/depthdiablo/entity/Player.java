@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.entity;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.engine.ItemDropped;
 import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
@@ -12,6 +13,7 @@ import com.epitech.depthdiablo.item.Inventory;
 import com.epitech.depthdiablo.item.Item;
 import com.epitech.depthdiablo.item.PassiveItem;
 import com.epitech.depthdiablo.item.Weapon;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -25,7 +27,13 @@ public abstract class Player extends Character {
 
   private final Inventory inventory;
 
+  /** How far an item on the ground can be from the player's centre to be picked up, in pixels. */
+  public static final float PICK_UP_RANGE = 32f;
+
   private boolean moving;
+
+  /** Whether the pickup key was held on the previous tick: one pickup per press. */
+  private boolean pickUpHeld;
 
   /**
    * Creates a player that stands still.
@@ -144,6 +152,46 @@ public abstract class Player extends Character {
   protected final void think(long tick) {
     walk();
     input.attackPoint().filter(point -> canAttack()).ifPresent(this::attackTowards);
+    boolean pressed = input.wantsPickUp() && !pickUpHeld;
+    pickUpHeld = input.wantsPickUp();
+    if (pressed) {
+      getPickUpTarget().ifPresent(this::take);
+    }
+  }
+
+  /**
+   * Returns the item on the ground the player would pick up now: the nearest one whose centre is
+   * within {@link #PICK_UP_RANGE} of the player's centre, not taken yet (GDD 1.4).
+   *
+   * @return that item on the ground, or nothing if none is in range
+   */
+  public final Optional<ItemDrop> getPickUpTarget() {
+    Vector2 centre = centre();
+    return world().getEntities().stream()
+        .filter(ItemDrop.class::isInstance)
+        .map(ItemDrop.class::cast)
+        .filter(drop -> !drop.isRemoved())
+        .filter(drop -> distanceTo(drop, centre) <= PICK_UP_RANGE)
+        .min(Comparator.comparingDouble(drop -> distanceTo(drop, centre)));
+  }
+
+  /** Takes an item off the ground; what does not fit falls back where the player stands. */
+  private void take(ItemDrop drop) {
+    drop.remove();
+    pickUp(drop.getItem())
+        .ifPresent(left -> world().getEventBus().publish(new ItemDropped(this, left, centre())));
+  }
+
+  /** Returns the centre of the player's body, in pixels. */
+  private Vector2 centre() {
+    Aabb body = getBodyBox();
+    return new Vector2(body.x() + body.width() / 2f, body.y() + body.height() / 2f);
+  }
+
+  /** Returns how far the centre of an item on the ground is from a point, in pixels. */
+  private static float distanceTo(ItemDrop drop, Vector2 point) {
+    Aabb box = drop.getBodyBox();
+    return point.dst(box.x() + box.width() / 2f, box.y() + box.height() / 2f);
   }
 
   /**

@@ -12,12 +12,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.combat.FireTouch;
+import com.epitech.depthdiablo.engine.ItemDropped;
 import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerOrders;
 import com.epitech.depthdiablo.item.Armor;
 import com.epitech.depthdiablo.item.FireRing;
 import com.epitech.depthdiablo.item.Inventory;
+import com.epitech.depthdiablo.item.Item;
 import com.epitech.depthdiablo.item.LeatherArmor;
 import com.epitech.depthdiablo.item.Potion;
 import com.epitech.depthdiablo.item.Sword;
@@ -360,6 +362,123 @@ class PlayerTest {
     Player player = aKnight();
 
     assertThrows(NullPointerException.class, () -> player.pickUp(null));
+  }
+
+  @Test
+  void should_target_an_item_in_range() {
+    Player player = aKnight();
+    ItemDrop drop = aDropAt(30, 8); // 22 px from its centre
+
+    assertEquals(Optional.of(drop), player.getPickUpTarget());
+  }
+
+  @Test
+  void should_target_nothing_when_the_items_are_out_of_range() {
+    Player player = aKnight();
+    aDropAt(60, 8); // 52 px away
+
+    assertEquals(Optional.empty(), player.getPickUpTarget());
+  }
+
+  @Test
+  void should_target_the_nearest_item_in_range() {
+    Player player = aKnight();
+    aDropAt(30, 8);
+    ItemDrop nearest = aDropAt(12, 8);
+
+    assertEquals(Optional.of(nearest), player.getPickUpTarget());
+  }
+
+  @Test
+  void should_not_target_an_item_already_taken() {
+    Player player = aKnight();
+    aDropAt(12, 8).remove();
+
+    assertEquals(Optional.empty(), player.getPickUpTarget());
+  }
+
+  @Test
+  void should_pick_up_the_targeted_item_when_the_pickup_key_is_pressed() {
+    Player player = aKnight();
+    ItemDrop drop = aDropAt(12, 8);
+    input.holdPickUp();
+
+    tick(player, 1);
+
+    assertSame(drop.getItem(), player.getInventory().hotbarSlot(0));
+    assertTrue(drop.isRemoved());
+  }
+
+  @Test
+  void should_pick_up_only_one_item_per_press() {
+    Player player = aKnight();
+    aDropAt(12, 8);
+    ItemDrop second = aDropAt(14, 8);
+    input.holdPickUp();
+
+    tick(player, 3); // held for 3 ticks
+
+    assertFalse(second.isRemoved());
+  }
+
+  @Test
+  void should_pick_up_again_once_the_key_is_pressed_again() {
+    Player player = aKnight();
+    aDropAt(12, 8);
+    ItemDrop second = aDropAt(14, 8);
+    input.holdPickUp();
+    player.update(1);
+    input.releasePickUp();
+    player.update(2);
+    input.holdPickUp();
+
+    player.update(3);
+
+    assertTrue(second.isRemoved());
+  }
+
+  @Test
+  void should_drop_its_old_weapon_where_it_stands_when_it_picks_up_a_weapon() {
+    Player player = aKnight();
+    Weapon old = player.getInventory().getWeapon();
+    world.getEventBus().subscribe(ItemDropped.class, new ItemDropper(Items.factory(), world));
+    world.add(new ItemDrop(Items.sword(), new Vector2(12, 8)));
+    input.holdPickUp();
+
+    tick(player, 1);
+    world.getEventBus().flush();
+
+    assertTrue(liesOnTheGround(old));
+  }
+
+  @Test
+  void should_leave_the_item_on_the_ground_when_its_bag_is_full() {
+    Player player = aKnight();
+    for (int i = 0; i < Inventory.HOTBAR_SIZE; i++) {
+      player.pickUp(Items.potion());
+    }
+    Potion extra = Items.potion();
+    world.getEventBus().subscribe(ItemDropped.class, new ItemDropper(Items.factory(), world));
+    world.add(new ItemDrop(extra, new Vector2(12, 8)));
+    input.holdPickUp();
+
+    tick(player, 1);
+    world.getEventBus().flush();
+
+    assertTrue(liesOnTheGround(extra));
+  }
+
+  /** Puts a potion on the ground at the given centre. */
+  private ItemDrop aDropAt(float x, float y) {
+    ItemDrop drop = new ItemDrop(Items.potion(), new Vector2(x, y));
+    world.add(drop);
+    return drop;
+  }
+
+  /** Tells whether an item lies on the ground, not taken. */
+  private boolean liesOnTheGround(Item item) {
+    return world.getEntities().stream()
+        .anyMatch(e -> e instanceof ItemDrop drop && drop.getItem() == item && !drop.isRemoved());
   }
 
   private Knight aKnight() {

@@ -1,6 +1,7 @@
 package com.epitech.depthdiablo.input;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
@@ -16,6 +17,7 @@ class PlayerOrdersTest {
 
     assertEquals(new Vector2(0f, 0f), orders.moveDirection());
     assertTrue(orders.attackPoint().isEmpty());
+    assertFalse(orders.wantsPickUp());
   }
 
   @Test
@@ -57,5 +59,24 @@ class PlayerOrdersTest {
 
     assertEquals(new Vector2(1f, 0f), orders.moveDirection());
     assertEquals(Optional.of(new Vector2(40f, 12f)), orders.attackPoint());
+  }
+
+  @Test
+  void should_want_to_pick_up_while_held() {
+    PlayerOrders orders = new PlayerOrders();
+
+    orders.holdPickUp();
+
+    assertTrue(orders.wantsPickUp());
+  }
+
+  @Test
+  void should_stop_wanting_to_pick_up_once_released() {
+    PlayerOrders orders = new PlayerOrders();
+    orders.holdPickUp();
+
+    orders.releasePickUp();
+
+    assertFalse(orders.wantsPickUp());
   }
 }

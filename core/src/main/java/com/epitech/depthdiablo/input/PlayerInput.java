@@ -23,4 +23,11 @@ public interface PlayerInput {
    * @return a new vector in world pixels, safe to change; empty while the user does not attack
    */
   Optional<Vector2> attackPoint();
+
+  /**
+   * Tells whether the user holds the pickup key (GDD 1.4). The player picks up once per press.
+   *
+   * @return true while the key is held
+   */
+  boolean wantsPickUp();
 }

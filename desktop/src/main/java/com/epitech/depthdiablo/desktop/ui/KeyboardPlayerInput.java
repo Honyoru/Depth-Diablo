@@ -29,6 +29,11 @@ final class KeyboardPlayerInput {
     } else {
       orders.releaseAttack();
     }
+    if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+      orders.holdPickUp();
+    } else {
+      orders.releasePickUp();
+    }
   }
 
   private static float axis(int negative, int positive) {

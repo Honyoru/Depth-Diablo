@@ -14,6 +14,8 @@ public final class PlayerOrders implements PlayerInput {
 
   private Optional<Vector2> attackPoint = Optional.empty();
 
+  private boolean pickUp;
+
   @Override
   public Vector2 moveDirection() {
     return new Vector2(direction);
@@ -22,6 +24,11 @@ public final class PlayerOrders implements PlayerInput {
   @Override
   public Optional<Vector2> attackPoint() {
     return attackPoint.map(Vector2::new);
+  }
+
+  @Override
+  public boolean wantsPickUp() {
+    return pickUp;
   }
 
   /**
@@ -47,5 +54,15 @@ public final class PlayerOrders implements PlayerInput {
   /** Stops attacking. */
   public void releaseAttack() {
     attackPoint = Optional.empty();
+  }
+
+  /** The user holds the pickup key. */
+  public void holdPickUp() {
+    pickUp = true;
+  }
+
+  /** The user lets go of the pickup key. */
+  public void releasePickUp() {
+    pickUp = false;
   }
 }
