@@ -31,16 +31,13 @@ public abstract class Enemy extends Character {
   /**
    * Creates an enemy. It starts {@link EnemyState#IDLE}, with no target.
    *
-   * @param bodyBox the box the enemy occupies in the world; must not be {@code null}
-   * @param stats where its stats come from (GDD 1.6); must not be {@code null}
+   * @param setup what every enemy is built from: its body (also its hurtbox), stats, invincibility
+   *     ticks after a hit, summoned flag (a summoned enemy never drops loot, Q16), sprite and
+   *     world; must not be {@code null}
    * @param baseAttack its natural attack; must not be {@code null}
-   * @param hurtbox the enemy's hurtbox; must not be {@code null}
-   * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
-   * @param summoned true if a summoner spawned it; a summoned enemy never drops loot (Q16)
-   * @param world the world it lives in: its walls stop it, its event bus hears its hits
-   * @throws NullPointerException if {@code bodyBox}, {@code stats}, {@code baseAttack}, {@code
-   *     hurtbox} or {@code world} is {@code null}
-   * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} is negative
+   * @throws NullPointerException if {@code setup}, a value of it or {@code baseAttack} is {@code
+   *     null}
+   * @throws IllegalArgumentException if the invincibility ticks are negative
    */
   protected Enemy(EnemySetup setup, Attack baseAttack) {
     super(
