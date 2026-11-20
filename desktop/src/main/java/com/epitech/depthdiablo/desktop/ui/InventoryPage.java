@@ -306,6 +306,7 @@ final class InventoryPage implements Disposable {
    * @param delta frame time in seconds
    */
   void render(float delta) {
+    stage.getViewport().apply(); // its 16:9 area, the one its clicks are read in
     stage.act(delta);
     stage.draw();
   }

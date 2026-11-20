@@ -315,7 +315,10 @@ public final class GameScreen extends ScreenAdapter {
     Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-    // 1. The world, drawn by the renderer of the current F1 view; frozen animations while paused
+    // 1. The world, drawn by the renderer of the current F1 view, over the whole window (the HUD
+    // and
+    // the page apply their own 16:9 viewport); frozen animations while paused
+    HdpiUtils.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     float worldDelta = inventoryPage.isOpen() ? 0f : delta;
     followPlayer();
     velocity.set(player.position()).sub(previousPosition);

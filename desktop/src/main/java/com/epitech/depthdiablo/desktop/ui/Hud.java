@@ -133,6 +133,7 @@ public final class Hud implements Disposable {
       slotStacks[i].setScale(scale);
       showHotbarIcon(i);
     }
+    stage.getViewport().apply(); // its 16:9 area, the one its clicks are read in
     stage.act(delta);
     stage.draw();
   }
