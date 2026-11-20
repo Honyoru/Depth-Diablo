@@ -30,6 +30,9 @@ public abstract class Player extends Character {
   /** How far an item on the ground can be from the player's centre to be picked up, in pixels. */
   public static final float PICK_UP_RANGE = 32f;
 
+  /** How many times the blocked part of a step is halved: under 1/100 px for a 10 px step. */
+  private static final int CONTACT_SEARCH_STEPS = 10;
+
   private boolean moving;
 
   /** Whether the pickup key was held on the previous tick: one pickup per press. */
@@ -37,6 +40,21 @@ public abstract class Player extends Character {
 
   /** Whether the use key was held on the previous tick: one consumable per press. */
   private boolean useHeld;
+
+  /** The quick move in progress, if any (Q40). */
+  private Optional<Evade> evade = Optional.empty();
+
+  /** How many ticks the quick move in progress still lasts. */
+  private int evadeTicksLeft;
+
+  /** The direction of the quick move in progress, fixed when it starts. */
+  private final Vector2 evadeDirection = new Vector2();
+
+  /** For each quick move, by its ordinal: the ticks left before it can start again. */
+  private final int[] evadeCooldownTicksLeft = new int[Evade.values().length];
+
+  /** Whether the dash key was held on the previous tick: one dash per press. */
+  private boolean dashHeld;
 
   /**
    * Creates a player that stands still.
@@ -148,13 +166,19 @@ public abstract class Player extends Character {
   }
 
   /**
-   * Walks one tick in the direction of the input, then, while the user attacks, starts an attack
-   * towards the point as soon as it can (see {@link #canAttack()}).
+   * Starts a dash when its key is pressed, then either moves one tick of the quick move in progress
+   * or walks in the direction of the input and, while the user attacks, starts an attack towards
+   * the point as soon as it can (see {@link #canAttack()}). Then picks up and uses, once per press.
    */
   @Override
   protected final void think(long tick) {
-    walk();
-    input.attackPoint().filter(point -> canAttack()).ifPresent(this::attackTowards);
+    boolean dashPressed = input.wantsDash() && !dashHeld;
+    dashHeld = input.wantsDash();
+    if (evade.isEmpty() && dashPressed) {
+      startEvade(Evade.DASH);
+    }
+    countDownEvadeCooldowns();
+    evade.ifPresentOrElse(this::evadeStep, this::walkAndAttack);
     boolean pressed = input.wantsPickUp() && !pickUpHeld;
     pickUpHeld = input.wantsPickUp();
     if (pressed) {
@@ -165,6 +189,54 @@ public abstract class Player extends Character {
     if (usePressed) {
       inventory.use(input.hotbarSlot(), this);
     }
+  }
+
+  /**
+   * Returns the quick move the player is doing; the renderer can pick its animation from it.
+   *
+   * @return the dash or the dodge roll, or nothing while it walks
+   */
+  public Optional<Evade> getEvade() {
+    return evade;
+  }
+
+  /** Starts a quick move in the walking direction, if it moves and the move is not cooling down. */
+  private void startEvade(Evade next) {
+    Vector2 direction = input.moveDirection();
+    if (isDead() || direction.isZero() || evadeCooldownTicksLeft[next.ordinal()] > 0) {
+      return;
+    }
+    evadeDirection.set(direction).nor();
+    evadeTicksLeft = next.getTicks();
+    next.onStart(this, evadeTicksLeft);
+    evade = Optional.of(next);
+  }
+
+  /** One tick of the quick move: a step in its fixed direction; its cooldown starts at the end. */
+  private void evadeStep(Evade current) {
+    float speed = getSpeed() * current.getSpeedFactor() / GameConstants.TICKS_PER_SECOND;
+    step(new Vector2(evadeDirection).scl(speed));
+    moving = true;
+    evadeTicksLeft--;
+    if (evadeTicksLeft == 0) {
+      evade = Optional.empty();
+      evadeCooldownTicksLeft[current.ordinal()] = current.getCooldownTicks();
+    }
+  }
+
+  /** Counts down the cooldown of each quick move. */
+  private void countDownEvadeCooldowns() {
+    for (int i = 0; i < evadeCooldownTicksLeft.length; i++) {
+      if (evadeCooldownTicksLeft[i] > 0) {
+        evadeCooldownTicksLeft[i]--;
+      }
+    }
+  }
+
+  /** The turn of a player not in a quick move: it walks, and attacks while the user asks to. */
+  private void walkAndAttack() {
+    walk();
+    input.attackPoint().filter(point -> canAttack()).ifPresent(this::attackTowards);
   }
 
   /**
@@ -215,18 +287,43 @@ public abstract class Player extends Character {
     if (!moving) {
       return;
     }
-    Vector2 step = direction.scl(getSpeed() / GameConstants.TICKS_PER_SECOND);
-    Vector2 position = position();
+    step(direction.scl(getSpeed() / GameConstants.TICKS_PER_SECOND));
+  }
 
-    Vector2 alongX = new Vector2(position).add(step.x, 0f);
-    if (canStandAt(alongX)) {
-      position.set(alongX);
-    }
-    Vector2 alongY = new Vector2(position).add(0f, step.y);
-    if (canStandAt(alongY)) {
-      position.set(alongY);
-    }
+  /**
+   * Moves by a step, one axis at a time. A wall stops the step on its axis only, so the player
+   * slides along it, and it stops against the wall rather than short of it.
+   */
+  private void step(Vector2 step) {
+    Vector2 position = position();
+    Vector2 alongX = new Vector2(step.x, 0f);
+    position.mulAdd(alongX, reachablePart(position, alongX));
+    Vector2 alongY = new Vector2(0f, step.y);
+    position.mulAdd(alongY, reachablePart(position, alongY));
     moveTo(position);
+  }
+
+  /**
+   * Returns how much of a move the body can make from a corner: all of it when nothing is in the
+   * way, else the longest part that still fits, found by halving the part that does not.
+   *
+   * @return from 0 (blocked at once) to 1 (the whole move)
+   */
+  private float reachablePart(Vector2 corner, Vector2 move) {
+    if (canStandAt(new Vector2(corner).add(move))) {
+      return 1f;
+    }
+    float fits = 0f;
+    float blocked = 1f;
+    for (int i = 0; i < CONTACT_SEARCH_STEPS; i++) {
+      float middle = (fits + blocked) / 2f;
+      if (canStandAt(new Vector2(corner).mulAdd(move, middle))) {
+        fits = middle;
+      } else {
+        blocked = middle;
+      }
+    }
+    return fits;
   }
 
   /** Attacks with the attack of the build, aimed from the player's centre to the point. */

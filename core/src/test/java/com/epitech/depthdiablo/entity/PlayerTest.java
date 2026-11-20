@@ -589,6 +589,120 @@ class PlayerTest {
   }
 
   @Test
+  void should_dash_seventy_two_pixels_in_twelve_ticks() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDash();
+
+    tick(player, 12);
+
+    assertEquals(72f, player.position().x, TOLERANCE);
+    assertTrue(player.getEvade().isEmpty());
+  }
+
+  @Test
+  void should_not_dash_when_standing_still() {
+    Player player = aKnight();
+    input.holdDash();
+
+    tick(player, 1);
+
+    assertTrue(player.getEvade().isEmpty());
+    assertEquals(0f, player.position().x, TOLERANCE);
+  }
+
+  @Test
+  void should_keep_its_dash_direction_when_steered_elsewhere() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDash();
+    tick(player, 1);
+
+    input.walk(0f, 1f);
+    tick(player, 11);
+
+    assertEquals(72f, player.position().x, TOLERANCE);
+    assertEquals(0f, player.position().y, TOLERANCE);
+  }
+
+  @Test
+  void should_dash_once_per_press_when_the_key_is_held() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDash();
+
+    tick(player, 12 + 30 + 12);
+
+    assertEquals(72f + 42 * 2f, player.position().x, TOLERANCE);
+  }
+
+  @Test
+  void should_not_dash_again_before_the_cooldown_is_over() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDash();
+    tick(player, 12);
+    input.releaseDash();
+    tick(player, 29);
+
+    input.holdDash();
+    tick(player, 1);
+
+    assertTrue(player.getEvade().isEmpty());
+  }
+
+  @Test
+  void should_dash_again_once_the_cooldown_is_over() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDash();
+    tick(player, 12);
+    input.releaseDash();
+    tick(player, 30);
+
+    input.holdDash();
+    tick(player, 12);
+
+    assertEquals(72f + 30 * 2f + 72f, player.position().x, TOLERANCE);
+  }
+
+  @Test
+  void should_still_be_hit_while_dashing() {
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDash();
+    tick(player, 1);
+    int hpBefore = player.getHp();
+
+    player.takeDamage(3);
+
+    assertTrue(player.getHp() < hpBefore);
+  }
+
+  @Test
+  void should_stop_against_a_wall_while_dashing() {
+    world.add(new Wall(new Aabb(20f, 0f, 32f, 32f)));
+    Player player = aKnight();
+    input.walk(1f, 0f);
+    input.holdDash();
+
+    tick(player, 12);
+
+    assertEquals(4f, player.position().x, TOLERANCE);
+  }
+
+  @Test
+  void should_walk_up_to_a_wall_even_when_its_steps_do_not_fit_the_gap() {
+    world.add(new Wall(new Aabb(21f, 0f, 32f, 32f)));
+    Player player = aKnight();
+    input.walk(1f, 0f);
+
+    tick(player, ONE_SECOND);
+
+    assertEquals(5f, player.position().x, TOLERANCE);
+  }
+
+  @Test
   void should_walk_away_from_a_wall_it_touches() {
     world.add(new Wall(new Aabb(16f, 0f, 32f, 32f)));
     Player player = aKnight();
