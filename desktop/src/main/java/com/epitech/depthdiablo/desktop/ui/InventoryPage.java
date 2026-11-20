@@ -110,7 +110,7 @@ final class InventoryPage implements Disposable {
     this.itemName = label("", skin, TITLE_SCALE);
     this.itemEffects = label("", skin, TEXT_SCALE);
     this.switchHint = label("Click a passive slot", skin, TEXT_SCALE);
-    this.dropButton = button("Drop", skin, () -> state.getSelected().ifPresent(onDrop));
+    this.dropButton = button("Drop", skin, () -> state.getSelected().ifPresent(this.onDrop));
     this.switchButton = button("Switch", skin, state::toggleSwitch);
     this.detailsContent = new Table(skin);
     this.details = detailsPanel(skin);
