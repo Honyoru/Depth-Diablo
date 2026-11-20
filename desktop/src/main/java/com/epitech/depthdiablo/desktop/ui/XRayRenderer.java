@@ -10,11 +10,14 @@ import com.epitech.depthdiablo.entity.Entity;
 
 /**
  * The X-ray view (GDD 1.1.2): no sprites, only what the logic sees. Body boxes in grey, hurtboxes
- * in green, the blade of a running swing in red, and the player's velocity as a yellow line.
+ * in green for the player (blue while it is invincible) and magenta for the others, the blade of a
+ * running swing in red, and the player's velocity as a yellow line.
  */
 final class XRayRenderer implements Renderer {
   private static final Color BODY_COLOR = Color.GRAY;
-  private static final Color HURTBOX_COLOR = Color.GREEN;
+  private static final Color PLAYER_HURTBOX_COLOR = Color.GREEN;
+  private static final Color ENEMY_HURTBOX_COLOR = Color.MAGENTA;
+  private static final Color INVINCIBLE_COLOR = Color.BLUE;
   private static final Color VELOCITY_COLOR = Color.YELLOW;
   private static final Color BLADE_COLOR = Color.RED;
 
@@ -44,7 +47,7 @@ final class XRayRenderer implements Renderer {
     shapes.setColor(BODY_COLOR);
     drawBox(entity.getBodyBox().translated(dx, dy));
     if (entity instanceof Damageable damageable) {
-      shapes.setColor(HURTBOX_COLOR);
+      shapes.setColor(hurtboxColor(frame, entity));
       drawBox(damageable.getHurtbox().translated(dx, dy));
     }
     if (entity instanceof Character character) {
@@ -52,6 +55,14 @@ final class XRayRenderer implements Renderer {
       float shiftY = dy;
       character.getCurrentSwing().ifPresent(swing -> drawBlade(swing.getShape(), shiftX, shiftY));
     }
+  }
+
+  /** The player's hurtbox in green, or blue while nothing can hurt it; the others in magenta. */
+  private static Color hurtboxColor(Frame frame, Entity entity) {
+    if (!entity.equals(frame.player())) {
+      return ENEMY_HURTBOX_COLOR;
+    }
+    return frame.player().isInvincible() ? INVINCIBLE_COLOR : PLAYER_HURTBOX_COLOR;
   }
 
   private void drawVelocity(Frame frame) {
