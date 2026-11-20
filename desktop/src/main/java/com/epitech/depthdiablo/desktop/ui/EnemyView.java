@@ -24,10 +24,10 @@ import java.util.Optional;
 /**
  * Draws every enemy with its own animations, found from its sprite id: {@code
  * sprites/<spriteId>_<animation>.png}, 32 x 32 frames in one row. The animation follows its state
- * (idle, move, attack, spawn); a hit plays its hit animation, and a death leaves a corpse that plays
- * its death animation once. A missing sheet falls back to idle. An enemy bigger than a frame, like
- * the king, is drawn bigger. It learns about hits and deaths from the world's events, so drawing
- * never changes the game state.
+ * (idle, move, attack, spawn); a hit plays its hit animation, and a death leaves a corpse that
+ * plays its death animation once. A missing sheet falls back to idle. An enemy bigger than a frame,
+ * like the king, is drawn bigger. It learns about hits and deaths from the world's events, so
+ * drawing never changes the game state.
  */
 final class EnemyView implements EventListener, Disposable {
   private static final int FRAME_SIZE = 32;
@@ -104,8 +104,7 @@ final class EnemyView implements EventListener, Disposable {
       lastHit.put(enemy, stateTime);
     } else if (event instanceof EntityDied death && death.source() instanceof Enemy enemy) {
       lastHit.remove(enemy);
-      corpses.add(
-          new Corpse(enemy.getSpriteId(), enemy.getBodyBox(), looksLeft(enemy), stateTime));
+      corpses.add(new Corpse(enemy.getSpriteId(), enemy.getBodyBox(), looksLeft(enemy), stateTime));
     }
   }
 
@@ -152,10 +151,9 @@ final class EnemyView implements EventListener, Disposable {
     Sheets(String spriteId) {
       this.idle =
           load(spriteId, "idle", FRAME_SECONDS, Animation.PlayMode.LOOP)
-              .orElseThrow(
-                  () ->
-                      new IllegalStateException(
-                          "No idle sheet for " + spriteId + ": " + path(spriteId, "idle")));
+              .orElseThrow(() ->
+                  new IllegalStateException(
+                      "No idle sheet for " + spriteId + ": " + path(spriteId, "idle")));
       this.move = load(spriteId, "move", FRAME_SECONDS, Animation.PlayMode.LOOP).orElse(idle);
       this.attack = load(spriteId, "attack", FRAME_SECONDS, Animation.PlayMode.LOOP).orElse(idle);
       this.spawn = load(spriteId, "spawn", FRAME_SECONDS, Animation.PlayMode.LOOP).orElse(idle);

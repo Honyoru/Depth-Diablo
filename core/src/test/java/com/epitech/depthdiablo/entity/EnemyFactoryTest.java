@@ -87,7 +87,9 @@ class EnemyFactoryTest {
       JsonValue entry = characters.definition(id);
       CharacterSpec spec = CharacterSpecReader.read(id, entry);
       if (spec.kind() instanceof EnemyKind kind) {
-        assertEquals(EnemyState.IDLE, factory.create(kind, spec, entry, BODY, false, NO_SUMMONER).getState());
+        assertEquals(
+            EnemyState.IDLE,
+            factory.create(kind, spec, entry, BODY, false, NO_SUMMONER).getState());
       }
     }
   }
