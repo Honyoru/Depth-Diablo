@@ -30,4 +30,18 @@ public interface PlayerInput {
    * @return true while the key is held
    */
   boolean wantsPickUp();
+
+  /**
+   * Returns the hotbar slot the user selected (keys 1, 2, 3): the one the use key uses.
+   *
+   * @return the slot, from 0 to {@link com.epitech.depthdiablo.item.Inventory#HOTBAR_SIZE} - 1
+   */
+  int hotbarSlot();
+
+  /**
+   * Tells whether the user holds the use key (GDD 1.4). The player uses one consumable per press.
+   *
+   * @return true while the key is held
+   */
+  boolean wantsToUse();
 }

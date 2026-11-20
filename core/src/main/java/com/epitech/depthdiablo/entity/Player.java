@@ -35,6 +35,9 @@ public abstract class Player extends Character {
   /** Whether the pickup key was held on the previous tick: one pickup per press. */
   private boolean pickUpHeld;
 
+  /** Whether the use key was held on the previous tick: one consumable per press. */
+  private boolean useHeld;
+
   /**
    * Creates a player that stands still.
    *
@@ -156,6 +159,11 @@ public abstract class Player extends Character {
     pickUpHeld = input.wantsPickUp();
     if (pressed) {
       getPickUpTarget().ifPresent(this::take);
+    }
+    boolean usePressed = input.wantsToUse() && !useHeld;
+    useHeld = input.wantsToUse();
+    if (usePressed) {
+      inventory.use(input.hotbarSlot(), this);
     }
   }
 

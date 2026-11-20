@@ -495,6 +495,53 @@ class PlayerTest {
     assertSame(player.getInventory().getWeapon(), player.getBuild().attack());
   }
 
+  @Test
+  void should_use_the_consumable_of_the_selected_slot_when_the_use_key_is_pressed() {
+    Player player = aKnight();
+    player.pickUp(Items.potion());
+    player.pickUp(Items.potion());
+    player.takeDamage(5);
+    input.selectHotbarSlot(1);
+    input.holdUse();
+
+    tick(player, 1);
+
+    assertTrue(player.getInventory().isHotbarSlotFree(1));
+    assertFalse(player.getInventory().isHotbarSlotFree(0));
+  }
+
+  @Test
+  void should_use_only_one_consumable_per_press() {
+    Player player = aKnight();
+    player.pickUp(Items.potion());
+    player.pickUp(Items.potion());
+    player.takeDamage(5);
+    input.holdUse();
+
+    tick(player, 3);
+
+    assertFalse(player.getInventory().isHotbarSlotFree(1));
+  }
+
+  @Test
+  void should_get_back_a_used_potion_and_its_hp_when_its_state_is_read_back() {
+    Player player = aKnight();
+    Potion potion = Items.potion();
+    player.pickUp(potion);
+    player.takeDamage(5);
+    int hpBefore = player.getHp();
+    StateBuffer photo = new StateBuffer();
+    player.writeState(photo);
+    input.holdUse();
+    tick(player, 1);
+
+    photo.startReading();
+    player.readState(photo);
+
+    assertSame(potion, player.getInventory().hotbarSlot(0));
+    assertEquals(hpBefore, player.getHp());
+  }
+
   private Knight aKnight() {
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
     return new Knight(box, stats(), Items.sword(), Items.leatherArmor(), box, 0, input, world);

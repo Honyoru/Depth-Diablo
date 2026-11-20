@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.input;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
@@ -78,5 +79,37 @@ class PlayerOrdersTest {
     orders.releasePickUp();
 
     assertFalse(orders.wantsPickUp());
+  }
+
+  @Test
+  void should_select_the_first_hotbar_slot_when_created() {
+    assertEquals(0, new PlayerOrders().hotbarSlot());
+  }
+
+  @Test
+  void should_give_the_hotbar_slot_it_selects() {
+    PlayerOrders orders = new PlayerOrders();
+
+    orders.selectHotbarSlot(2);
+
+    assertEquals(2, orders.hotbarSlot());
+  }
+
+  @Test
+  void should_throw_when_the_selected_hotbar_slot_is_outside_the_hotbar() {
+    PlayerOrders orders = new PlayerOrders();
+
+    assertThrows(IndexOutOfBoundsException.class, () -> orders.selectHotbarSlot(3));
+  }
+
+  @Test
+  void should_want_to_use_while_held_and_stop_once_released() {
+    PlayerOrders orders = new PlayerOrders();
+    orders.holdUse();
+    assertTrue(orders.wantsToUse());
+
+    orders.releaseUse();
+
+    assertFalse(orders.wantsToUse());
   }
 }

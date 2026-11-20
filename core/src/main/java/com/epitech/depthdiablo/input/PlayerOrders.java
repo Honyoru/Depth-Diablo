@@ -1,6 +1,8 @@
 package com.epitech.depthdiablo.input;
 
 import com.badlogic.gdx.math.Vector2;
+import com.epitech.depthdiablo.item.Inventory;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -16,6 +18,10 @@ public final class PlayerOrders implements PlayerInput {
 
   private boolean pickUp;
 
+  private int hotbarSlot;
+
+  private boolean use;
+
   @Override
   public Vector2 moveDirection() {
     return new Vector2(direction);
@@ -29,6 +35,16 @@ public final class PlayerOrders implements PlayerInput {
   @Override
   public boolean wantsPickUp() {
     return pickUp;
+  }
+
+  @Override
+  public int hotbarSlot() {
+    return hotbarSlot;
+  }
+
+  @Override
+  public boolean wantsToUse() {
+    return use;
   }
 
   /**
@@ -64,5 +80,25 @@ public final class PlayerOrders implements PlayerInput {
   /** The user lets go of the pickup key. */
   public void releasePickUp() {
     pickUp = false;
+  }
+
+  /**
+   * The user selects a hotbar slot (keys 1, 2, 3).
+   *
+   * @param slot the slot, from 0 to {@link Inventory#HOTBAR_SIZE} - 1
+   * @throws IndexOutOfBoundsException if {@code slot} is outside the hotbar
+   */
+  public void selectHotbarSlot(int slot) {
+    this.hotbarSlot = Objects.checkIndex(slot, Inventory.HOTBAR_SIZE);
+  }
+
+  /** The user holds the use key. */
+  public void holdUse() {
+    use = true;
+  }
+
+  /** The user lets go of the use key. */
+  public void releaseUse() {
+    use = false;
   }
 }
