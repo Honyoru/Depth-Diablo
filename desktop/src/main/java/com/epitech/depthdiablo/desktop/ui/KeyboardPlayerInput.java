@@ -39,6 +39,16 @@ final class KeyboardPlayerInput {
     } else {
       orders.releaseUse();
     }
+    if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+      orders.holdDash();
+    } else {
+      orders.releaseDash();
+    }
+    if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+      orders.holdDodgeRoll();
+    } else {
+      orders.releaseDodgeRoll();
+    }
   }
 
   private static float axis(int negative, int positive) {

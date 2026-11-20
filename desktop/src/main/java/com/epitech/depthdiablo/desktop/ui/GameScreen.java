@@ -387,6 +387,8 @@ public final class GameScreen extends ScreenAdapter {
     orders.releaseAttack();
     orders.releasePickUp();
     orders.releaseUse();
+    orders.releaseDash();
+    orders.releaseDodgeRoll();
   }
 
   private void runLogic(float delta) {
