@@ -40,6 +40,39 @@ class WavePlanTest {
   }
 
   @Test
+  void should_send_no_rat_nest_before_wave_3() {
+    assertFalse(plan.enemiesOf(1, false).contains("rat_nest"));
+    assertFalse(plan.enemiesOf(2, false).contains("rat_nest"));
+  }
+
+  @Test
+  void should_add_one_rat_nest_every_2_waves_from_wave_3() {
+    assertEquals(1, Collections.frequency(plan.enemiesOf(3, false), "rat_nest"));
+    assertEquals(1, Collections.frequency(plan.enemiesOf(4, false), "rat_nest"));
+    assertEquals(2, Collections.frequency(plan.enemiesOf(6, false), "rat_nest"));
+    assertEquals(3, Collections.frequency(plan.enemiesOf(7, false), "rat_nest"));
+  }
+
+  @Test
+  void should_send_no_skeleton_archer_before_wave_4() {
+    assertFalse(plan.enemiesOf(3, false).contains("skeleton_archer"));
+  }
+
+  @Test
+  void should_add_one_skeleton_archer_per_wave_from_wave_4() {
+    assertEquals(1, Collections.frequency(plan.enemiesOf(4, false), "skeleton_archer"));
+    assertEquals(3, Collections.frequency(plan.enemiesOf(6, false), "skeleton_archer"));
+  }
+
+  @Test
+  void should_send_neither_rat_nest_nor_skeleton_archer_in_a_boss_wave() {
+    List<String> enemies = plan.enemiesOf(10, true);
+
+    assertFalse(enemies.contains("rat_nest"));
+    assertFalse(enemies.contains("skeleton_archer"));
+  }
+
+  @Test
   void should_start_a_boss_wave_with_the_king() {
     List<String> enemies = plan.enemiesOf(5, true);
 
