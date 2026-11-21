@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.desktop.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.epitech.depthdiablo.GameConstants;
+import com.epitech.depthdiablo.desktop.audio.SoundEffect;
 import java.util.Objects;
 
 /** Renders the Startup Menu (Play/Quit), Mode Selection (Arena/Endless), and 3-Hero Selection. */
@@ -45,6 +47,7 @@ public final class MenuScreen extends ScreenAdapter {
   @Override
   public void show() {
     Gdx.input.setInputProcessor(stage);
+    app.getAudio().playMusic(true);
     rebuildUi();
   }
 
@@ -61,6 +64,33 @@ public final class MenuScreen extends ScreenAdapter {
     }
   }
 
+  /**
+   * Makes a menu button that sounds when the mouse enters it and when it is clicked (GDD 4.2.1). A
+   * disabled button, such as a locked hero, stays silent.
+   */
+  private TextButton button(String text) {
+    TextButton button = new TextButton(text, skin);
+    button.addListener(
+        new ClickListener() {
+          @Override
+          public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+            super.enter(event, x, y, pointer, fromActor);
+            boolean fromInside = fromActor != null && fromActor.isDescendantOf(button);
+            if (pointer == -1 && !fromInside && !button.isDisabled()) {
+              app.getAudio().play(SoundEffect.MENU_MOVE, button);
+            }
+          }
+
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            if (!button.isDisabled()) {
+              app.getAudio().play(SoundEffect.MENU_CONFIRM, button);
+            }
+          }
+        });
+    return button;
+  }
+
   /** Game over (DECISIONS: "game over (rerun or quit)"): the score, then Rerun or Quit. */
   private void buildGameOver() {
     rootTable.add(new Label("GAME OVER", skin)).padBottom(30f).row();
@@ -70,7 +100,7 @@ public final class MenuScreen extends ScreenAdapter {
         .padBottom(24f)
         .row();
 
-    TextButton rerunBtn = new TextButton("Rerun", skin);
+    TextButton rerunBtn = button("Rerun");
     rerunBtn.addListener(
         new ClickListener() {
           @Override
@@ -81,7 +111,7 @@ public final class MenuScreen extends ScreenAdapter {
         });
     rootTable.add(rerunBtn).width(220f).height(48f).pad(8f).row();
 
-    TextButton mainMenuBtn = new TextButton("Main menu", skin);
+    TextButton mainMenuBtn = button("Main menu");
     mainMenuBtn.addListener(
         new ClickListener() {
           @Override
@@ -96,7 +126,7 @@ public final class MenuScreen extends ScreenAdapter {
   private void buildMainMenu() {
     rootTable.add(new Label("DEPTH DIABLO", skin)).padBottom(30f).row();
 
-    TextButton playBtn = new TextButton("Play", skin);
+    TextButton playBtn = button("Play");
     playBtn.addListener(
         new ClickListener() {
           @Override
@@ -107,7 +137,7 @@ public final class MenuScreen extends ScreenAdapter {
         });
     rootTable.add(playBtn).width(220f).height(48f).pad(8f).row();
 
-    TextButton quitBtn = new TextButton("Quit", skin);
+    TextButton quitBtn = button("Quit");
     quitBtn.addListener(
         new ClickListener() {
           @Override
@@ -122,7 +152,7 @@ public final class MenuScreen extends ScreenAdapter {
     rootTable.add(new Label("SELECT MODE", skin)).padBottom(24f).row();
 
     for (MenuFlowState.GameMode mode : MenuFlowState.GameMode.values()) {
-      TextButton modeBtn = new TextButton(mode.getDisplayName(), skin);
+      TextButton modeBtn = button(mode.getDisplayName());
       modeBtn.addListener(
           new ClickListener() {
             @Override
@@ -134,7 +164,7 @@ public final class MenuScreen extends ScreenAdapter {
       rootTable.add(modeBtn).width(240f).height(48f).pad(8f).row();
     }
 
-    TextButton backBtn = new TextButton("Back", skin);
+    TextButton backBtn = button("Back");
     backBtn.addListener(
         new ClickListener() {
           @Override
@@ -154,7 +184,7 @@ public final class MenuScreen extends ScreenAdapter {
         .row();
 
     for (MenuFlowState.HeroType hero : MenuFlowState.HeroType.values()) {
-      TextButton heroBtn = new TextButton(hero.getDisplayName(), skin);
+      TextButton heroBtn = button(hero.getDisplayName());
       heroBtn.setDisabled(!hero.isPlayable());
       if (hero.isPlayable()) {
         heroBtn.addListener(
@@ -171,7 +201,7 @@ public final class MenuScreen extends ScreenAdapter {
     }
     rootTable.row();
 
-    TextButton backBtn = new TextButton("Back", skin);
+    TextButton backBtn = button("Back");
     backBtn.addListener(
         new ClickListener() {
           @Override

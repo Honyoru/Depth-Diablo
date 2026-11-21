@@ -27,6 +27,8 @@ import com.epitech.depthdiablo.debug.HotReload;
 import com.epitech.depthdiablo.debug.Rewind;
 import com.epitech.depthdiablo.debug.ViewMode;
 import com.epitech.depthdiablo.debug.ViewSwitcher;
+import com.epitech.depthdiablo.desktop.audio.SoundEffect;
+import com.epitech.depthdiablo.desktop.audio.SoundEvents;
 import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.FixedTimestep;
@@ -265,6 +267,8 @@ public final class GameScreen extends ScreenAdapter {
     renderers.put(ViewMode.XRAY, new XRayRenderer());
     renderers.put(ViewMode.HIGH_CONTRAST, new HighContrastRenderer());
     world.getEventBus().subscribeAll(eventLaser);
+    // Sounds: attack, damage, death, pickup.
+    world.getEventBus().subscribeAll(new SoundEvents(app.getAudio()));
     world.getEventBus().subscribe(DamageDealt.class, enemyView); // hit animation
     world.getEventBus().subscribe(EntityDied.class, enemyView); // death animation
     world.getEventBus().subscribe(ItemDropped.class, dropper);
@@ -298,6 +302,7 @@ public final class GameScreen extends ScreenAdapter {
   @Override
   public void show() {
     Gdx.input.setInputProcessor(hud.getStage());
+    app.getAudio().playMusic(false);
   }
 
   @Override
@@ -498,6 +503,10 @@ public final class GameScreen extends ScreenAdapter {
         hotReload.onTick(world.getCurrentTick());
       }
       world.tick();
+      if (player.isMoving()) {
+        // One step per sound: the overlap guard paces them.
+        app.getAudio().play(SoundEffect.FOOTSTEP, player);
+      }
       if (rewind.isEnabled()) {
         rewind.onTick(world.getCurrentTick()); // photo of the tick that just ran
       }
