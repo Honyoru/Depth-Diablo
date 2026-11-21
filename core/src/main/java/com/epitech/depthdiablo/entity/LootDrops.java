@@ -1,20 +1,19 @@
 package com.epitech.depthdiablo.entity;
 
 import com.badlogic.gdx.math.Vector2;
-import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.EventListener;
 import com.epitech.depthdiablo.engine.GameEvent;
+import com.epitech.depthdiablo.item.LootTable;
 import com.epitech.depthdiablo.random.RandomSource;
-import java.util.List;
 import java.util.Objects;
 
 /**
- * Drops a random item where an enemy dies (GDD 1.4). The pool is every id of {@code
- * data/items.json}, read at each death, so new entries and F5 count at once.
+ * Drops an item of the loot table where an enemy dies (GDD 1.4); the table makes rare items drop
+ * less often.
  */
 public final class LootDrops implements EventListener {
-  private final DataRegistry items;
+  private final LootTable table;
   private final ItemDropper dropper;
   private final RandomSource random;
   private final double chance;
@@ -22,15 +21,15 @@ public final class LootDrops implements EventListener {
   /**
    * Creates the loot rule.
    *
-   * @param items the entries of {@code data/items.json}
+   * @param table picks the item, weighted by rarity
    * @param dropper puts the item on the ground
-   * @param random rolls the drop and picks the item
+   * @param random rolls the drop and the item
    * @param chance the chance an enemy drops something, from 0 to 1
    * @throws NullPointerException if an object is {@code null}
    * @throws IllegalArgumentException if the chance is outside 0 to 1
    */
-  public LootDrops(DataRegistry items, ItemDropper dropper, RandomSource random, double chance) {
-    this.items = Objects.requireNonNull(items, "items is null");
+  public LootDrops(LootTable table, ItemDropper dropper, RandomSource random, double chance) {
+    this.table = Objects.requireNonNull(table, "table is null");
     this.dropper = Objects.requireNonNull(dropper, "dropper is null");
     this.random = Objects.requireNonNull(random, "random is null");
     if (!(chance >= 0 && chance <= 1)) {
@@ -52,12 +51,8 @@ public final class LootDrops implements EventListener {
     if (random.nextDouble() >= chance) {
       return;
     }
-    List<String> ids = items.getIds();
-    if (ids.isEmpty()) {
-      return;
-    }
     Aabb body = enemy.getBodyBox();
     Vector2 centre = new Vector2(body.x() + body.width() / 2, body.y() + body.height() / 2);
-    dropper.spawn(ids.get(random.nextInt(ids.size())), centre);
+    table.roll(random).ifPresent(id -> dropper.spawn(id, centre));
   }
 }

@@ -45,6 +45,7 @@ import com.epitech.depthdiablo.entity.Wall;
 import com.epitech.depthdiablo.input.PlayerOrders;
 import com.epitech.depthdiablo.item.Item;
 import com.epitech.depthdiablo.item.ItemFactory;
+import com.epitech.depthdiablo.item.LootTable;
 import com.epitech.depthdiablo.random.SeededRandomSource;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -256,7 +257,11 @@ public final class GameScreen extends ScreenAdapter {
         .getEventBus()
         .subscribe(
             EntityDied.class,
-            new LootDrops(itemData, dropper, new SeededRandomSource(System.nanoTime()), 0.3));
+            new LootDrops(
+                new LootTable(itemData, items, LootTable.DEFAULT_WEIGHTS),
+                dropper,
+                new SeededRandomSource(System.nanoTime()),
+                0.3));
     // TEMPORARY: items next to the spawn to try the pickup, until loot and rooms exist
     dropper.spawn("fire_ring", new Vector2(spawns.player()).add(48, 0));
     dropper.spawn("potion_small", new Vector2(spawns.player()).add(0, 48));
