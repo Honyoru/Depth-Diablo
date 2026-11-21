@@ -19,6 +19,24 @@
       "armor": "leather_armor"
     },
     {
+      "id": "assassin",
+      "class": "ASSASSIN",
+      "spriteId": "player/assassin",
+      "stats": {
+        "MAX_HP": 700,
+        "ATTACK": 4,
+        "DEFENSE": 1,
+        "SPEED": 320,
+        "ATTACK_SPEED": 1.5,
+        "LUCK": 0
+      },
+      "width": 28,
+      "height": 28,
+      "invincibilityTicks": 30,
+      "weapon": "rapier",
+      "armor": "leather_armor"
+    },
+    {
       "id": "rat",
       "class": "RAT",
       "spriteId": "enemies/rat",

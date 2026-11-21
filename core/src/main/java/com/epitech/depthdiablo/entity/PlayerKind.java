@@ -11,7 +11,9 @@ import com.epitech.depthdiablo.item.Weapon;
  */
 public enum PlayerKind implements CharacterKind {
   /** Built as a {@link Knight}. */
-  KNIGHT(Knight::new);
+  KNIGHT(Knight::new),
+  /** Built as an {@link Assassin}. */
+  ASSASSIN(Assassin::new);
 
   /** The constructor every player class shares. */
   @FunctionalInterface
