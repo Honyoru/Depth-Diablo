@@ -64,6 +64,7 @@ class GameEventTest {
       case DamageDealt damage -> "damage";
       case EntityDied death -> "death";
       case ItemDropped drop -> "drop";
+      case ShopOpened shop -> "shop";
     };
   }
 }
