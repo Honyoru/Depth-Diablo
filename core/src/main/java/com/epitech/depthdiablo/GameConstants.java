@@ -14,5 +14,7 @@ public final class GameConstants {
   /** Edge length of one tile in pixels (Q60). */
   public static final int TILE_SIZE = 32;
 
+  public static final float ENEMY_DETECTION_RANGE = (float) 10 * TILE_SIZE;
+
   private GameConstants() {}
 }

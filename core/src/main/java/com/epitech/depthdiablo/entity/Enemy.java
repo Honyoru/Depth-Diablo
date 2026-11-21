@@ -28,6 +28,8 @@ public abstract class Enemy extends Character {
 
   private final String spriteId;
 
+  private boolean rushing;
+
   /**
    * Creates an enemy. It starts {@link EnemyState#IDLE}, with no target.
    *
@@ -110,9 +112,9 @@ public abstract class Enemy extends Character {
   }
 
   /**
-   * Gives this enemy a target to chase: the signal sent to an area's enemies when the player enters
-   * it (Q51), or a freshly spawned wave. A target it cannot see (dead, or on its own side) is
-   * ignored.
+   * Gives this enemy a target it chases anywhere on the map: the signal sent to an area's enemies
+   * when the player enters it (Q51), or an arena wave rushing the player. A target it cannot see
+   * (dead, or on its own side) is ignored.
    *
    * @param target the character to chase
    * @throws NullPointerException if {@code target} is {@code null}
@@ -120,6 +122,7 @@ public abstract class Enemy extends Character {
   public void alert(Character target) {
     if (canSee(target)) {
       this.target = Optional.of(target);
+      this.rushing = true;
     }
   }
 
@@ -143,10 +146,10 @@ public abstract class Enemy extends Character {
   /**
    * Tells whether this enemy has a target it still sees. Used by its states.
    *
-   * @return true if it has a living target on a side it can hurt
+   * @return true if it has a living target on a side it can hurt, rushed or within detection range
    */
   boolean seesTarget() {
-    return target.filter(this::canSee).isPresent();
+    return target.filter(this::canSee).filter(t -> rushing || inDetectionRange(t)).isPresent();
   }
 
   /**
@@ -299,5 +302,29 @@ public abstract class Enemy extends Character {
       ai.setInitialState(state);
     }
     target = Optional.ofNullable(in.readRef(Character.class));
+  }
+
+  /**
+   * Gives this enemy a target it only chases while it is within {@link
+   * GameConstants#ENEMY_DETECTION_RANGE} (Endless, GDD 1.7). A target it cannot see is ignored.
+   *
+   * @param target the character to watch
+   * @throws NullPointerException if {@code target} is {@code null}
+   */
+  public void watch(Character target) {
+    if (canSee(target)) {
+      this.target = Optional.of(target);
+      this.rushing = false;
+    }
+  }
+
+  /**
+   * Tells whether the target's centre is within the detection range of this enemy's centre.
+   *
+   * @param target the character to look at
+   * @return true if it is at most {@link GameConstants#ENEMY_DETECTION_RANGE} away
+   */
+  boolean inDetectionRange(Character target) {
+    return towards(target).len() <= GameConstants.ENEMY_DETECTION_RANGE;
   }
 }
