@@ -494,15 +494,15 @@ No cinematics; the story is not fixed yet (Q72–Q75).
 
 #### 4.2.1 GUI
 
-UI sounds (Q69): menu move and confirm; proposal: shop purchase, roulette spin, item equip.
+UI sounds (Q69): menu move (the mouse enters a button) and confirm (a click), done 21 Nov; proposal: shop purchase, roulette spin, item equip.
 
 #### 4.2.2 Special Effects
 
-Hit, death and pickup first (Q69). Proposal if time allows: dash, dodge roll, burn, summon, door, chest.
+Done (21 Nov): attack by weapon family (melee, bow, staff; enemies have their own), damage, death, pickup. Proposal if time allows: dash, dodge roll, burn, summon, door, chest.
 
 #### 4.2.3 Environment
 
-None beyond the ambient loop (4.3); footsteps are not a priority (Q69).
+Player footsteps added (21 Nov), one step per sound; no other environment sound beyond the ambient loop (4.3).
 
 ### 4.3 Music
 
@@ -514,7 +514,7 @@ No event music (boss, shop, death); the loop keeps playing.
 
 #### 4.3.2 System Screens
 
-Same loop on menus (proposal: lower volume).
+Same loop on menus at half the game volume (decided 21 Nov).
 
 #### 4.3.3 Level Theme
 

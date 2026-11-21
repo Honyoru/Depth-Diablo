@@ -75,6 +75,7 @@ Status note (Ange, 4 Nov): the team reviewed the whole draft orally, and every "
 - Shop: coins from enemies. Shopkeeper has 2 vending slots (weapon or armor; consumable) plus a roulette. A spin costs coins; a roulette ticket gives a free spin (Q14, Q34).
 - Coin drop rates, prices and roulette odds are TBD during balancing.
 - Weapons (16 Nov): a weapon's values come only from `data/items.json`; `Sword` has a package-private constructor that only `ItemFactory` calls. `ItemFactory` maps each `"class"` to a builder instead of a switch, so a new item type is one more line. Placeholder sword: COMMON, 30 coins, +2 attack, attack speed 1, reach 24, width 8, arc 90°, 12 ticks. The player gets its sword through the inventory's weapon slot.
+- Ranged weapons (21 Nov): `RangedWeapon` fires one projectile per attack, which flies the weapon's `range` at its `projectileSpeed` (lifetime = range ÷ speed, at least 1 tick). Families: `Bow` (always an `Arrow`, 16 x 4 px, from the owner's centre) and `Staff` (each real staff picks its spell, e.g. a `Fireball` with its burn); the real weapons extend a family. New events in the sealed `GameEvent`: `AttackStarted` (once per attack, after the attack started) and `ItemPickedUp` (only when the item is kept). F2 shows pickups in orange and draws no attack.
 
 ## 7. AI
 
@@ -145,6 +146,7 @@ All four ship in the full game. Each is a separate module behind one small inter
 - HUD: minimal corner HUD, HP bar, the 3 hotbar slots, coin counter, current floor. No minimap, no floating damage numbers (Q54 to Q57). The inventory is a pause overlay (Q58). Menus and overlays are built with Scene2D.
 - Options screen: remap keys, aim mode, language (FR / EN) (Q43, Q59).
 - Sound: effects for hit, death, pickup and UI; one ambient music loop for the whole game; all from free CC0 libraries listed in `CREDITS` (Q68 to Q71).
+- Sound effects (21 Nov): attack (one per attack, heard from the attacker: melee, bow, staff, or the enemy sound), damage (one per character hit, heard from the one hit), death, pickup (only when the item is kept), the player's footsteps (paced by the sound's length; Q69 had them as not a priority) and menu move / confirm. One source never plays the same effect twice at once. The attack sound follows the weapon's family (`MeleeWeapon`, `Bow`, `Staff`), so a new weapon needs no audio change. Music: one loop at volume 0.5 in game and 0.25 on menus, never restarted between screens. Exceptions to CC0 (Q71), credited in `CREDITS`: the staff sound and the music, both CC-BY-SA 3.0. The 3.3 MB music stays in plain Git (Q132).
 
 ## 13. Level generation
 
