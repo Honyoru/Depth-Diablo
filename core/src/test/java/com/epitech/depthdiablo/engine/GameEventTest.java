@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.testdata.Items;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -47,6 +48,22 @@ class GameEventTest {
   }
 
   @Test
+  void should_return_the_picker_when_a_pickup_event_gives_its_source() {
+    GameEvent event = new ItemPickedUp(character, Items.potion());
+
+    assertSame(character, event.source());
+  }
+
+  @Test
+  void should_have_no_receiver_when_a_pickup_event_gives_it() {
+    GameEvent event = new ItemPickedUp(character, Items.potion());
+
+    Optional<?> receiver = event.receiver();
+
+    assertTrue(receiver.isEmpty());
+  }
+
+  @Test
   void should_identify_each_type_when_a_switch_covers_every_event() {
     GameEvent damage = new DamageDealt(character, aCharacter().build(), 1);
     GameEvent death = new EntityDied(character, Optional.empty());
@@ -64,6 +81,7 @@ class GameEventTest {
       case DamageDealt damage -> "damage";
       case EntityDied death -> "death";
       case ItemDropped drop -> "drop";
+      case ItemPickedUp pickup -> "pickup";
       case ShopOpened shop -> "shop";
     };
   }

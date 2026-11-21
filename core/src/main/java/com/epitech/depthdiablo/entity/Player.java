@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.ItemDropped;
+import com.epitech.depthdiablo.engine.ItemPickedUp;
 import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerInput;
@@ -272,11 +273,19 @@ public abstract class Player extends Character {
         .min(Comparator.comparingDouble(drop -> distanceTo(drop, centre)));
   }
 
-  /** Takes an item off the ground; what does not fit falls back where the player stands. */
+  /**
+   * Takes an item off the ground; what does not fit falls back where the player stands. Publishes
+   * {@link ItemPickedUp} only when the item is kept.
+   */
   private void take(ItemDrop drop) {
     drop.remove();
-    pickUp(drop.getItem())
-        .ifPresent(left -> world().getEventBus().publish(new ItemDropped(this, left, centre())));
+    Item item = drop.getItem();
+    Optional<Item> left = pickUp(item);
+    if (left.filter(item::equals).isEmpty()) {
+      world().getEventBus().publish(new ItemPickedUp(this, item));
+    }
+    left.ifPresent(
+        dropped -> world().getEventBus().publish(new ItemDropped(this, dropped, centre())));
   }
 
   /** Returns the centre of the player's body, in pixels. */

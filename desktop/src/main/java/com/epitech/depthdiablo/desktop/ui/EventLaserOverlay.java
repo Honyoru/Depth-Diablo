@@ -11,6 +11,7 @@ import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.engine.ItemDropped;
+import com.epitech.depthdiablo.engine.ItemPickedUp;
 import com.epitech.depthdiablo.engine.ShopOpened;
 import java.util.Objects;
 
@@ -23,6 +24,7 @@ final class EventLaserOverlay implements Disposable {
   private static final Color DEATH_COLOR = Color.MAGENTA;
   private static final Color DROP_COLOR = Color.GOLD;
   private static final Color SHOP_COLOR = Color.CYAN;
+  private static final Color PICKUP_COLOR = Color.ORANGE;
 
   /** Radius of the ring drawn for an event without a receiver, in pixels. */
   private static final float RING_RADIUS = 10f;
@@ -74,6 +76,7 @@ final class EventLaserOverlay implements Disposable {
       case EntityDied death -> DEATH_COLOR;
       case ItemDropped drop -> DROP_COLOR;
       case ShopOpened shop -> SHOP_COLOR;
+      case ItemPickedUp pickup -> PICKUP_COLOR;
     };
   }
 

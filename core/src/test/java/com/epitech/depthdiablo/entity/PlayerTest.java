@@ -12,7 +12,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.combat.FireTouch;
+import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.engine.ItemDropped;
+import com.epitech.depthdiablo.engine.ItemPickedUp;
 import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.input.PlayerOrders;
@@ -495,6 +497,52 @@ class PlayerTest {
 
     assertEquals(Optional.of(near), target);
     assertTrue(far.visitors.isEmpty());
+  }
+
+  @Test
+  void should_publish_the_pickup_of_an_item_it_keeps() {
+    Player player = aKnight();
+    ItemDrop drop = aDropAt(12, 8);
+    List<GameEvent> seen = new ArrayList<>();
+    world.getEventBus().subscribe(ItemPickedUp.class, seen::add);
+    input.holdPickUp();
+
+    tick(player, 1);
+    world.getEventBus().flush();
+
+    assertEquals(List.of(new ItemPickedUp(player, drop.getItem())), seen);
+  }
+
+  @Test
+  void should_not_publish_a_pickup_when_its_bag_is_full() {
+    Player player = aKnight();
+    for (int i = 0; i < Inventory.HOTBAR_SIZE; i++) {
+      player.pickUp(Items.potion());
+    }
+    world.add(new ItemDrop(Items.potion(), new Vector2(12, 8)));
+    List<GameEvent> seen = new ArrayList<>();
+    world.getEventBus().subscribe(ItemPickedUp.class, seen::add);
+    input.holdPickUp();
+
+    tick(player, 1);
+    world.getEventBus().flush();
+
+    assertTrue(seen.isEmpty());
+  }
+
+  @Test
+  void should_publish_the_pickup_of_a_weapon_it_swaps_for_its_own() {
+    Player player = aKnight();
+    Sword sword = Items.sword();
+    world.add(new ItemDrop(sword, new Vector2(12, 8)));
+    List<GameEvent> seen = new ArrayList<>();
+    world.getEventBus().subscribe(ItemPickedUp.class, seen::add);
+    input.holdPickUp();
+
+    tick(player, 1);
+    world.getEventBus().flush();
+
+    assertEquals(List.of(new ItemPickedUp(player, sword)), seen);
   }
 
   @Test
