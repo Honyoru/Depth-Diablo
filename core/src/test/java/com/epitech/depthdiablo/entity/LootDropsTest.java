@@ -10,12 +10,15 @@ import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.item.ItemFactory;
+import com.epitech.depthdiablo.item.LootTable;
+import com.epitech.depthdiablo.item.Rarity;
 import com.epitech.depthdiablo.random.SeededRandomSource;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/** GDD 1.4: a dying enemy may drop a random item of data/items.json where it stood. */
+/** GDD 1.4: a dying enemy may drop an item of its loot table where it stood. */
 class LootDropsTest {
   private static final String ONE_POTION =
       """
@@ -27,12 +30,14 @@ class LootDropsTest {
 
   private final World world = new World();
   private final DataRegistry items = new DataRegistry("items", () -> ONE_POTION);
-  private final ItemDropper dropper = new ItemDropper(new ItemFactory(items), world);
+  private final ItemFactory factory = new ItemFactory(items);
+  private final ItemDropper dropper = new ItemDropper(factory, world);
+  private final LootTable table = new LootTable(items, factory, LootTable.DEFAULT_WEIGHTS);
 
   @Test
-  void should_drop_an_item_of_the_data_where_an_enemy_dies() {
+  void should_drop_an_item_of_the_table_where_an_enemy_dies() {
     MeleeEnemy rat = aRat().at(64, 32).withWorld(world).build();
-    LootDrops loot = new LootDrops(items, dropper, new SeededRandomSource(1), 1);
+    LootDrops loot = new LootDrops(table, dropper, new SeededRandomSource(1), 1);
 
     loot.onEvent(new EntityDied(rat, Optional.empty()));
 
@@ -48,7 +53,18 @@ class LootDropsTest {
   @Test
   void should_drop_nothing_when_the_chance_is_0() {
     MeleeEnemy rat = aRat().withWorld(world).build();
-    LootDrops loot = new LootDrops(items, dropper, new SeededRandomSource(1), 0);
+    LootDrops loot = new LootDrops(table, dropper, new SeededRandomSource(1), 0);
+
+    loot.onEvent(new EntityDied(rat, Optional.empty()));
+
+    assertEquals(List.of(), drops());
+  }
+
+  @Test
+  void should_drop_nothing_when_the_table_has_no_weighted_item() {
+    MeleeEnemy rat = aRat().withWorld(world).build();
+    LootTable noPotions = new LootTable(items, factory, Map.of(Rarity.LEGENDARY, 1));
+    LootDrops loot = new LootDrops(noPotions, dropper, new SeededRandomSource(1), 1);
 
     loot.onEvent(new EntityDied(rat, Optional.empty()));
 
@@ -58,7 +74,7 @@ class LootDropsTest {
   @Test
   void should_drop_nothing_when_the_player_dies() {
     Character player = aCharacter().withFaction(Faction.PLAYER).withWorld(world).build();
-    LootDrops loot = new LootDrops(items, dropper, new SeededRandomSource(1), 1);
+    LootDrops loot = new LootDrops(table, dropper, new SeededRandomSource(1), 1);
 
     loot.onEvent(new EntityDied(player, Optional.empty()));
 
@@ -69,10 +85,10 @@ class LootDropsTest {
   void should_throw_when_the_chance_is_outside_0_to_1() {
     SeededRandomSource random = new SeededRandomSource(1);
 
-    assertThrows(IllegalArgumentException.class, () -> new LootDrops(items, dropper, random, -0.1));
-    assertThrows(IllegalArgumentException.class, () -> new LootDrops(items, dropper, random, 1.5));
+    assertThrows(IllegalArgumentException.class, () -> new LootDrops(table, dropper, random, -0.1));
+    assertThrows(IllegalArgumentException.class, () -> new LootDrops(table, dropper, random, 1.5));
     assertThrows(
-        IllegalArgumentException.class, () -> new LootDrops(items, dropper, random, Double.NaN));
+        IllegalArgumentException.class, () -> new LootDrops(table, dropper, random, Double.NaN));
   }
 
   @Test
@@ -80,8 +96,8 @@ class LootDropsTest {
     SeededRandomSource random = new SeededRandomSource(1);
 
     assertThrows(NullPointerException.class, () -> new LootDrops(null, dropper, random, 1));
-    assertThrows(NullPointerException.class, () -> new LootDrops(items, null, random, 1));
-    assertThrows(NullPointerException.class, () -> new LootDrops(items, dropper, null, 1));
+    assertThrows(NullPointerException.class, () -> new LootDrops(table, null, random, 1));
+    assertThrows(NullPointerException.class, () -> new LootDrops(table, dropper, null, 1));
   }
 
   private List<ItemDrop> drops() {
