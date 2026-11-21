@@ -6,6 +6,7 @@ import com.epitech.depthdiablo.combat.Damageable;
 import com.epitech.depthdiablo.combat.HitResult;
 import com.epitech.depthdiablo.combat.StatusEffect;
 import com.epitech.depthdiablo.combat.Swing;
+import com.epitech.depthdiablo.engine.AttackStarted;
 import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.StateBuffer;
@@ -288,7 +289,8 @@ public abstract class Character extends Entity implements Damageable {
   /**
    * Attacks towards the aim with a weapon, whatever its kind: a sword starts a swing, a bow will
    * shoot an arrow. A player or an enemy calls it from {@link #think(long)}, once {@link
-   * #canAttack()} is true.
+   * #canAttack()} is true. Publishes {@link AttackStarted} once the attack has started, so a failed
+   * attack makes no sound.
    *
    * @param weapon the attack to start, usually the equipped weapon
    * @param aimDegrees the direction of the attack, in degrees (0 = right, 90 = up)
@@ -300,6 +302,7 @@ public abstract class Character extends Entity implements Damageable {
   protected final void startAttack(Attack weapon, float aimDegrees, World world) {
     Objects.requireNonNull(weapon, "weapon is null");
     weapon.attack(this, aimDegrees, world);
+    world.getEventBus().publish(new AttackStarted(this));
   }
 
   /**

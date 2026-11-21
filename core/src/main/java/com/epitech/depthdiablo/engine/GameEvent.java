@@ -8,7 +8,7 @@ import java.util.Optional;
  * The event list is still open (Q24).
  */
 public sealed interface GameEvent
-    permits DamageDealt, EntityDied, ItemDropped, ItemPickedUp, ShopOpened {
+    permits AttackStarted, DamageDealt, EntityDied, ItemDropped, ItemPickedUp, ShopOpened {
   /**
    * Returns the emitter, where the event laser (F2) starts its line.
    *
