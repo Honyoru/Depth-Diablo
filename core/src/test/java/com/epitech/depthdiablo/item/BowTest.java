@@ -4,6 +4,7 @@ import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
@@ -63,6 +64,28 @@ class BowTest {
     aBow(120f, 240f).attack(owner, 0f, world);
 
     assertFalse(owner.canAttack());
+  }
+
+  @Test
+  void should_leave_its_owner_ready_and_fire_nothing_when_the_aim_is_not_a_number() {
+    Character owner = aCharacter().withWorld(world).build();
+    Bow bow = aBow(120f, 240f);
+
+    assertThrows(IllegalArgumentException.class, () -> bow.attack(owner, Float.NaN, world));
+
+    assertTrue(owner.canAttack());
+    assertTrue(arrowsIn(world).isEmpty());
+  }
+
+  @Test
+  void should_fire_nothing_when_its_owner_cannot_attack_yet() {
+    Character owner = aCharacter().withWorld(world).build();
+    Bow bow = aBow(120f, 240f);
+    bow.attack(owner, 0f, world); // the first shot starts the cooldown
+
+    assertThrows(IllegalStateException.class, () -> bow.attack(owner, 0f, world));
+
+    assertEquals(1, arrowsIn(world).size());
   }
 
   /** A bow with the given range and arrow speed; the other values do not matter here. */

@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.desktop.ui;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.epitech.depthdiablo.desktop.audio.GameAudio;
 
 /** Root LibGDX {@link Game} managing shared rendering resources and screen transitions. */
 public final class GameApplication extends Game {
@@ -13,14 +14,26 @@ public final class GameApplication extends Game {
 
   private MenuFlowState menuFlowState;
 
+  private GameAudio audio;
+
   /** Returns the shared {@link SpriteBatch}. */
   public SpriteBatch getBatch() {
     return batch;
   }
 
+  /**
+   * Returns the game's sounds and music, shared by every screen so the loop never restarts.
+   *
+   * @return the audio, made once in {@link #create()}
+   */
+  public GameAudio getAudio() {
+    return audio;
+  }
+
   @Override
   public void create() {
     this.batch = new SpriteBatch();
+    this.audio = new GameAudio();
     this.hudSkin = UiSkinFactory.loadHudSkin();
     this.menuFlowState = new MenuFlowState();
     setScreen(new MenuScreen(this, menuFlowState, hudSkin));
@@ -71,6 +84,9 @@ public final class GameApplication extends Game {
     }
     if (batch != null) {
       batch.dispose();
+    }
+    if (audio != null) {
+      audio.dispose();
     }
   }
 }
