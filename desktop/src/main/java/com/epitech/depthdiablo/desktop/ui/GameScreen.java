@@ -556,7 +556,11 @@ public final class GameScreen extends ScreenAdapter {
       nextEnemySpawn++;
     }
     Enemy enemy = characters.create(characterId, position, Enemy.class);
-    enemy.alert(player);
+    if (arenaMode) {
+      enemy.alert(player); // arena: the wave rushes the player
+    } else {
+      enemy.watch(player); // endless: only engages within detection range
+    }
     world.add(enemy);
   }
 
