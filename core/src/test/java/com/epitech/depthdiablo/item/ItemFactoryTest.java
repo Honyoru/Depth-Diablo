@@ -141,6 +141,35 @@ class ItemFactoryTest {
     assertThrows(IllegalArgumentException.class, () -> factory.create("fire_ring"));
   }
 
+  @Test
+  void should_build_an_axe_with_the_values_of_its_entry() throws IOException {
+    DataRegistry items = realItems();
+
+    Axe axe = assertInstanceOf(Axe.class, new ItemFactory(items).create("hatchet"));
+
+    JsonValue entry = items.definition("hatchet");
+    assertEquals(Rarity.valueOf(entry.getString("rarity")), axe.getRarity());
+    assertEquals(entry.getInt("price"), axe.getPrice());
+    assertEquals(entry.getInt("attackBonus"), axe.getAttackBonus());
+    assertEquals(entry.getFloat("attackSpeed"), axe.getAttackSpeed());
+    assertEquals(entry.getFloat("range"), axe.getRange());
+    assertEquals(entry.getFloat("width"), axe.getWidth());
+    assertEquals(entry.getFloat("arcDegrees"), axe.getArcDegrees());
+    assertEquals(entry.getInt("swingTicks"), axe.getSwingTicks());
+  }
+
+  @Test
+  void should_build_a_shield_with_the_values_of_its_entry() throws IOException {
+    DataRegistry items = realItems();
+
+    Shield shield = assertInstanceOf(Shield.class, new ItemFactory(items).create("kite_shield"));
+
+    JsonValue entry = items.definition("kite_shield");
+    assertEquals(Rarity.valueOf(entry.getString("rarity")), shield.getRarity());
+    assertEquals(entry.getInt("price"), shield.getPrice());
+    assertEquals(entry.getInt("defenseBonus"), shield.getDefenseBonus());
+  }
+
   private static DataRegistry realItems() throws IOException {
     String file = readItemsFile();
     return new DataRegistry("items", () -> file);
