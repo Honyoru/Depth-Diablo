@@ -42,7 +42,7 @@ class MenuFlowStateTest {
     state.selectMode(MenuFlowState.GameMode.ARENA);
 
     assertFalse(MenuFlowState.HeroType.MAGE.isPlayable());
-    assertFalse(MenuFlowState.HeroType.ROGUE.isPlayable());
+    assertTrue(MenuFlowState.HeroType.ROGUE.isPlayable());
     assertFalse(state.trySelectHero(MenuFlowState.HeroType.MAGE));
     assertEquals(MenuFlowState.HeroType.WARRIOR, state.getSelectedHero());
   }
