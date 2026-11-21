@@ -12,6 +12,8 @@ import com.epitech.depthdiablo.data.DataRegistry;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -168,6 +170,56 @@ class ItemFactoryTest {
     assertEquals(Rarity.valueOf(entry.getString("rarity")), shield.getRarity());
     assertEquals(entry.getInt("price"), shield.getPrice());
     assertEquals(entry.getInt("defenseBonus"), shield.getDefenseBonus());
+  }
+
+  @Test
+  void should_build_a_stat_ring_with_the_values_of_its_entry() throws IOException {
+    DataRegistry items = realItems();
+
+    StatRing ring = assertInstanceOf(StatRing.class, new ItemFactory(items).create("iron_band"));
+
+    JsonValue entry = items.definition("iron_band");
+    assertEquals(Rarity.PASSIVE, ring.getRarity());
+    assertEquals(
+        List.of(
+            new ItemEffect(
+                "ring." + entry.getString("stat").toLowerCase(Locale.ROOT),
+                entry.getFloat("amount"))),
+        ring.getEffects());
+  }
+
+  @Test
+  void should_build_the_life_steal_ring_with_the_values_of_its_entry() throws IOException {
+    DataRegistry items = realItems();
+
+    LifeStealRing ring =
+        assertInstanceOf(LifeStealRing.class, new ItemFactory(items).create("ruby_ring"));
+
+    JsonValue entry = items.definition("ruby_ring");
+    assertEquals(
+        List.of(new ItemEffect("effect.life_steal", entry.getFloat("fraction") * 100)),
+        ring.getEffects());
+  }
+
+  @Test
+  void should_build_the_executioner_ring_with_the_values_of_its_entry() throws IOException {
+    DataRegistry items = realItems();
+
+    ExecutionerRing ring =
+        assertInstanceOf(ExecutionerRing.class, new ItemFactory(items).create("bone_ring"));
+
+    JsonValue entry = items.definition("bone_ring");
+    assertEquals(
+        List.of(new ItemEffect("effect.execute", entry.getFloat("threshold") * 100)),
+        ring.getEffects());
+  }
+
+  @Test
+  void should_reject_a_stat_ring_when_its_stat_is_unknown() throws IOException {
+    String file = readItemsFile().replace("\"stat\": \"ATTACK\"", "\"stat\": \"MANA\"");
+    ItemFactory factory = new ItemFactory(new DataRegistry("items", () -> file));
+
+    assertThrows(IllegalArgumentException.class, () -> factory.create("iron_band"));
   }
 
   private static DataRegistry realItems() throws IOException {
