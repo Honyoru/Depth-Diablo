@@ -10,9 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.epitech.depthdiablo.combat.AroundContactAttack;
 import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.Burn;
+import com.epitech.depthdiablo.combat.DamageOverTime;
 import com.epitech.depthdiablo.combat.DotSpec;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.combat.HitResult;
+import com.epitech.depthdiablo.combat.Poison;
 import com.epitech.depthdiablo.combat.StatusEffect;
 import com.epitech.depthdiablo.combat.Swing;
 import com.epitech.depthdiablo.engine.DamageDealt;
@@ -671,6 +673,46 @@ class CharacterTest {
     world.getEventBus().flush();
 
     assertEquals(List.of(new EntityDied(character, Optional.of(source))), events);
+  }
+
+  @Test
+  void should_report_an_active_burn() {
+    Character character = aCharacter().withHp(10).build();
+
+    character.applyStatus(new Burn(new DotSpec(1, 1, 5), aCharacter().build()));
+
+    assertTrue(character.hasStatus(Burn.class));
+    assertFalse(character.hasStatus(Poison.class));
+  }
+
+  @Test
+  void should_forget_an_effect_once_it_is_over() {
+    Character character = aCharacter().withHp(10).build();
+    character.applyStatus(new Poison(new DotSpec(1, 1, 2), aCharacter().build()));
+
+    character.update(1);
+    character.update(2);
+
+    assertFalse(character.hasStatus(Poison.class));
+  }
+
+  @Test
+  void should_count_a_subclass_as_its_parent_kind() {
+    Character character = aCharacter().withHp(10).build();
+
+    character.applyStatus(new Poison(new DotSpec(1, 1, 5), aCharacter().build()));
+
+    assertTrue(character.hasStatus(DamageOverTime.class));
+  }
+
+  @Test
+  void should_report_no_status_when_none_was_applied() {
+    assertFalse(aCharacter().build().hasStatus(StatusEffect.class));
+  }
+
+  @Test
+  void should_throw_when_the_status_kind_is_null() {
+    assertThrows(NullPointerException.class, () -> aCharacter().build().hasStatus(null));
   }
 
   @Test
