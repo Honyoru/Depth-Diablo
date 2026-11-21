@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.badlogic.gdx.math.Vector2;
+import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.GameEvent;
@@ -158,6 +160,62 @@ class EnemyStateTest {
     assertEquals(EnemyState.DEAD, rat.getState());
     assertTrue(rat.isRemoved());
     assertFalse(world.getEntities().contains(rat));
+  }
+
+  @Test
+  void should_stay_idle_when_watching_a_target_beyond_its_detection_range() {
+    MeleeEnemy rat = aRat().withWorld(world).build();
+    Character player = aPlayerAt(GameConstants.ENEMY_DETECTION_RANGE + 50, 0);
+    world.add(rat);
+    world.add(player);
+    rat.watch(player);
+
+    ticks(10);
+
+    assertEquals(EnemyState.IDLE, rat.getState());
+    assertEquals(0f, rat.position().x);
+  }
+
+  @Test
+  void should_walk_towards_a_watched_target_within_its_detection_range() {
+    MeleeEnemy rat = aRat().withWorld(world).build();
+    Character player = aPlayerAt(100, 0);
+    world.add(rat);
+    world.add(player);
+    rat.watch(player);
+
+    ticks(2);
+
+    assertEquals(EnemyState.CHASE, rat.getState());
+    assertEquals(1f, rat.position().x, 1e-4f);
+  }
+
+  @Test
+  void should_go_idle_when_a_watched_target_leaves_its_detection_range() {
+    MeleeEnemy rat = aRat().withWorld(world).build();
+    Character player = aPlayerAt(100, 0);
+    world.add(rat);
+    world.add(player);
+    rat.watch(player);
+    ticks(2);
+
+    player.moveTo(new Vector2(GameConstants.ENEMY_DETECTION_RANGE * 3, 0));
+    ticks(2);
+
+    assertEquals(EnemyState.IDLE, rat.getState());
+  }
+
+  @Test
+  void should_chase_an_alerted_target_beyond_its_detection_range() {
+    MeleeEnemy rat = aRat().withWorld(world).build();
+    Character player = aPlayerAt(GameConstants.ENEMY_DETECTION_RANGE * 3, 0);
+    world.add(rat);
+    world.add(player);
+    rat.alert(player);
+
+    ticks(2);
+
+    assertEquals(EnemyState.CHASE, rat.getState());
   }
 
   private void ticks(int count) {
