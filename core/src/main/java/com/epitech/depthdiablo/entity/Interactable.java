@@ -1,6 +1,4 @@
-package com.epitech.depthdiablo.shop;
-
-import com.epitech.depthdiablo.entity.Player;
+package com.epitech.depthdiablo.entity;
 
 /**
  * What the interact key (E) uses when no item lies in reach (GDD 2.4): the shopkeeper, later the
