@@ -1,7 +1,5 @@
 package com.epitech.depthdiablo.shop;
 
-import java.util.Objects;
-
 import com.epitech.depthdiablo.arena.ArenaCycle;
 import com.epitech.depthdiablo.engine.ShopOpened;
 import com.epitech.depthdiablo.engine.World;
@@ -9,6 +7,7 @@ import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.Entity;
 import com.epitech.depthdiablo.entity.Interactable;
 import com.epitech.depthdiablo.entity.Player;
+import java.util.Objects;
 
 /**
  * The shopkeeper, the only NPC (GDD 1.3, 1.4). In Arena mode he trades after each boss wave, while
@@ -29,7 +28,7 @@ public final class Shopkeeper extends Entity implements Interactable {
    * @param world the world whose event bus hears that the shop opens
    * @throws NullPointerException if an argument is {@code null}
    */
-  public Shopkeeper(Aabb box, ArenaCycle cycle, World world){
+  public Shopkeeper(Aabb box, ArenaCycle cycle, World world) {
     super(box);
     this.cycle = Objects.requireNonNull(cycle, "cycle is null");
     this.world = Objects.requireNonNull(world, "world is null");
@@ -55,7 +54,7 @@ public final class Shopkeeper extends Entity implements Interactable {
   @Override
   public void interact(Player player) {
     Objects.requireNonNull(player, "player is null");
-    if(isOpen() && !player.isDead()) {
+    if (isOpen() && !player.isDead()) {
       world.getEventBus().publish(new ShopOpened(player, this));
     }
   }

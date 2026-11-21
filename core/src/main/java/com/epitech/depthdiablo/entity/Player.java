@@ -30,6 +30,9 @@ public abstract class Player extends Character {
   /** How far an item on the ground can be from the player's centre to be picked up, in pixels. */
   public static final float PICK_UP_RANGE = 32f;
 
+  /** How far what the player can interact with can be from its centre, in pixels (GDD 2.4). */
+  public static final float INTERACT_RANGE = 32f;
+
   /** How many times the blocked part of a step is halved: under 1/100 px for a 10 px step. */
   private static final int CONTACT_SEARCH_STEPS = 10;
 
@@ -38,7 +41,7 @@ public abstract class Player extends Character {
 
   private boolean moving;
 
-  /** Whether the pickup key was held on the previous tick: one pickup per press. */
+  /** Whether the pickup key was held on the previous tick: one pickup or interaction per press. */
   private boolean pickUpHeld;
 
   /** Whether the use key was held on the previous tick: one consumable per press. */
@@ -174,8 +177,8 @@ public abstract class Player extends Character {
   /**
    * Starts a dodge roll or a dash when its key is pressed, then either moves one tick of the quick
    * move in progress or walks in the direction of the input and, while the user attacks, starts an
-   * attack towards the point as soon as it can (see {@link #canAttack()}). Then picks up and uses,
-   * once per press.
+   * attack towards the point as soon as it can (see {@link #canAttack()}). Then picks up, or
+   * interacts when no item lies in reach, and uses, once per press.
    */
   @Override
   protected final void think(long tick) {
@@ -194,7 +197,9 @@ public abstract class Player extends Character {
     boolean pressed = input.wantsPickUp() && !pickUpHeld;
     pickUpHeld = input.wantsPickUp();
     if (pressed) {
-      getPickUpTarget().ifPresent(this::take);
+      getPickUpTarget()
+          .ifPresentOrElse(
+              this::take, () -> getInteractTarget().ifPresent(target -> target.interact(this)));
     }
     boolean usePressed = input.wantsToUse() && !useHeld;
     useHeld = input.wantsToUse();
@@ -284,6 +289,28 @@ public abstract class Player extends Character {
   private static float distanceTo(ItemDrop drop, Vector2 point) {
     Aabb box = drop.getBodyBox();
     return point.dst(box.x() + box.width() / 2f, box.y() + box.height() / 2f);
+  }
+
+  /**
+   * Returns what the player would interact with now, when no item lies in reach: the nearest {@link
+   * Interactable} whose box is within {@link #INTERACT_RANGE} of the player's centre (GDD 2.4).
+   *
+   * @return that interactable, or nothing if none is in range
+   */
+  public final Optional<Interactable> getInteractTarget() {
+    Vector2 centre = centre();
+    return world().getEntities().stream()
+        .filter(entity -> entity instanceof Interactable && !entity.isRemoved())
+        .filter(entity -> distanceToBox(entity.getBodyBox(), centre) <= INTERACT_RANGE)
+        .min(Comparator.comparingDouble(entity -> distanceToBox(entity.getBodyBox(), centre)))
+        .map(Interactable.class::cast);
+  }
+
+  /** Returns how far a point is from a box, in pixels: 0 inside it. */
+  private static float distanceToBox(Aabb box, Vector2 point) {
+    float dx = Math.max(0f, Math.max(box.x() - point.x, point.x - (box.x() + box.width())));
+    float dy = Math.max(0f, Math.max(box.y() - point.y, point.y - (box.y() + box.height())));
+    return (float) Math.hypot(dx, dy);
   }
 
   /**
