@@ -2,11 +2,14 @@ package com.epitech.depthdiablo.desktop.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Disposable;
+import com.epitech.depthdiablo.combat.Burn;
+import com.epitech.depthdiablo.combat.Poison;
 import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.EventListener;
@@ -34,6 +37,12 @@ final class EnemyView implements EventListener, Disposable {
   private static final float FRAME_SECONDS = 0.15f;
   private static final float HIT_FRAME_SECONDS = 0.1f;
   private static final float FRAME_MARGIN = 2;
+
+  /** Tint of a burning enemy. */
+  private static final Color BURN_TINT = new Color(1f, 0.45f, 0.35f, 1f);
+
+  /** Tint of a poisoned enemy. */
+  private static final Color POISON_TINT = new Color(0.45f, 1f, 0.45f, 1f);
 
   /** The animations of each sprite id, loaded the first time an enemy of that sprite is drawn. */
   private final Map<String, Sheets> sheets = new HashMap<>();
@@ -70,7 +79,10 @@ final class EnemyView implements EventListener, Disposable {
     } else {
       frame = enemySheets.of(enemy.getState()).getKeyFrame(stateTime);
     }
+    Color tint = tintOf(enemy);
+    batch.setColor(tint);
     drawFrame(batch, frame, enemy.getBodyBox(), looksLeft(enemy));
+    batch.setColor(Color.WHITE);
   }
 
   /**
@@ -194,5 +206,16 @@ final class EnemyView implements EventListener, Disposable {
     public void dispose() {
       textures.forEach(Texture::dispose);
     }
+  }
+
+  /** Poison wins over burn when both are active; no effect keeps the sprite's own colours. */
+  private static Color tintOf(Enemy enemy) {
+    if (enemy.hasStatus(Poison.class)) {
+      return POISON_TINT;
+    }
+    if (enemy.hasStatus(Burn.class)) {
+      return BURN_TINT;
+    }
+    return Color.WHITE;
   }
 }
