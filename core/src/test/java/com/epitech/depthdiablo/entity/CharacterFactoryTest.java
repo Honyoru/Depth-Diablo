@@ -261,6 +261,26 @@ class CharacterFactoryTest {
     assertTrue(rat.isSummoned());
   }
 
+  @Test
+  void should_build_the_assassin_from_the_real_file() throws IOException {
+    CharacterFactory factory = factory(realCharactersFile());
+
+    Player assassin = factory.create("assassin", new Vector2(), Player.class);
+
+    assertInstanceOf(Assassin.class, assassin);
+  }
+
+  @Test
+  void should_make_the_assassin_faster_and_more_fragile_than_the_knight() throws IOException {
+    CharacterFactory factory = factory(realCharactersFile());
+
+    Player assassin = factory.create("assassin", new Vector2(), Player.class);
+    Player knight = factory.create("knight", new Vector2(), Player.class);
+
+    assertTrue(assassin.getSpeed() > knight.getSpeed());
+    assertTrue(assassin.getMaxHp() < knight.getMaxHp());
+  }
+
   private static String realCharactersFile() throws IOException {
     return Files.readString(
         Path.of(System.getProperty("assets.dir"), "data", "characters.json"),
