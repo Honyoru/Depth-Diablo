@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.DamageDealt;
+import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.engine.World;
 import java.util.ArrayList;
@@ -22,7 +23,9 @@ class EnemyStateTest {
   private final List<GameEvent> events = new ArrayList<>();
 
   EnemyStateTest() {
-    world.getEventBus().subscribeAll(events::add);
+    // Hits only: an attack also publishes AttackStarted, tested in MeleeEnemyTest.
+    world.getEventBus().subscribe(DamageDealt.class, events::add);
+    world.getEventBus().subscribe(EntityDied.class, events::add);
   }
 
   @Test

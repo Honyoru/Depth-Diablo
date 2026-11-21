@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.engine.AttackStarted;
 import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.GameEvent;
@@ -25,7 +26,9 @@ class MeleeEnemyTest {
   private final List<GameEvent> events = new ArrayList<>();
 
   MeleeEnemyTest() {
-    world.getEventBus().subscribeAll(events::add);
+    // Hits only: an attack also publishes AttackStarted, tested in MeleeEnemyTest.
+    world.getEventBus().subscribe(DamageDealt.class, events::add);
+    world.getEventBus().subscribe(EntityDied.class, events::add);
   }
 
   @Test
@@ -102,6 +105,21 @@ class MeleeEnemyTest {
     world.getEventBus().flush();
 
     assertTrue(events.isEmpty());
+  }
+
+  @Test
+  void should_publish_the_start_of_its_attack_even_when_it_does_no_damage() {
+    MeleeEnemy rat = aRat().build();
+    Character player = aPlayerAt(18, 0);
+    player.grantInvincibility(10);
+    rat.alert(player);
+    List<GameEvent> attacks = new ArrayList<>();
+    world.getEventBus().subscribe(AttackStarted.class, attacks::add);
+
+    rat.attackTarget(world);
+    world.getEventBus().flush();
+
+    assertEquals(List.of(new AttackStarted(rat)), attacks);
   }
 
   @Test

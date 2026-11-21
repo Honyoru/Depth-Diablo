@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Disposable;
 import com.epitech.depthdiablo.debug.EventLaser;
+import com.epitech.depthdiablo.engine.AttackStarted;
 import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.GameEvent;
@@ -72,6 +73,7 @@ final class EventLaserOverlay implements Disposable {
   /** No default branch: a new event type stops this compiling until it gets a colour. */
   private static Color colorOf(GameEvent event) {
     return switch (event) {
+      case AttackStarted attack -> Color.CLEAR; // attacks are heard, not drawn
       case DamageDealt damage -> DAMAGE_COLOR;
       case EntityDied death -> DEATH_COLOR;
       case ItemDropped drop -> DROP_COLOR;

@@ -64,6 +64,22 @@ class GameEventTest {
   }
 
   @Test
+  void should_return_the_attacker_when_an_attack_event_gives_its_source() {
+    GameEvent event = new AttackStarted(character);
+
+    assertSame(character, event.source());
+  }
+
+  @Test
+  void should_have_no_receiver_when_an_attack_event_gives_it() {
+    GameEvent event = new AttackStarted(character);
+
+    Optional<?> receiver = event.receiver();
+
+    assertTrue(receiver.isEmpty());
+  }
+
+  @Test
   void should_identify_each_type_when_a_switch_covers_every_event() {
     GameEvent damage = new DamageDealt(character, aCharacter().build(), 1);
     GameEvent death = new EntityDied(character, Optional.empty());
@@ -78,6 +94,7 @@ class GameEventTest {
   /** No default branch: a new event type stops this compiling until it is handled here. */
   private static String kindOf(GameEvent event) {
     return switch (event) {
+      case AttackStarted attack -> "attack";
       case DamageDealt damage -> "damage";
       case EntityDied death -> "death";
       case ItemDropped drop -> "drop";
