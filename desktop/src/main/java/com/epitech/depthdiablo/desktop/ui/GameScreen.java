@@ -241,7 +241,7 @@ public final class GameScreen extends ScreenAdapter {
         spawnEnemy("rat", false); // one rat per enemy tile, in turn
       }
     }
-    this.playerView = new PlayerView();
+    this.playerView = PlayerView.of(hero.getCharacterId());
     this.enemyView = new EnemyView();
     this.previousPosition.set(player.position());
     renderers.put(

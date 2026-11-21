@@ -46,7 +46,7 @@ public final class MenuFlowState {
   public enum HeroType {
     WARRIOR("Knight", true, "knight"),
     MAGE("Mage (Locked)", false, "mage"),
-    ROGUE("Archer (Locked)", false, "archer");
+    ROGUE("Assassin", true, "assassin");
 
     private final String displayName;
     private final boolean playable;

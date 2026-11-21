@@ -16,9 +16,14 @@ import java.util.Optional;
  * left.
  */
 final class PlayerView implements Disposable {
-  private static final int FRAME_SIZE = 64;
   private static final float FRAME_SECONDS = 0.15f;
-  private static final float FRAME_MARGIN = 2;
+
+  /** The size one frame is drawn at, in world pixels. */
+  private final float drawSize;
+
+  /** The empty space under the feet in a drawn frame, so the feet touch the body box bottom. */
+  private final float footMargin;
+
   private final Texture idleSheet;
   private final Texture moveSheet;
   private final Texture attackSheet;
@@ -28,17 +33,52 @@ final class PlayerView implements Disposable {
   private float stateTime;
   private boolean lookingLeft;
 
-  PlayerView() {
-    this.idleSheet = new Texture(Gdx.files.internal("sprites/player/knight_idle.png"));
-    this.moveSheet = new Texture(Gdx.files.internal("sprites/player/knight_move.png"));
-    this.idle = animation(idleSheet);
-    this.move = animation(moveSheet);
-    this.attackSheet = new Texture(Gdx.files.internal("sprites/player/knight_attack.png"));
-    this.attack = animation(attackSheet);
+  /**
+   * Returns the view of a hero, from its id in {@code data/characters.json}.
+   *
+   * @param characterId e.g. {@code "knight"}
+   * @return its view; the knight's for an unknown id
+   */
+  static PlayerView of(String characterId) {
+    return switch (characterId) {
+      case "assassin" ->
+          new PlayerView(
+              "sprites/player/assassin/assassin_idle_east.png",
+              "sprites/player/assassin/assassin_move_east.png",
+              "sprites/player/assassin/assassin_attack_east.png",
+              256,
+              54, // 167 px tall in 256 px frames -> 35 px, the knight's height
+              9); // 42 empty px under the feet, at 54/256
+      default ->
+          new PlayerView(
+              "sprites/player/knight_idle.png",
+              "sprites/player/knight_move.png",
+              "sprites/player/knight_attack.png",
+              64,
+              64,
+              2);
+    };
   }
 
-  private static Animation<TextureRegion> animation(Texture sheet) {
-    TextureRegion[] frames = TextureRegion.split(sheet, FRAME_SIZE, FRAME_SIZE)[0];
+  private PlayerView(
+      String idlePath,
+      String movePath,
+      String attackPath,
+      int frameSize,
+      float drawSize,
+      float footMargin) {
+    this.drawSize = drawSize;
+    this.footMargin = footMargin;
+    this.idleSheet = new Texture(Gdx.files.internal(idlePath));
+    this.moveSheet = new Texture(Gdx.files.internal(movePath));
+    this.attackSheet = new Texture(Gdx.files.internal(attackPath));
+    this.idle = animation(idleSheet, frameSize);
+    this.move = animation(moveSheet, frameSize);
+    this.attack = animation(attackSheet, frameSize);
+  }
+
+  private static Animation<TextureRegion> animation(Texture sheet, int frameSize) {
+    TextureRegion[] frames = TextureRegion.split(sheet, frameSize, frameSize)[0];
     Animation<TextureRegion> animation = new Animation<>(FRAME_SECONDS, frames);
     animation.setPlayMode(Animation.PlayMode.LOOP);
     return animation;
@@ -73,12 +113,12 @@ final class PlayerView implements Disposable {
     } else {
       frame = (player.isMoving() ? move : idle).getKeyFrame(stateTime);
     }
-    float left = position.x + (player.getBodyBox().width() - FRAME_SIZE) / 2f;
-    float bottom = position.y - FRAME_MARGIN;
+    float left = position.x + (player.getBodyBox().width() - drawSize) / 2f;
+    float bottom = position.y - footMargin;
     if (lookingLeft) {
-      batch.draw(frame, left + FRAME_SIZE, bottom, -FRAME_SIZE, FRAME_SIZE);
+      batch.draw(frame, left + drawSize, bottom, -drawSize, drawSize);
     } else {
-      batch.draw(frame, left, bottom, FRAME_SIZE, FRAME_SIZE);
+      batch.draw(frame, left, bottom, drawSize, drawSize);
     }
   }
 
