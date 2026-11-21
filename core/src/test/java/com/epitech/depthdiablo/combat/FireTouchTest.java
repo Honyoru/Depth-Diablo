@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
  * GDD 1.3.1 and 1.4.1: a fire-effect item applies burn on every hit that lands, and nothing else.
  */
 class FireTouchTest {
-  private static final BurnSpec BURN = new BurnSpec(2, 1, 3);
+  private static final DotSpec BURN = new DotSpec(2, 1, 3);
 
   private final World world = new World();
   private final Character attacker = aCharacter().withWorld(world).build();

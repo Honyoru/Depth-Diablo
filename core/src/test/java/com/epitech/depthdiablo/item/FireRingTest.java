@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.epitech.depthdiablo.combat.Attack;
-import com.epitech.depthdiablo.combat.BurnSpec;
+import com.epitech.depthdiablo.combat.DotSpec;
 import com.epitech.depthdiablo.combat.FireTouch;
 import com.epitech.depthdiablo.combat.HitResult;
 import com.epitech.depthdiablo.engine.DamageDealt;
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1 and 1.4.1: the fire ring makes every landed hit of its holder burn the target. */
 class FireRingTest {
-  private static final BurnSpec BURN = new BurnSpec(2, 1, 3);
+  private static final DotSpec BURN = new DotSpec(2, 1, 3);
 
   private final World world = new World();
   private final Character attacker = aCharacter().withWorld(world).build();

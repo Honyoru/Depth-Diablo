@@ -1,6 +1,6 @@
 package com.epitech.depthdiablo.item;
 
-import com.epitech.depthdiablo.combat.BurnSpec;
+import com.epitech.depthdiablo.combat.DotSpec;
 
 /**
  * The values of one entry of {@code data/items.json} (Q93, Q129), typed by its {@code "class"}.
@@ -102,6 +102,6 @@ public sealed interface ItemSpec {
    * @param price its shop price in coins
    * @param burn the burn each landed hit applies
    */
-  record FireRingSpec(String id, String nameKey, String spriteId, int price, BurnSpec burn)
+  record FireRingSpec(String id, String nameKey, String spriteId, int price, DotSpec burn)
       implements ItemSpec {}
 }

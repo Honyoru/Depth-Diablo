@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.GameConstants;
-import com.epitech.depthdiablo.combat.BurnSpec;
+import com.epitech.depthdiablo.combat.DotSpec;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.engine.World;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 class FireballTest {
   private static final float TEN_PIXELS_PER_TICK = 10f * GameConstants.TICKS_PER_SECOND;
   private static final int LIFETIME_TICKS = 30;
-  private static final BurnSpec BURN = new BurnSpec(2, 1, 3);
+  private static final DotSpec BURN = new DotSpec(2, 1, 3);
 
   private final World world = new World();
 

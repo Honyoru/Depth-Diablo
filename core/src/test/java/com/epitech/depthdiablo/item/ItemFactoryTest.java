@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.badlogic.gdx.utils.JsonValue;
-import com.epitech.depthdiablo.combat.BurnSpec;
+import com.epitech.depthdiablo.combat.DotSpec;
 import com.epitech.depthdiablo.data.DataRegistry;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -128,7 +128,7 @@ class ItemFactoryTest {
     assertEquals(Rarity.PASSIVE, ring.getRarity());
     assertEquals(entry.getInt("price"), ring.getPrice());
     assertEquals(
-        new BurnSpec(
+        new DotSpec(
             burn.getInt("damage"), burn.getInt("intervalTicks"), burn.getInt("durationTicks")),
         ring.getBurn());
   }

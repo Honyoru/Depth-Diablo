@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.epitech.depthdiablo.combat.BurnSpec;
+import com.epitech.depthdiablo.combat.DotSpec;
 import com.epitech.depthdiablo.data.DataRegistry;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -82,7 +82,7 @@ class ItemSpecReaderTest {
 
     assertEquals(
         new ItemSpec.FireRingSpec(
-            "fire_ring", "item.fire_ring.name", "items/fire_ring", 0, new BurnSpec(1, 30, 120)),
+            "fire_ring", "item.fire_ring.name", "items/fire_ring", 0, new DotSpec(1, 30, 120)),
         spec);
   }
 

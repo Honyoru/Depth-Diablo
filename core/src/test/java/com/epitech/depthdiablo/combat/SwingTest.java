@@ -271,7 +271,7 @@ class SwingTest {
 
   private static FireRing aFireRing() {
     return new FireRing(
-        "fire_ring", "item.fire_ring.name", "items/fire_ring", 0, new BurnSpec(2, 1, 3));
+        "fire_ring", "item.fire_ring.name", "items/fire_ring", 0, new DotSpec(2, 1, 3));
   }
 
   private Swing aSwingAt(Character target) {

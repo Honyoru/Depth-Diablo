@@ -18,7 +18,7 @@ public class Burn extends StatusEffect {
    * @param source the character who applied it, credited for its damage
    * @throws NullPointerException if an argument is {@code null}
    */
-  public Burn(BurnSpec spec, Character source) {
+  public Burn(DotSpec spec, Character source) {
     super(spec.durationTicks(), source);
     this.damage = spec.damage();
     this.intervalTicks = spec.intervalTicks();

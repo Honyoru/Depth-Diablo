@@ -1,7 +1,7 @@
 package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.combat.Attack;
-import com.epitech.depthdiablo.combat.BurnSpec;
+import com.epitech.depthdiablo.combat.DotSpec;
 import com.epitech.depthdiablo.combat.FireTouch;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public final class FireRing extends PassiveItem {
 
-  private final BurnSpec burn;
+  private final DotSpec burn;
 
   /**
    * Creates a fire ring. The burn comes from {@code data/items.json} (Q93), so rings of different
@@ -26,7 +26,7 @@ public final class FireRing extends PassiveItem {
    * @throws NullPointerException if a text or {@code burn} is {@code null}
    * @throws IllegalArgumentException if a text is blank or the price is negative
    */
-  public FireRing(String id, String nameKey, String spriteId, int price, BurnSpec burn) {
+  public FireRing(String id, String nameKey, String spriteId, int price, DotSpec burn) {
     super(id, nameKey, spriteId, price);
     this.burn = Objects.requireNonNull(burn, "The burn spec of a fire ring must not be null");
   }
@@ -48,7 +48,7 @@ public final class FireRing extends PassiveItem {
    *
    * @return its burn values
    */
-  public BurnSpec getBurn() {
+  public DotSpec getBurn() {
     return burn;
   }
 

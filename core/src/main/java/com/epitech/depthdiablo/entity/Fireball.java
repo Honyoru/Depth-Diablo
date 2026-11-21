@@ -1,7 +1,7 @@
 package com.epitech.depthdiablo.entity;
 
 import com.epitech.depthdiablo.combat.Burn;
-import com.epitech.depthdiablo.combat.BurnSpec;
+import com.epitech.depthdiablo.combat.DotSpec;
 import com.epitech.depthdiablo.engine.World;
 import java.util.Objects;
 
@@ -10,7 +10,7 @@ import java.util.Objects;
  * that lands nothing, on a character rolling for example, does not burn either.
  */
 public final class Fireball extends Projectile {
-  private final BurnSpec burn;
+  private final DotSpec burn;
 
   /**
    * Creates a fireball. Its length along its flight is the width of its body box.
@@ -33,7 +33,7 @@ public final class Fireball extends Projectile {
       float aimDegrees,
       float speed,
       int lifetimeTicks,
-      BurnSpec burn,
+      DotSpec burn,
       World world) {
     super(bodyBox, owner, aimDegrees, speed, lifetimeTicks, world);
     this.burn = Objects.requireNonNull(burn, "The burn of a fireball must not be null");

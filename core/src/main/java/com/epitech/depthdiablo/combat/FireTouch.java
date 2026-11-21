@@ -10,7 +10,7 @@ import java.util.Objects;
  * <p>Pattern: Decorator.
  */
 public final class FireTouch extends AttackDecorator {
-  private final BurnSpec burn;
+  private final DotSpec burn;
 
   /**
    * Wraps an attack with a burn.
@@ -19,7 +19,7 @@ public final class FireTouch extends AttackDecorator {
    * @param burn the burn each landed hit applies, from {@code data/items.json}
    * @throws NullPointerException if an argument is {@code null}
    */
-  public FireTouch(Attack inner, BurnSpec burn) {
+  public FireTouch(Attack inner, DotSpec burn) {
     super(inner); // AttackDecorator stores the sword
     this.burn = Objects.requireNonNull(burn, "...");
   }

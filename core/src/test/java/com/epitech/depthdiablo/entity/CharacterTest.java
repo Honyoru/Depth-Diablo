@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.epitech.depthdiablo.combat.AroundContactAttack;
 import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.Burn;
-import com.epitech.depthdiablo.combat.BurnSpec;
+import com.epitech.depthdiablo.combat.DotSpec;
 import com.epitech.depthdiablo.combat.Faction;
 import com.epitech.depthdiablo.combat.HitResult;
 import com.epitech.depthdiablo.combat.StatusEffect;
@@ -580,7 +580,7 @@ class CharacterTest {
   void should_stop_its_status_effects_when_it_dies() {
     Character character = aCharacter().withHp(10).build();
     CountingEffect effect = new CountingEffect(5, aCharacter().build());
-    character.applyStatus(new Burn(new BurnSpec(10, 1, 5), aCharacter().build()));
+    character.applyStatus(new Burn(new DotSpec(10, 1, 5), aCharacter().build()));
     character.applyStatus(effect);
 
     character.update(1);
@@ -678,8 +678,8 @@ class CharacterTest {
     World world = new World();
     Character character = aCharacter().withHp(2).withWorld(world).build();
     Character source = aCharacter().build();
-    character.applyStatus(new Burn(new BurnSpec(2, 1, 5), source));
-    character.applyStatus(new Burn(new BurnSpec(2, 1, 5), source));
+    character.applyStatus(new Burn(new DotSpec(2, 1, 5), source));
+    character.applyStatus(new Burn(new DotSpec(2, 1, 5), source));
     List<GameEvent> deaths = new ArrayList<>();
     world.getEventBus().subscribe(EntityDied.class, deaths::add);
 
@@ -842,7 +842,7 @@ class CharacterTest {
 
   private static FireRing aFireRing() {
     return new FireRing(
-        "fire_ring", "item.fire_ring.name", "items/fire_ring", 0, new BurnSpec(2, 1, 3));
+        "fire_ring", "item.fire_ring.name", "items/fire_ring", 0, new DotSpec(2, 1, 3));
   }
 
   private static BuildModifier attackSpeedTimes(float factor) {

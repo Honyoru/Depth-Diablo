@@ -10,13 +10,13 @@ package com.epitech.depthdiablo.combat;
  * @param intervalTicks the ticks between two damages; at least 1
  * @param durationTicks how many ticks the burn lasts; at least 1
  */
-public record BurnSpec(int damage, int intervalTicks, int durationTicks) {
+public record DotSpec(int damage, int intervalTicks, int durationTicks) {
   /**
    * Checks the values.
    *
    * @throws IllegalArgumentException if a value is less than 1
    */
-  public BurnSpec {
+  public DotSpec {
     if (damage < 1) {
       throw new IllegalArgumentException("Damage must not be negative: " + damage);
     }

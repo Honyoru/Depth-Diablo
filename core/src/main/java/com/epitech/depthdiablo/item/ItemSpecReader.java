@@ -1,7 +1,7 @@
 package com.epitech.depthdiablo.item;
 
 import com.badlogic.gdx.utils.JsonValue;
-import com.epitech.depthdiablo.combat.BurnSpec;
+import com.epitech.depthdiablo.combat.DotSpec;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -58,11 +58,11 @@ public final class ItemSpecReader {
                   readBurn(id, json.get("burn"))));
 
   /** Reads the {@code "burn"} object of a fire ring entry. */
-  private static BurnSpec readBurn(String id, JsonValue burn) {
+  private static DotSpec readBurn(String id, JsonValue burn) {
     if (burn == null) {
       throw new IllegalArgumentException("Item " + id + " has no \"burn\" object in the data file");
     }
-    return new BurnSpec(
+    return new DotSpec(
         burn.getInt("damage"), burn.getInt("intervalTicks"), burn.getInt("durationTicks"));
   }
 
