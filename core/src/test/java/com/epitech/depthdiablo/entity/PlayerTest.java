@@ -29,6 +29,8 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.List;
 
 /** GDD 1.3.1 and 1.5: the player walks where its input points */
 class PlayerTest {
@@ -438,6 +440,64 @@ class PlayerTest {
   }
 
   @Test
+  void should_interact_with_what_is_in_reach_when_the_key_is_pressed_and_no_item_lies_there() {
+    Player player = aKnight();
+    Talker talker = aTalkerAt(40); // its box is 32 pixels from the knight's centre
+    input.holdPickUp();
+
+    tick(player, 1);
+
+    assertEquals(List.of(player), talker.visitors);
+  }
+
+  @Test
+  void should_not_interact_with_what_is_out_of_reach() {
+    Player player = aKnight();
+    Talker talker = aTalkerAt(41); // 33 pixels from the knight's centre
+    input.holdPickUp();
+
+    tick(player, 1);
+
+    assertTrue(talker.visitors.isEmpty());
+  }
+
+  @Test
+  void should_pick_up_the_item_rather_than_interact_when_both_are_in_reach() {
+    Player player = aKnight();
+    Talker talker = aTalkerAt(20);
+    ItemDrop drop = aDropAt(12, 8);
+    input.holdPickUp();
+
+    tick(player, 1);
+
+    assertTrue(drop.isRemoved());
+    assertTrue(talker.visitors.isEmpty());
+  }
+
+  @Test
+  void should_interact_only_once_per_press() {
+    Player player = aKnight();
+    Talker talker = aTalkerAt(20);
+    input.holdPickUp();
+
+    tick(player, 3); // held for 3 ticks
+
+    assertEquals(1, talker.visitors.size());
+  }
+
+  @Test
+  void should_interact_with_the_nearest_of_two_interactables() {
+    Player player = aKnight();
+    Talker far = aTalkerAt(30);
+    Talker near = aTalkerAt(20);
+
+    Optional<Interactable> target = player.getInteractTarget();
+
+    assertEquals(Optional.of(near), target);
+    assertTrue(far.visitors.isEmpty());
+  }
+
+  @Test
   void should_drop_its_old_weapon_where_it_stands_when_it_picks_up_a_weapon() {
     Player player = aKnight();
     Weapon old = player.getInventory().getWeapon();
@@ -474,6 +534,33 @@ class PlayerTest {
     world.add(drop);
     return drop;
   }
+
+    /** Puts a 16 x 16 interactable on the knight's row, its left side at the given x. */
+  private Talker aTalkerAt(float x) {
+    Talker talker = new Talker(new Aabb(x, 0, 16, 16));
+    world.add(talker);
+    return talker;
+  }
+
+  /** An interactable that remembers who used it. */
+  private static final class Talker extends Entity implements Interactable {
+    private final List<Player> visitors = new ArrayList<>();
+
+    Talker(Aabb box) {
+      super(box);
+    }
+
+    @Override
+    public void interact(Player player) {
+      visitors.add(player);
+    }
+
+    @Override
+    protected void onUpdate(long tick) {
+      // It stands still.
+    }
+  }
+
 
   /** Tells whether an item lies on the ground, not taken. */
   private boolean liesOnTheGround(Item item) {
