@@ -55,7 +55,30 @@ public final class ItemSpecReader {
                   json.getString("nameKey"),
                   json.getString("spriteId"),
                   json.getInt("price"),
-                  readBurn(id, json.get("burn"))));
+                  readBurn(id, json.get("burn"))),
+          "Axe",
+          (id, json) ->
+              new ItemSpec.AxeSpec(
+                  id,
+                  json.getString("nameKey"),
+                  json.getString("spriteId"),
+                  Rarity.valueOf(json.getString("rarity")),
+                  json.getInt("price"),
+                  json.getInt("attackBonus"),
+                  json.getFloat("attackSpeed"),
+                  json.getFloat("range"),
+                  json.getFloat("width"),
+                  json.getFloat("arcDegrees"),
+                  json.getInt("swingTicks")),
+          "Shield",
+          (id, json) ->
+              new ItemSpec.ShieldSpec(
+                  id,
+                  json.getString("nameKey"),
+                  json.getString("spriteId"),
+                  Rarity.valueOf(json.getString("rarity")),
+                  json.getInt("price"),
+                  json.getInt("defenseBonus")));
 
   /** Reads the {@code "burn"} object of a fire ring entry. */
   private static DotSpec readBurn(String id, JsonValue burn) {

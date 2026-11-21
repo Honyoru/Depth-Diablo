@@ -69,6 +69,27 @@ public final class ItemFactory {
               fireRing.spriteId(),
               fireRing.price(),
               fireRing.burn());
+      case ItemSpec.AxeSpec axe ->
+          new Axe(
+              axe.id(),
+              axe.nameKey(),
+              axe.spriteId(),
+              axe.rarity(),
+              axe.price(),
+              axe.attackBonus(),
+              axe.attackSpeed(),
+              axe.range(),
+              axe.width(),
+              axe.arcDegrees(),
+              axe.swingTicks());
+      case ItemSpec.ShieldSpec shield ->
+          new Shield(
+              shield.id(),
+              shield.nameKey(),
+              shield.spriteId(),
+              shield.rarity(),
+              shield.price(),
+              shield.defenseBonus());
     };
   }
 }

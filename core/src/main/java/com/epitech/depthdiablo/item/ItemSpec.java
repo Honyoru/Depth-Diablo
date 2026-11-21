@@ -104,4 +104,25 @@ public sealed interface ItemSpec {
    */
   record FireRingSpec(String id, String nameKey, String spriteId, int price, DotSpec burn)
       implements ItemSpec {}
+
+  /** An {@code "Axe"} entry; same values as a sword. */
+  record AxeSpec(
+      String id,
+      String nameKey,
+      String spriteId,
+      Rarity rarity,
+      int price,
+      int attackBonus,
+      float attackSpeed,
+      float range,
+      float width,
+      float arcDegrees,
+      int swingTicks)
+      implements ItemSpec {}
+
+  /** A {@code "Shield"} entry. */
+  record ShieldSpec(
+      String id, String nameKey, String spriteId, Rarity rarity, int price, int defenseBonus)
+      implements ItemSpec {}
+
 }
