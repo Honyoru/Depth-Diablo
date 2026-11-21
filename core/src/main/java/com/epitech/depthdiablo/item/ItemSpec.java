@@ -1,6 +1,7 @@
 package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.combat.DotSpec;
+import com.epitech.depthdiablo.entity.Stat;
 
 /**
  * The values of one entry of {@code data/items.json} (Q93, Q129), typed by its {@code "class"}.
@@ -125,4 +126,16 @@ public sealed interface ItemSpec {
       String id, String nameKey, String spriteId, Rarity rarity, int price, int defenseBonus)
       implements ItemSpec {}
 
+  /** A {@code "StatRing"} entry. */
+  record StatRingSpec(
+      String id, String nameKey, String spriteId, int price, Stat stat, float amount)
+      implements ItemSpec {}
+
+  /** A {@code "LifeStealRing"} entry. */
+  record LifeStealRingSpec(String id, String nameKey, String spriteId, int price, float fraction)
+      implements ItemSpec {}
+
+  /** An {@code "ExecutionerRing"} entry. */
+  record ExecutionerRingSpec(String id, String nameKey, String spriteId, int price, float threshold)
+      implements ItemSpec {}
 }

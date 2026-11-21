@@ -90,6 +90,15 @@ public final class ItemFactory {
               shield.rarity(),
               shield.price(),
               shield.defenseBonus());
+      case ItemSpec.StatRingSpec ring ->
+          new StatRing(
+              ring.id(), ring.nameKey(), ring.spriteId(), ring.price(), ring.stat(), ring.amount());
+      case ItemSpec.LifeStealRingSpec ring ->
+          new LifeStealRing(
+              ring.id(), ring.nameKey(), ring.spriteId(), ring.price(), ring.fraction());
+      case ItemSpec.ExecutionerRingSpec ring ->
+          new ExecutionerRing(
+              ring.id(), ring.nameKey(), ring.spriteId(), ring.price(), ring.threshold());
     };
   }
 }

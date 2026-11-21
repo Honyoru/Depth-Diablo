@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.item;
 
 import com.badlogic.gdx.utils.JsonValue;
 import com.epitech.depthdiablo.combat.DotSpec;
+import com.epitech.depthdiablo.entity.Stat;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -78,7 +79,32 @@ public final class ItemSpecReader {
                   json.getString("spriteId"),
                   Rarity.valueOf(json.getString("rarity")),
                   json.getInt("price"),
-                  json.getInt("defenseBonus")));
+                  json.getInt("defenseBonus")),
+          "StatRing",
+          (id, json) ->
+              new ItemSpec.StatRingSpec(
+                  id,
+                  json.getString("nameKey"),
+                  json.getString("spriteId"),
+                  json.getInt("price"),
+                  Stat.valueOf(json.getString("stat")),
+                  json.getFloat("amount")),
+          "LifeStealRing",
+          (id, json) ->
+              new ItemSpec.LifeStealRingSpec(
+                  id,
+                  json.getString("nameKey"),
+                  json.getString("spriteId"),
+                  json.getInt("price"),
+                  json.getFloat("fraction")),
+          "ExecutionerRing",
+          (id, json) ->
+              new ItemSpec.ExecutionerRingSpec(
+                  id,
+                  json.getString("nameKey"),
+                  json.getString("spriteId"),
+                  json.getInt("price"),
+                  json.getFloat("threshold")));
 
   /** Reads the {@code "burn"} object of a fire ring entry. */
   private static DotSpec readBurn(String id, JsonValue burn) {

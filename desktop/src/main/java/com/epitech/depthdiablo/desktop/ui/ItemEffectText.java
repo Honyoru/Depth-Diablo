@@ -42,7 +42,13 @@ final class ItemEffectText {
         }
         case "effect.burn_interval_ticks" -> burnInterval = value;
         case "effect.burn_duration_ticks" -> burnDuration = value;
-        default -> lines.add(effect.key() + " " + number(value));
+        case "effect.life_steal" -> lines.add("Heals " + number(value) + "% of damage dealt");
+        case "effect.execute" -> lines.add("Kills targets under " + number(value) + "% HP");
+        default ->
+            lines.add(
+                effect.key().startsWith("ring.")
+                    ? name(effect.key().substring("ring.".length())) + " +" + number(value)
+                    : effect.key() + " " + number(value));
       }
     }
     if (burns) {

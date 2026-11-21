@@ -94,6 +94,20 @@
     { "id": "vitality_elixir", "class": "Potion", "nameKey": "item.vitality_elixir.name",
       "spriteId": "items/potions/vitality_elixir", "price": 25, "healAmount": 10 },
     { "id": "holy_water", "class": "Potion", "nameKey": "item.holy_water.name",
-      "spriteId": "items/potions/holy_water", "price": 40, "healAmount": 20 }
+      "spriteId": "items/potions/holy_water", "price": 40, "healAmount": 20 },
+    { "id": "iron_band", "class": "StatRing", "nameKey": "item.iron_band.name",
+      "spriteId": "items/rings/iron_band", "price": 40, "stat": "ATTACK", "amount": 2 },
+    { "id": "copper_ring", "class": "StatRing", "nameKey": "item.copper_ring.name",
+      "spriteId": "items/rings/copper_ring", "price": 30, "stat": "SPEED", "amount": 40 },
+    { "id": "sapphire_ring", "class": "StatRing", "nameKey": "item.sapphire_ring.name",
+      "spriteId": "items/rings/sapphire_ring", "price": 50, "stat": "ATTACK_SPEED", "amount": 0.3 },
+    { "id": "amethyst_ring", "class": "StatRing", "nameKey": "item.amethyst_ring.name",
+      "spriteId": "items/rings/amethyst_ring", "price": 40, "stat": "MAX_HP", "amount": 200 },
+    { "id": "diamond_ring", "class": "StatRing", "nameKey": "item.diamond_ring.name",
+      "spriteId": "items/rings/diamond_ring", "price": 60, "stat": "DEFENSE", "amount": 1 },
+    { "id": "ruby_ring", "class": "LifeStealRing", "nameKey": "item.ruby_ring.name",
+      "spriteId": "items/rings/ruby_ring", "price": 80, "fraction": 0.25 },
+    { "id": "bone_ring", "class": "ExecutionerRing", "nameKey": "item.bone_ring.name",
+      "spriteId": "items/rings/bone_ring", "price": 80, "threshold": 0.2 }
   ]
 }
