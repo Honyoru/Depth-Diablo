@@ -31,6 +31,7 @@ import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.FixedTimestep;
 import com.epitech.depthdiablo.engine.ItemDropped;
+import com.epitech.depthdiablo.engine.ShopOpened;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.CharacterFactory;
@@ -47,6 +48,7 @@ import com.epitech.depthdiablo.item.Item;
 import com.epitech.depthdiablo.item.ItemFactory;
 import com.epitech.depthdiablo.item.LootTable;
 import com.epitech.depthdiablo.random.SeededRandomSource;
+import com.epitech.depthdiablo.shop.Shopkeeper;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -65,7 +67,7 @@ public final class GameScreen extends ScreenAdapter {
   /** Name of the map layer that holds the boss spawn tiles. */
   private static final String BOSS_LAYER = "spawner_boss";
 
-  /** Name of the map layer that draws the merchant; hidden while there is no shop. */
+  /** Name of the map layer that draws the merchant; shown only while the shopkeeper trades. */
   private static final String MERCHANT_LAYER = "merchant";
 
   /** The Tiled map of the selected mode. */
@@ -77,6 +79,12 @@ public final class GameScreen extends ScreenAdapter {
 
   /** Arena mode only: spawns the waves. Null in Endless mode. */
   private final WaveDirector waveDirector;
+
+  /** Arena mode only: the shopkeeper, at the merchant tiles of the map. Null in Endless mode. */
+  private final Shopkeeper shopkeeper;
+
+  /** The map layer that draws the shopkeeper; null if the map has none. */
+  private final MapLayer merchantLayer;
 
   /** Next enemy spawn tile, round-robin. */
   private int nextEnemySpawn;
@@ -111,7 +119,7 @@ public final class GameScreen extends ScreenAdapter {
 
   private final FixedTimestep timestep = new FixedTimestep();
 
-  private final ArenaCycle arenaCycle = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS, false);
+  private final ArenaCycle arenaCycle = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS);
 
   private final boolean arenaMode;
 
@@ -139,6 +147,12 @@ public final class GameScreen extends ScreenAdapter {
 
   /** Draws the inventory page while it is open. */
   private final InventoryPage inventoryView;
+
+  /** The shop page (E next to the shopkeeper): the game is paused while it is open. */
+  private final ShopPageState shopPage = new ShopPageState();
+
+  /** Draws the shop page while it is open. */
+  private final ShopPage shopView;
 
   /** Draws the items on the ground in the sprite view. */
   private final ItemView itemView = new ItemView(itemTextures);
@@ -208,6 +222,7 @@ public final class GameScreen extends ScreenAdapter {
             inventoryPage,
             this::dropFromPage,
             this::swapFromPage);
+    this.shopView = new ShopPage(skin, app.getBatch(), this::startNextRound, this::leaveShop);
 
     this.worldCamera = new OrthographicCamera();
     this.worldCamera.setToOrtho(false, GameConstants.VIRTUAL_WIDTH, GameConstants.VIRTUAL_HEIGHT);
@@ -217,10 +232,7 @@ public final class GameScreen extends ScreenAdapter {
 
     this.tiledMap = new TmxMapLoader().load(mapPath);
     this.clearColor = readBackgroundColor(tiledMap);
-    MapLayer merchant = tiledMap.getLayers().get(MERCHANT_LAYER);
-    if (merchant != null) {
-      merchant.setVisible(false); // no shop for now
-    }
+    this.merchantLayer = tiledMap.getLayers().get(MERCHANT_LAYER);
 
     this.mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, app.getBatch());
     this.batch = app.getBatch();
@@ -236,8 +248,11 @@ public final class GameScreen extends ScreenAdapter {
     if (arenaMode) {
       // the first tick spawns wave 1
       this.waveDirector = new WaveDirector(arenaCycle, new WavePlan(), this::spawnEnemy);
+      this.shopkeeper = new Shopkeeper(merchantBox(), arenaCycle, world);
+      this.world.add(shopkeeper); // away until the first boss wave is cleared
     } else {
       this.waveDirector = null;
+      this.shopkeeper = null;
       for (int i = 0; i < spawns.enemies().size(); i++) {
         spawnEnemy("rat", false); // one rat per enemy tile, in turn
       }
@@ -253,6 +268,9 @@ public final class GameScreen extends ScreenAdapter {
     world.getEventBus().subscribe(DamageDealt.class, enemyView); // hit animation
     world.getEventBus().subscribe(EntityDied.class, enemyView); // death animation
     world.getEventBus().subscribe(ItemDropped.class, dropper);
+    world
+        .getEventBus()
+        .subscribe(ShopOpened.class, event -> openShop(((ShopOpened) event).shopkeeper()));
     world
         .getEventBus()
         .subscribe(
@@ -300,12 +318,12 @@ public final class GameScreen extends ScreenAdapter {
       hotReload.request();
       LOG.info("Hot reload requested");
     }
-    if (Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+    if (!shopPage.isOpen() && Gdx.input.isKeyJustPressed(Input.Keys.I)) {
       inventoryPage.toggle();
       Gdx.input.setInputProcessor(
           inventoryPage.isOpen() ? inventoryView.getStage() : hud.getStage());
     }
-    if (inventoryPage.isOpen()) {
+    if (isPaused()) {
       holdStill();
     } else {
       input.readInto(orders, worldCamera);
@@ -331,7 +349,10 @@ public final class GameScreen extends ScreenAdapter {
     // and
     // the page apply their own 16:9 viewport); frozen animations while paused
     HdpiUtils.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-    float worldDelta = inventoryPage.isOpen() ? 0f : delta;
+    float worldDelta = isPaused() ? 0f : delta;
+    if (merchantLayer != null) {
+      merchantLayer.setVisible(shopkeeper != null && shopkeeper.isOpen()); // drawn while he trades
+    }
     followPlayer();
     velocity.set(player.position()).sub(previousPosition);
     renderers
@@ -349,6 +370,11 @@ public final class GameScreen extends ScreenAdapter {
     if (inventoryPage.isOpen()) {
       inventoryView.refresh(player);
       inventoryView.render(delta);
+    }
+
+    // 5. The shop page over everything, while it is open
+    if (shopPage.isOpen()) {
+      shopView.render(delta);
     }
   }
 
@@ -391,8 +417,8 @@ public final class GameScreen extends ScreenAdapter {
   }
 
   /**
-   * Gives the player no order while the inventory page is open: it stands still and does not
-   * attack, and nothing held before the pause is still held when it ends.
+   * Gives the player no order while a page is open: it stands still and does not attack, and
+   * nothing held before the pause is still held when it ends.
    */
   private void holdStill() {
     orders.walk(0f, 0f);
@@ -401,6 +427,62 @@ public final class GameScreen extends ScreenAdapter {
     orders.releaseUse();
     orders.releaseDash();
     orders.releaseDodgeRoll();
+  }
+
+  /** Tells whether a page is open, the inventory or the shop: the world does not tick meanwhile. */
+  private boolean isPaused() {
+    return inventoryPage.isOpen() || shopPage.isOpen();
+  }
+
+  /** Opens the shop page on the shopkeeper the player talks to; its buttons get the clicks. */
+  private void openShop(Shopkeeper keeper) {
+    shopPage.open(keeper);
+    Gdx.input.setInputProcessor(shopView.getStage());
+  }
+
+  /** The Next round button: the shopkeeper goes away and the next wave comes. */
+  private void startNextRound() {
+    shopPage.startNextRound();
+    Gdx.input.setInputProcessor(hud.getStage());
+  }
+
+  /** The Leave button: back to the arena; the shopkeeper waits until the player comes back. */
+  private void leaveShop() {
+    shopPage.close();
+    Gdx.input.setInputProcessor(hud.getStage());
+  }
+
+  /**
+   * Returns the box around the merchant tiles of the map: where the shopkeeper stands.
+   *
+   * @throws IllegalStateException if the map has no merchant layer, or the layer has no tile
+   */
+  private Aabb merchantBox() {
+    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(MERCHANT_LAYER);
+    if (layer == null) {
+      throw new IllegalStateException("No \"" + MERCHANT_LAYER + "\" layer in " + mapPath);
+    }
+    int left = Integer.MAX_VALUE;
+    int bottom = Integer.MAX_VALUE;
+    int right = -1;
+    int top = -1;
+    for (int x = 0; x < layer.getWidth(); x++) {
+      for (int y = 0; y < layer.getHeight(); y++) {
+        if (layer.getCell(x, y) != null) {
+          left = Math.min(left, x);
+          bottom = Math.min(bottom, y);
+          right = Math.max(right, x);
+          top = Math.max(top, y);
+        }
+      }
+    }
+    if (right < 0) {
+      throw new IllegalStateException(
+          "No tile in the \"" + MERCHANT_LAYER + "\" layer of " + mapPath);
+    }
+    float tile = GameConstants.TILE_SIZE;
+    return new Aabb(
+        left * tile, bottom * tile, (right - left + 1) * tile, (top - bottom + 1) * tile);
   }
 
   private void runLogic(float delta) {
@@ -461,6 +543,7 @@ public final class GameScreen extends ScreenAdapter {
   public void resize(int width, int height) {
     hud.resize(width, height);
     inventoryView.resize(width, height);
+    shopView.resize(width, height);
   }
 
   @Override
@@ -468,6 +551,7 @@ public final class GameScreen extends ScreenAdapter {
     LOG.info("Game screen closed after {} ticks", world.getCurrentTick());
     hud.dispose();
     inventoryView.dispose();
+    shopView.dispose();
     renderers.values().forEach(Renderer::dispose);
     eventLaserOverlay.dispose();
     playerView.dispose();

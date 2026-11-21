@@ -12,7 +12,6 @@ import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.GameEvent;
 import com.epitech.depthdiablo.engine.ItemDropped;
 import com.epitech.depthdiablo.engine.ShopOpened;
-
 import java.util.Objects;
 
 /**
@@ -74,7 +73,7 @@ final class EventLaserOverlay implements Disposable {
       case DamageDealt damage -> DAMAGE_COLOR;
       case EntityDied death -> DEATH_COLOR;
       case ItemDropped drop -> DROP_COLOR;
-       case ShopOpened shop -> SHOP_COLOR;
+      case ShopOpened shop -> SHOP_COLOR;
     };
   }
 

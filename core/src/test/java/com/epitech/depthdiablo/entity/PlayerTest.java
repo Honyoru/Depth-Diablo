@@ -25,12 +25,12 @@ import com.epitech.depthdiablo.item.Potion;
 import com.epitech.depthdiablo.item.Sword;
 import com.epitech.depthdiablo.item.Weapon;
 import com.epitech.depthdiablo.testdata.Items;
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
-import java.util.List;
 
 /** GDD 1.3.1 and 1.5: the player walks where its input points */
 class PlayerTest {
@@ -535,7 +535,7 @@ class PlayerTest {
     return drop;
   }
 
-    /** Puts a 16 x 16 interactable on the knight's row, its left side at the given x. */
+  /** Puts a 16 x 16 interactable on the knight's row, its left side at the given x. */
   private Talker aTalkerAt(float x) {
     Talker talker = new Talker(new Aabb(x, 0, 16, 16));
     world.add(talker);
@@ -560,7 +560,6 @@ class PlayerTest {
       // It stands still.
     }
   }
-
 
   /** Tells whether an item lies on the ground, not taken. */
   private boolean liesOnTheGround(Item item) {
