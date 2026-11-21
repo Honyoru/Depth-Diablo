@@ -338,6 +338,24 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
+   * Tells whether an effect of the given kind is active on this character, e.g. for the view to
+   * tint a burning enemy.
+   *
+   * @param type the kind of effect, e.g. {@code Burn.class}; subclasses count
+   * @return true if at least one active effect is of that kind
+   * @throws NullPointerException if {@code type} is {@code null}
+   */
+  public boolean hasStatus(Class<? extends StatusEffect> type) {
+    Objects.requireNonNull(type, "type is null");
+    for (StatusEffect effect : statuses) {
+      if (type.isInstance(effect) && !effect.isOver()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * Takes damage from a status effect, such as a burn tick (GDD 1.3.1). Unlike {@link
    * #takeDamage(int)}, it ignores invincibility and grants none: a burn keeps ticking during the
    * frames after a hit, and never blocks the next hit. The amount is applied as is, without the
