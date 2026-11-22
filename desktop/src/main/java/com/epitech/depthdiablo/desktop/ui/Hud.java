@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.desktop.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
@@ -28,6 +29,9 @@ public final class Hud implements Disposable {
 
   /** Size of the HUD texts: the skin's font is 32 px, too big for a corner. */
   private static final float TEXT_SCALE = 0.6f;
+
+  /** Size of the key letters on the hotbar. */
+  private static final float KEY_SCALE = 0.4f;
 
   /** Size of the BOSS title above its life bar. */
   private static final float BOSS_TITLE_SCALE = 0.7f;
@@ -65,6 +69,9 @@ public final class Hud implements Disposable {
   private final Table bossTable;
 
   private final ProgressBar bossBar;
+
+  /** "E: pick up", above the item in range; placed freely on the stage, not in the table. */
+  private final Label pickUpHint;
 
   /**
    * Builds the Scene2D HUD table using the provided skin and state model.
@@ -105,9 +112,17 @@ public final class Hud implements Disposable {
       Table iconCell = new Table();
       iconCell.add(icon).size(28f, 28f);
       iconCell.setTouchable(Touchable.disabled);
-      slotStacks[i] = new Stack(slotBtn, iconCell);
+      Label key = new Label(String.valueOf(i + 1), skin);
+      key.setFontScale(KEY_SCALE);
+      Table keyCell = new Table();
+      keyCell.add(key).expand().top().left().pad(2f);
+      keyCell.setTouchable(Touchable.disabled);
+      slotStacks[i] = new Stack(slotBtn, iconCell, keyCell);
       quickAccessTable.add(slotStacks[i]).size(40f, 40f).pad(4f);
     }
+    Label useKey = new Label("A: use", skin); // the AZERTY key; Q on QWERTY (key positions)
+    useKey.setFontScale(KEY_SCALE);
+    quickAccessTable.add(useKey).bottom().padLeft(6f);
 
     this.minimapBox = new Image(skin.get("minimap_bg", TextureRegionDrawable.class));
     this.progressLabel = new Label("", skin);
@@ -145,6 +160,22 @@ public final class Hud implements Disposable {
     root.add(minimapBox).size(96f, 96f).bottom().right().pad(12f);
 
     stage.addActor(root);
+    this.pickUpHint = new Label("E: pick up", skin);
+    pickUpHint.setFontScale(KEY_SCALE);
+    pickUpHint.setVisible(false);
+    stage.addActor(pickUpHint);
+  }
+
+  /**
+   * Converts a point of the window, y up as the world camera gives it, to the HUD's coordinates,
+   * letterbox included.
+   *
+   * @param x the point's x in window pixels
+   * @param y the point's y in window pixels, from the bottom
+   * @return the same point on the HUD
+   */
+  public Vector2 windowToHud(float x, float y) {
+    return stage.screenToStageCoordinates(new Vector2(x, Gdx.graphics.getHeight() - y));
   }
 
   /** Returns the Scene2D stage so it can be added to an {@code InputMultiplexer}. */
@@ -161,6 +192,9 @@ public final class Hud implements Disposable {
     healthBar.setValue(state.getHealthPercentage());
     bossTable.setVisible(state.isBossShown());
     bossBar.setValue(state.getBossHealthPercentage());
+    pickUpHint.setVisible(state.isPickUpHintShown());
+    pickUpHint.setPosition(
+        state.getPickUpHintX() - pickUpHint.getPrefWidth() / 2f, state.getPickUpHintY());
     coinCounter.setText(String.valueOf(state.getCoins()));
     progressLabel.setText(state.getProgressText());
     timerLabel.setText(state.getTimerText());

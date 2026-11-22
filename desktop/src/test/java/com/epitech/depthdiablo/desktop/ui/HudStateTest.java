@@ -155,4 +155,30 @@ class HudStateTest {
   void should_throw_when_the_boss_max_hp_is_0() {
     assertThrows(IllegalArgumentException.class, () -> new HudState().syncBoss(0, 0));
   }
+
+  @Test
+  void should_hide_the_pick_up_hint_when_created() {
+    assertFalse(new HudState().isPickUpHintShown());
+  }
+
+  @Test
+  void should_show_the_pick_up_hint_where_it_is_asked() {
+    HudState state = new HudState();
+
+    state.showPickUpHint(120f, 80f);
+
+    assertTrue(state.isPickUpHintShown());
+    assertEquals(120f, state.getPickUpHintX());
+    assertEquals(80f, state.getPickUpHintY());
+  }
+
+  @Test
+  void should_hide_the_pick_up_hint_once_hidden() {
+    HudState state = new HudState();
+    state.showPickUpHint(120f, 80f);
+
+    state.hidePickUpHint();
+
+    assertFalse(state.isPickUpHintShown());
+  }
 }

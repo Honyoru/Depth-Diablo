@@ -38,6 +38,12 @@ public final class HudState {
 
   private float bossHealthPercentage;
 
+  private boolean pickUpHintShown;
+
+  private float pickUpHintX;
+
+  private float pickUpHintY;
+
   /** Creates a HUD model with free hotbar slots. */
   public HudState() {
     Arrays.fill(hotbarSpriteIds, FREE_SLOT_SPRITE);
@@ -92,6 +98,33 @@ public final class HudState {
    */
   public float getBossHealthPercentage() {
     return bossHealthPercentage;
+  }
+
+  /**
+   * Tells whether the "E: pick up" hint shows.
+   *
+   * @return true while an item is in pickup range and the game runs
+   */
+  public boolean isPickUpHintShown() {
+    return pickUpHintShown;
+  }
+
+  /**
+   * Returns where the hint stands across: centred above the item.
+   *
+   * @return the centre of the hint, in HUD coordinates
+   */
+  public float getPickUpHintX() {
+    return pickUpHintX;
+  }
+
+  /**
+   * Returns where the hint stands up: just above the item.
+   *
+   * @return the bottom of the hint, in HUD coordinates
+   */
+  public float getPickUpHintY() {
+    return pickUpHintY;
   }
 
   /** Returns current coin count. */
@@ -226,6 +259,23 @@ public final class HudState {
   public void hideBoss() {
     bossShown = false;
     bossHealthPercentage = 0f;
+  }
+
+  /**
+   * Shows the hint above an item the player can pick up.
+   *
+   * @param x the centre of the hint, in HUD coordinates
+   * @param y its bottom, in HUD coordinates
+   */
+  public void showPickUpHint(float x, float y) {
+    pickUpHintShown = true;
+    pickUpHintX = x;
+    pickUpHintY = y;
+  }
+
+  /** Hides the hint: no item in range, or the game is paused. */
+  public void hidePickUpHint() {
+    pickUpHintShown = false;
   }
 
   /** Whole seconds left, rounded up: 59 ticks still show 1 s, never 0 s. */

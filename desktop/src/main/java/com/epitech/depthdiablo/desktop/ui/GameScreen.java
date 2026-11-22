@@ -16,6 +16,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.arena.ArenaCycle;
@@ -41,6 +42,7 @@ import com.epitech.depthdiablo.entity.CharacterFactory;
 import com.epitech.depthdiablo.entity.Enemy;
 import com.epitech.depthdiablo.entity.EnemyFactory;
 import com.epitech.depthdiablo.entity.Entity;
+import com.epitech.depthdiablo.entity.ItemDrop;
 import com.epitech.depthdiablo.entity.ItemDropper;
 import com.epitech.depthdiablo.entity.LootDrops;
 import com.epitech.depthdiablo.entity.Player;
@@ -384,6 +386,8 @@ public final class GameScreen extends ScreenAdapter {
       merchantLayer.setVisible(shopkeeper != null && shopkeeper.isOpen()); // drawn while he trades
     }
     followPlayer();
+    Optional<ItemDrop> pickUpTarget = isPaused() ? Optional.empty() : player.getPickUpTarget();
+    pickUpTarget.ifPresentOrElse(this::showPickUpHintAbove, hudState::hidePickUpHint);
     velocity.set(player.position()).sub(previousPosition);
     renderers
         .get(viewSwitcher.getMode())
@@ -724,6 +728,16 @@ public final class GameScreen extends ScreenAdapter {
         }
       }
     }
+  }
+
+  /** Puts the "E: pick up" hint just above an item on the ground, once the camera has moved. */
+  private void showPickUpHintAbove(ItemDrop drop) {
+    Aabb box = drop.getBodyBox();
+    Vector3 onWindow =
+        worldCamera.project(
+            new Vector3(box.x() + box.width() / 2f, box.y() + box.height() + 4f, 0f));
+    Vector2 onHud = hud.windowToHud(onWindow.x, onWindow.y);
+    hudState.showPickUpHint(onHud.x, onHud.y);
   }
 
   private void followPlayer() {
