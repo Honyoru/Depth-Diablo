@@ -1,6 +1,6 @@
 package com.epitech.depthdiablo.item;
 
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
 
 /**
  * An item used once from the hotbar, such as a potion (GDD 1.3.1, 1.4).

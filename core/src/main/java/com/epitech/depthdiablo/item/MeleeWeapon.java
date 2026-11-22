@@ -1,9 +1,9 @@
 package com.epitech.depthdiablo.item;
 
-import com.epitech.depthdiablo.combat.Obb;
 import com.epitech.depthdiablo.combat.Swing;
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.geometry.Obb;
 import java.util.Objects;
 
 /**

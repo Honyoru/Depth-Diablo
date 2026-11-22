@@ -1,5 +1,7 @@
 package com.epitech.depthdiablo.entity;
 
+import com.epitech.depthdiablo.geometry.Aabb;
+
 /** Something with a body that other bodies can touch (GDD 1.5). */
 public interface Collidable {
   /**

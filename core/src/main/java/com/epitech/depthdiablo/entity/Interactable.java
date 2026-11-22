@@ -1,5 +1,7 @@
 package com.epitech.depthdiablo.entity;
 
+import com.epitech.depthdiablo.entity.character.Player;
+
 /**
  * What the interact key (E) uses when no item lies in reach (GDD 2.4): the shopkeeper, later the
  * chests and the locked doors.

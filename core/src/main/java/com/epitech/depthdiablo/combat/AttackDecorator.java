@@ -1,7 +1,7 @@
 package com.epitech.depthdiablo.combat;
 
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
 import java.util.Objects;
 
 /**

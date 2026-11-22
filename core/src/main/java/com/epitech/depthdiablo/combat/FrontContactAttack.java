@@ -1,6 +1,7 @@
 package com.epitech.depthdiablo.combat;
 
-import com.epitech.depthdiablo.entity.Aabb;
+import com.epitech.depthdiablo.geometry.Aabb;
+import com.epitech.depthdiablo.geometry.Obb;
 
 /**
  * A contact attack that hits in front of the owner, towards the aim (GDD 1.3.1): its area starts at

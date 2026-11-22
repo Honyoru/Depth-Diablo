@@ -2,8 +2,8 @@ package com.epitech.depthdiablo.desktop.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.Entity;
+import com.epitech.depthdiablo.geometry.Aabb;
 
 /**
  * The high-contrast view (GDD 1.1.2, also an accessibility view): flat shapes on the dark

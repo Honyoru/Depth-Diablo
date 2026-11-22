@@ -4,10 +4,10 @@ import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.Arrow;
-import com.epitech.depthdiablo.entity.Character;
-import com.epitech.depthdiablo.entity.Projectile;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.entity.projectile.Arrow;
+import com.epitech.depthdiablo.entity.projectile.Projectile;
+import com.epitech.depthdiablo.geometry.Aabb;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1: a staff fires the spell its real staff picks, at the staff's speed. */

@@ -1,10 +1,10 @@
 package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.Arrow;
-import com.epitech.depthdiablo.entity.Character;
-import com.epitech.depthdiablo.entity.Projectile;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.entity.projectile.Arrow;
+import com.epitech.depthdiablo.entity.projectile.Projectile;
+import com.epitech.depthdiablo.geometry.Aabb;
 
 /**
  * The bow family: every bow shoots an {@link Arrow} from the centre of its owner (GDD 1.3.1). The

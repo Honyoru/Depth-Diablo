@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.epitech.depthdiablo.combat.Swing;
-import com.epitech.depthdiablo.entity.Player;
+import com.epitech.depthdiablo.entity.character.Player;
 import java.util.Optional;
 
 /**

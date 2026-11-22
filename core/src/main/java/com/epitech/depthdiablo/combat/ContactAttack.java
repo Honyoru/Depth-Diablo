@@ -1,12 +1,13 @@
 package com.epitech.depthdiablo.combat;
 
-import com.epitech.depthdiablo.engine.DamageDealt;
-import com.epitech.depthdiablo.engine.EntityDied;
-import com.epitech.depthdiablo.engine.EventBus;
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.engine.event.DamageDealt;
+import com.epitech.depthdiablo.engine.event.EntityDied;
+import com.epitech.depthdiablo.engine.event.EventBus;
 import com.epitech.depthdiablo.entity.Entity;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.geometry.Aabb;
+import com.epitech.depthdiablo.geometry.Obb;
 import java.util.Objects;
 import java.util.Optional;
 

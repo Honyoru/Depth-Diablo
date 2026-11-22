@@ -1,9 +1,9 @@
 package com.epitech.depthdiablo.debug;
 
-import com.epitech.depthdiablo.engine.EventListener;
-import com.epitech.depthdiablo.engine.GameEvent;
-import com.epitech.depthdiablo.entity.Aabb;
+import com.epitech.depthdiablo.engine.event.EventListener;
+import com.epitech.depthdiablo.engine.event.GameEvent;
 import com.epitech.depthdiablo.entity.Entity;
+import com.epitech.depthdiablo.geometry.Aabb;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

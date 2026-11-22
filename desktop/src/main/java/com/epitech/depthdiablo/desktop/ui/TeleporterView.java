@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Disposable;
-import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.TeleportZone;
+import com.epitech.depthdiablo.geometry.Aabb;
 
 /** Draws the teleport zone once it is open: a glowing pad, tinted blue, centred on the zone. */
 final class TeleporterView implements Disposable {

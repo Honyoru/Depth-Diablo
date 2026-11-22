@@ -1,5 +1,7 @@
 package com.epitech.depthdiablo.entity;
 
+import com.epitech.depthdiablo.geometry.Aabb;
+
 /**
  * A solid tile of the map (GDD 1.5). It never moves and nothing can walk through it: movers ask the
  * world whether a box is free, and a wall makes it taken.

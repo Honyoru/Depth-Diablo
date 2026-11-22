@@ -1,6 +1,6 @@
 package com.epitech.depthdiablo.combat;
 
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
 
 /**
  * A burn (GDD 1.3.1, 1.6): damage over time from fire, such as the fire ring's. The view tints a

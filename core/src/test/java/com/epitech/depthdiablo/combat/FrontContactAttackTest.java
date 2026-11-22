@@ -6,8 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.geometry.Aabb;
+import com.epitech.depthdiablo.geometry.Obb;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1: the front contact attack hits towards the aim, as far past the body at any angle. */

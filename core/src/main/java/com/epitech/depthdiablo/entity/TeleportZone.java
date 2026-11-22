@@ -3,6 +3,9 @@ package com.epitech.depthdiablo.entity;
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
+import com.epitech.depthdiablo.entity.character.Player;
+import com.epitech.depthdiablo.entity.enemy.Enemy;
+import com.epitech.depthdiablo.geometry.Aabb;
 import java.util.Objects;
 
 /**

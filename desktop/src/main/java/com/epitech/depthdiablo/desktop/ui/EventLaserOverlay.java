@@ -7,13 +7,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Disposable;
 import com.epitech.depthdiablo.debug.EventLaser;
-import com.epitech.depthdiablo.engine.AttackStarted;
-import com.epitech.depthdiablo.engine.DamageDealt;
-import com.epitech.depthdiablo.engine.EntityDied;
-import com.epitech.depthdiablo.engine.GameEvent;
-import com.epitech.depthdiablo.engine.ItemDropped;
-import com.epitech.depthdiablo.engine.ItemPickedUp;
-import com.epitech.depthdiablo.engine.ShopOpened;
+import com.epitech.depthdiablo.engine.event.AttackStarted;
+import com.epitech.depthdiablo.engine.event.DamageDealt;
+import com.epitech.depthdiablo.engine.event.EntityDied;
+import com.epitech.depthdiablo.engine.event.GameEvent;
+import com.epitech.depthdiablo.engine.event.ItemDropped;
+import com.epitech.depthdiablo.engine.event.ItemPickedUp;
+import com.epitech.depthdiablo.engine.event.ShopOpened;
 import java.util.Objects;
 
 /**

@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.epitech.depthdiablo.combat.DotSpec;
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.Character;
-import com.epitech.depthdiablo.entity.Fireball;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.entity.projectile.Fireball;
+import com.epitech.depthdiablo.geometry.Aabb;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1: the fire staff casts a fireball that burns what it hurts. */

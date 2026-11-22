@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.epitech.depthdiablo.engine.Rewindable;
 import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

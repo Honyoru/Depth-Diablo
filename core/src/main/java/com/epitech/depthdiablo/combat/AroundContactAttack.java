@@ -1,6 +1,7 @@
 package com.epitech.depthdiablo.combat;
 
-import com.epitech.depthdiablo.entity.Aabb;
+import com.epitech.depthdiablo.geometry.Aabb;
+import com.epitech.depthdiablo.geometry.Obb;
 
 /**
  * A contact attack that hits all around the owner (GDD 1.3.1): its area is the owner's body box

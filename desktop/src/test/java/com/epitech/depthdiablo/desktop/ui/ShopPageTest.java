@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.arena.ArenaCycle;
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Aabb;
+import com.epitech.depthdiablo.geometry.Aabb;
 import com.epitech.depthdiablo.shop.Shopkeeper;
 import org.junit.jupiter.api.Test;
 

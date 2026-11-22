@@ -1,9 +1,9 @@
 package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.combat.Attack;
-import com.epitech.depthdiablo.entity.BuildModifier;
-import com.epitech.depthdiablo.entity.CharacterBuild;
-import com.epitech.depthdiablo.entity.StatSource;
+import com.epitech.depthdiablo.entity.stats.BuildModifier;
+import com.epitech.depthdiablo.entity.stats.CharacterBuild;
+import com.epitech.depthdiablo.entity.stats.StatSource;
 import java.util.Objects;
 
 /**

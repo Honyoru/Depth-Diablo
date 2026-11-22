@@ -1,13 +1,13 @@
 package com.epitech.depthdiablo.testdata;
 
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.BaseStats;
-import com.epitech.depthdiablo.entity.EnemySetup;
-import com.epitech.depthdiablo.entity.MeleeEnemy;
-import com.epitech.depthdiablo.entity.Rat;
-import com.epitech.depthdiablo.entity.Stat;
-import com.epitech.depthdiablo.entity.Zombie;
+import com.epitech.depthdiablo.entity.enemy.EnemySetup;
+import com.epitech.depthdiablo.entity.enemy.MeleeEnemy;
+import com.epitech.depthdiablo.entity.enemy.Rat;
+import com.epitech.depthdiablo.entity.enemy.Zombie;
+import com.epitech.depthdiablo.entity.stats.BaseStats;
+import com.epitech.depthdiablo.entity.stats.Stat;
+import com.epitech.depthdiablo.geometry.Aabb;
 import java.util.EnumMap;
 import java.util.Map;
 

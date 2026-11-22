@@ -1,12 +1,12 @@
 package com.epitech.depthdiablo.shop;
 
 import com.epitech.depthdiablo.arena.ArenaCycle;
-import com.epitech.depthdiablo.engine.ShopOpened;
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Aabb;
+import com.epitech.depthdiablo.engine.event.ShopOpened;
 import com.epitech.depthdiablo.entity.Entity;
 import com.epitech.depthdiablo.entity.Interactable;
-import com.epitech.depthdiablo.entity.Player;
+import com.epitech.depthdiablo.entity.character.Player;
+import com.epitech.depthdiablo.geometry.Aabb;
 import java.util.Objects;
 
 /**

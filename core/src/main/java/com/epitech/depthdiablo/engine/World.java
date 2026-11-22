@@ -1,8 +1,9 @@
 package com.epitech.depthdiablo.engine;
 
-import com.epitech.depthdiablo.combat.Obb;
-import com.epitech.depthdiablo.entity.Aabb;
+import com.epitech.depthdiablo.engine.event.EventBus;
 import com.epitech.depthdiablo.entity.Entity;
+import com.epitech.depthdiablo.geometry.Aabb;
+import com.epitech.depthdiablo.geometry.Obb;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

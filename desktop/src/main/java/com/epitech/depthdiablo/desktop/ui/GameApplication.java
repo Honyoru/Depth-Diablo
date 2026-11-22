@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.epitech.depthdiablo.desktop.audio.GameAudio;
-import com.epitech.depthdiablo.entity.Player;
+import com.epitech.depthdiablo.entity.character.Player;
 
 /** Root LibGDX {@link Game} managing shared rendering resources and screen transitions. */
 public final class GameApplication extends Game {

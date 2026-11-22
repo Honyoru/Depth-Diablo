@@ -1,15 +1,15 @@
 package com.epitech.depthdiablo.desktop.audio;
 
-import com.epitech.depthdiablo.engine.AttackStarted;
-import com.epitech.depthdiablo.engine.DamageDealt;
-import com.epitech.depthdiablo.engine.EntityDied;
-import com.epitech.depthdiablo.engine.EventListener;
-import com.epitech.depthdiablo.engine.GameEvent;
-import com.epitech.depthdiablo.engine.ItemDropped;
-import com.epitech.depthdiablo.engine.ItemPickedUp;
-import com.epitech.depthdiablo.engine.ShopOpened;
-import com.epitech.depthdiablo.entity.Character;
-import com.epitech.depthdiablo.entity.Player;
+import com.epitech.depthdiablo.engine.event.AttackStarted;
+import com.epitech.depthdiablo.engine.event.DamageDealt;
+import com.epitech.depthdiablo.engine.event.EntityDied;
+import com.epitech.depthdiablo.engine.event.EventListener;
+import com.epitech.depthdiablo.engine.event.GameEvent;
+import com.epitech.depthdiablo.engine.event.ItemDropped;
+import com.epitech.depthdiablo.engine.event.ItemPickedUp;
+import com.epitech.depthdiablo.engine.event.ShopOpened;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.entity.character.Player;
 import com.epitech.depthdiablo.item.Bow;
 import com.epitech.depthdiablo.item.MeleeWeapon;
 import com.epitech.depthdiablo.item.Staff;

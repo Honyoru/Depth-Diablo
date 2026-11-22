@@ -3,7 +3,7 @@ package com.epitech.depthdiablo.desktop.ui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.epitech.depthdiablo.entity.Aabb;
+import com.epitech.depthdiablo.geometry.Aabb;
 import org.junit.jupiter.api.Test;
 
 /** GDD 1.3.1: a projectile is drawn as a square as long as its body, centred on it. */

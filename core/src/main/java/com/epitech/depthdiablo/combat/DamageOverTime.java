@@ -1,6 +1,6 @@
 package com.epitech.depthdiablo.combat;
 
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
 
 /**
  * Damage over time (GDD 1.3.1, 1.6): deals its damage at the end of every interval until its

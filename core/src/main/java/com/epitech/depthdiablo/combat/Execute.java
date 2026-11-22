@@ -1,6 +1,6 @@
 package com.epitech.depthdiablo.combat;
 
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
 
 /**
  * Finishes a target that a landed hit leaves under a part of its max HP (GDD 1.3.1). The bone ring

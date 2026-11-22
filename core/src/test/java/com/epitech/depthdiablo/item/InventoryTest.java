@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.engine.StateBuffer;
-import com.epitech.depthdiablo.entity.BuildModifier;
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.entity.stats.BuildModifier;
 import com.epitech.depthdiablo.testdata.Items;
 import java.util.List;
 import java.util.Optional;

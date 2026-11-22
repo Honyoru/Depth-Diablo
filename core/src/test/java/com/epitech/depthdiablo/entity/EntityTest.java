@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.engine.StateBuffer;
+import com.epitech.depthdiablo.geometry.Aabb;
 import org.junit.jupiter.api.Test;
 
 class EntityTest {

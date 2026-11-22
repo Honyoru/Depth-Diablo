@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.entity;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.engine.Rewindable;
 import com.epitech.depthdiablo.engine.StateBuffer;
+import com.epitech.depthdiablo.geometry.Aabb;
 import java.util.Objects;
 
 /**

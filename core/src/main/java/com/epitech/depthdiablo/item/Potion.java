@@ -1,6 +1,6 @@
 package com.epitech.depthdiablo.item;
 
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
 import java.util.List;
 import java.util.Objects;
 

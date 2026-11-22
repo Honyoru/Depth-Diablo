@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.combat;
 
 import com.epitech.depthdiablo.entity.Entity;
 import com.epitech.depthdiablo.entity.Updatable;
+import com.epitech.depthdiablo.geometry.Obb;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Objects;

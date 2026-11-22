@@ -6,11 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.epitech.depthdiablo.combat.Obb;
-import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.engine.event.EntityDied;
+import com.epitech.depthdiablo.engine.event.GameEvent;
 import com.epitech.depthdiablo.entity.Entity;
 import com.epitech.depthdiablo.entity.Wall;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.geometry.Aabb;
+import com.epitech.depthdiablo.geometry.Obb;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

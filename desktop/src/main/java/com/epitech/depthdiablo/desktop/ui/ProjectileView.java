@@ -3,8 +3,8 @@ package com.epitech.depthdiablo.desktop.ui;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
-import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.Projectile;
+import com.epitech.depthdiablo.entity.projectile.Projectile;
+import com.epitech.depthdiablo.geometry.Aabb;
 import java.util.Objects;
 
 /**

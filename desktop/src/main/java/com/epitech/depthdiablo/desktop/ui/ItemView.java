@@ -1,8 +1,8 @@
 package com.epitech.depthdiablo.desktop.ui;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.ItemDrop;
+import com.epitech.depthdiablo.geometry.Aabb;
+import com.epitech.depthdiablo.loot.ItemDrop;
 import java.util.Objects;
 
 /** Draws the items lying on the ground (GDD 1.4) from the {@code spriteId} of their item. */

@@ -10,11 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.HitResult;
-import com.epitech.depthdiablo.entity.BaseStats;
-import com.epitech.depthdiablo.entity.Character;
-import com.epitech.depthdiablo.entity.CharacterBuild;
-import com.epitech.depthdiablo.entity.Stat;
-import com.epitech.depthdiablo.entity.StatSource;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.entity.stats.BaseStats;
+import com.epitech.depthdiablo.entity.stats.CharacterBuild;
+import com.epitech.depthdiablo.entity.stats.Stat;
+import com.epitech.depthdiablo.entity.stats.StatSource;
 import com.epitech.depthdiablo.testdata.Items;
 import java.util.EnumMap;
 import java.util.List;

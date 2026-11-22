@@ -3,11 +3,11 @@ package com.epitech.depthdiablo.desktop.ui;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.epitech.depthdiablo.combat.Damageable;
-import com.epitech.depthdiablo.combat.Obb;
-import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.entity.Entity;
-import com.epitech.depthdiablo.entity.Projectile;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.entity.projectile.Projectile;
+import com.epitech.depthdiablo.geometry.Aabb;
+import com.epitech.depthdiablo.geometry.Obb;
 
 /**
  * The X-ray view (GDD 1.1.2): no sprites, only what the logic sees. Body boxes in grey, hurtboxes

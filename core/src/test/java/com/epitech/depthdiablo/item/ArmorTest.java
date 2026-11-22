@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.epitech.depthdiablo.entity.BaseStats;
-import com.epitech.depthdiablo.entity.CharacterBuild;
-import com.epitech.depthdiablo.entity.Stat;
+import com.epitech.depthdiablo.entity.stats.BaseStats;
+import com.epitech.depthdiablo.entity.stats.CharacterBuild;
+import com.epitech.depthdiablo.entity.stats.Stat;
 import com.epitech.depthdiablo.testdata.Items;
 import java.util.EnumMap;
 import java.util.List;

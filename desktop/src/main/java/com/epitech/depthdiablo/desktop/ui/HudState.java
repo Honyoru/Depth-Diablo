@@ -2,7 +2,7 @@ package com.epitech.depthdiablo.desktop.ui;
 
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.arena.ArenaCycle;
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
 import com.epitech.depthdiablo.item.Inventory;
 import java.util.Arrays;
 import java.util.Objects;

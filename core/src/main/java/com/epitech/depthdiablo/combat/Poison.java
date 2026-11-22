@@ -1,6 +1,6 @@
 package com.epitech.depthdiablo.combat;
 
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
 
 /**
  * A poison (GDD 1.3.1, 1.6): damage over time from venom. The view tints a poisoned character

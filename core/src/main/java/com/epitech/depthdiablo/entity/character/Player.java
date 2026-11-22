@@ -1,0 +1,494 @@
+package com.epitech.depthdiablo.entity.character;
+
+import com.badlogic.gdx.math.Vector2;
+import com.epitech.depthdiablo.GameConstants;
+import com.epitech.depthdiablo.combat.Faction;
+import com.epitech.depthdiablo.engine.StateBuffer;
+import com.epitech.depthdiablo.engine.World;
+import com.epitech.depthdiablo.engine.event.ItemDropped;
+import com.epitech.depthdiablo.engine.event.ItemPickedUp;
+import com.epitech.depthdiablo.entity.Interactable;
+import com.epitech.depthdiablo.entity.stats.StatSource;
+import com.epitech.depthdiablo.geometry.Aabb;
+import com.epitech.depthdiablo.input.PlayerInput;
+import com.epitech.depthdiablo.item.Armor;
+import com.epitech.depthdiablo.item.Consumable;
+import com.epitech.depthdiablo.item.Inventory;
+import com.epitech.depthdiablo.item.Item;
+import com.epitech.depthdiablo.item.PassiveItem;
+import com.epitech.depthdiablo.item.Weapon;
+import com.epitech.depthdiablo.loot.ItemDrop;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
+
+/**
+ * The character the user controls (GDD 1.3.1). Every tick it reads its {@link PlayerInput} and
+ * walks. Knight, Mage and Archer are its concrete classes.
+ */
+public abstract class Player extends Character {
+
+  private final PlayerInput input;
+
+  private final Inventory inventory;
+
+  /** How far an item on the ground can be from the player's centre to be picked up, in pixels. */
+  public static final float PICK_UP_RANGE = 32f;
+
+  /** How far what the player can interact with can be from its centre, in pixels (GDD 2.4). */
+  public static final float INTERACT_RANGE = 32f;
+
+  /** How many times the blocked part of a step is halved: under 1/100 px for a 10 px step. */
+  private static final int CONTACT_SEARCH_STEPS = 10;
+
+  /** What the photo holds when no quick move is in progress. */
+  private static final int NO_EVADE = -1;
+
+  private boolean moving;
+
+  /** Whether the pickup key was held on the previous tick: one pickup or interaction per press. */
+  private boolean pickUpHeld;
+
+  /** Whether the use key was held on the previous tick: one consumable per press. */
+  private boolean useHeld;
+
+  /** The quick move in progress, if any (Q40). */
+  private Optional<Evade> evade = Optional.empty();
+
+  /** How many ticks the quick move in progress still lasts. */
+  private int evadeTicksLeft;
+
+  /** The direction of the quick move in progress, fixed when it starts. */
+  private final Vector2 evadeDirection = new Vector2();
+
+  /** For each quick move, by its ordinal: the ticks left before it can start again. */
+  private final int[] evadeCooldownTicksLeft = new int[Evade.values().length];
+
+  /** Whether the dash key was held on the previous tick: one dash per press. */
+  private boolean dashHeld;
+
+  /** Whether the dodge roll key was held on the previous tick: one roll per press. */
+  private boolean rollHeld;
+
+  /**
+   * Creates a player that stands still.
+   *
+   * @param bodyBox the box the player occupies in the world; must not be {@code null}
+   * @param stats where its stats come from; must not be {@code null}
+   * @param startingWeapon the weapon it starts with: its base attack and the first item of its
+   *     inventory; must not be {@code null}
+   * @param startingArmor the armor it starts with, in its inventory; must not be {@code null}
+   * @param hurtbox the player's hurtbox; must not be {@code null}
+   * @param invincibilityTicksAfterHit invincibility ticks granted after a hit; 0 or more
+   * @param input what the user asks for; must not be {@code null}
+   * @param world the world the player walks in, asked what blocks it; must not be {@code null}
+   */
+  protected Player(
+      Aabb bodyBox,
+      StatSource stats,
+      Weapon startingWeapon,
+      Armor startingArmor,
+      Aabb hurtbox,
+      int invincibilityTicksAfterHit,
+      PlayerInput input,
+      World world) {
+    this(
+        bodyBox,
+        stats,
+        startingWeapon,
+        new Inventory(startingWeapon, startingArmor),
+        hurtbox,
+        invincibilityTicksAfterHit,
+        input,
+        world);
+  }
+
+  /**
+   * Creates the player around an inventory made before it, so its build starts with the inventory's
+   * items without calling a method of the half-built player.
+   */
+  private Player(
+      Aabb bodyBox,
+      StatSource stats,
+      Weapon startingWeapon,
+      Inventory inventory,
+      Aabb hurtbox,
+      int invincibilityTicksAfterHit,
+      PlayerInput input,
+      World world) {
+    super(
+        bodyBox,
+        stats,
+        startingWeapon,
+        hurtbox,
+        invincibilityTicksAfterHit,
+        world,
+        inventory.getModifiers());
+    this.input = Objects.requireNonNull(input, "The input of a player must not be null");
+    this.inventory = inventory;
+  }
+
+  /**
+   * Returns the player's bag: its hotbar, its equipped weapon and its worn armor (GDD 1.4).
+   *
+   * @return the inventory; never null
+   */
+  public Inventory getInventory() {
+    return inventory;
+  }
+
+  /**
+   * Picks up an item and rebuilds (GDD 1.4): a consumable goes in the hotbar, a passive item in the
+   * first free passive slot, a weapon or an armor replaces the one held.
+   *
+   * @param item the item the player walks on
+   * @return what is left on the ground: the old weapon or armor, the item itself when no slot takes
+   *     it, or nothing
+   * @throws NullPointerException if {@code item} is {@code null}
+   * @throws IllegalArgumentException if the item is of no kind the inventory takes
+   */
+  public final Optional<Item> pickUp(Item item) {
+    Objects.requireNonNull(item, "item is null");
+    Optional<Item> left =
+        switch (item) {
+          case Consumable consumable ->
+              inventory.add(consumable) ? Optional.empty() : Optional.of(item);
+          case PassiveItem passive -> inventory.add(passive) ? Optional.empty() : Optional.of(item);
+          case Weapon weapon -> Optional.of(inventory.equip(weapon));
+          case Armor armor -> Optional.of(inventory.equip(armor));
+          default ->
+              throw new IllegalArgumentException(item.getId() + " cannot go in an inventory");
+        };
+    rebuild(inventory.getModifiers());
+    return left;
+  }
+
+  /**
+   * Takes the passive item out of a slot and rebuilds without it.
+   *
+   * @param slot the passive slot, from 0 to {@link Inventory#PASSIVE_SIZE} - 1
+   * @return the item to drop on the ground, or nothing if the slot was free
+   * @throws IndexOutOfBoundsException if {@code slot} is outside the passive slots
+   */
+  public final Optional<PassiveItem> dropPassive(int slot) {
+    Optional<PassiveItem> dropped = inventory.removePassive(slot);
+    rebuild(inventory.getModifiers());
+    return dropped;
+  }
+
+  /**
+   * Takes the consumable out of a hotbar slot; consumables do not change the build.
+   *
+   * @param slot the hotbar slot, from 0 to {@link Inventory#HOTBAR_SIZE} - 1
+   * @return the consumable to drop on the ground, or nothing if the slot was free
+   * @throws IndexOutOfBoundsException if {@code slot} is outside the hotbar
+   */
+  public final Optional<Consumable> dropConsumable(int slot) {
+    return inventory.removeConsumable(slot);
+  }
+
+  /**
+   * Swaps two passive slots and rebuilds, since passive items apply in slot order.
+   *
+   * @param first one passive slot, from 0 to {@link Inventory#PASSIVE_SIZE} - 1
+   * @param second the other passive slot, from 0 to {@link Inventory#PASSIVE_SIZE} - 1
+   * @throws IndexOutOfBoundsException if a slot is outside the passive slots
+   */
+  public final void swapPassiveSlots(int first, int second) {
+    inventory.swapPassiveSlots(first, second);
+    rebuild(inventory.getModifiers());
+  }
+
+  /**
+   * Takes over what the player of the previous floor had: every slot of its inventory, then its HP
+   * once the build follows the new inventory. This player stays where it stands.
+   *
+   * @param previous the player of the previous floor
+   * @throws NullPointerException if {@code previous} is {@code null}
+   */
+  public final void carryOver(Player previous) {
+    Objects.requireNonNull(previous, "previous is null");
+    StateBuffer bag = new StateBuffer();
+    previous.inventory.writeState(bag);
+    bag.startReading();
+    inventory.readState(bag);
+    rebuild(inventory.getModifiers());
+    restoreHp(previous.getHp());
+  }
+
+  /**
+   * Returns the player's side. Knight, Mage and Archer all fight for it, so it is final.
+   *
+   * @return {@link Faction#PLAYER}
+   */
+  @Override
+  public final Faction getFaction() {
+    return Faction.PLAYER;
+  }
+
+  /**
+   * Starts a dodge roll or a dash when its key is pressed, then either moves one tick of the quick
+   * move in progress or walks in the direction of the input and, while the user attacks, starts an
+   * attack towards the point as soon as it can (see {@link #canAttack()}). Then picks up, or
+   * interacts when no item lies in reach, and uses, once per press.
+   */
+  @Override
+  protected final void think(long tick) {
+    boolean dashPressed = input.wantsDash() && !dashHeld;
+    dashHeld = input.wantsDash();
+    boolean rollPressed = input.wantsDodgeRoll() && !rollHeld;
+    rollHeld = input.wantsDodgeRoll();
+    if (evade.isEmpty() && rollPressed) {
+      startEvade(Evade.DODGE_ROLL); // the roll wins: it is the safe one
+    }
+    if (evade.isEmpty() && dashPressed) {
+      startEvade(Evade.DASH); // also when the roll is cooling down
+    }
+    countDownEvadeCooldowns();
+    evade.ifPresentOrElse(this::evadeStep, this::walkAndAttack);
+    boolean pressed = input.wantsPickUp() && !pickUpHeld;
+    pickUpHeld = input.wantsPickUp();
+    if (pressed) {
+      getPickUpTarget()
+          .ifPresentOrElse(
+              this::take, () -> getInteractTarget().ifPresent(target -> target.interact(this)));
+    }
+    boolean usePressed = input.wantsToUse() && !useHeld;
+    useHeld = input.wantsToUse();
+    if (usePressed) {
+      inventory.use(input.hotbarSlot(), this);
+    }
+  }
+
+  /**
+   * Returns the quick move the player is doing; the renderer can pick its animation from it.
+   *
+   * @return the dash or the dodge roll, or nothing while it walks
+   */
+  public Optional<Evade> getEvade() {
+    return evade;
+  }
+
+  /** Starts a quick move in the walking direction, if it moves and the move is not cooling down. */
+  private void startEvade(Evade next) {
+    Vector2 direction = input.moveDirection();
+    if (isDead() || direction.isZero() || evadeCooldownTicksLeft[next.ordinal()] > 0) {
+      return;
+    }
+    evadeDirection.set(direction).nor();
+    evadeTicksLeft = next.getTicks();
+    next.onStart(this, evadeTicksLeft);
+    evade = Optional.of(next);
+  }
+
+  /** One tick of the quick move: a step in its fixed direction; its cooldown starts at the end. */
+  private void evadeStep(Evade current) {
+    float speed = getSpeed() * current.getSpeedFactor() / GameConstants.TICKS_PER_SECOND;
+    step(new Vector2(evadeDirection).scl(speed));
+    moving = true;
+    evadeTicksLeft--;
+    if (evadeTicksLeft == 0) {
+      evade = Optional.empty();
+      evadeCooldownTicksLeft[current.ordinal()] = current.getCooldownTicks();
+    }
+  }
+
+  /** Counts down the cooldown of each quick move. */
+  private void countDownEvadeCooldowns() {
+    for (int i = 0; i < evadeCooldownTicksLeft.length; i++) {
+      if (evadeCooldownTicksLeft[i] > 0) {
+        evadeCooldownTicksLeft[i]--;
+      }
+    }
+  }
+
+  /** The turn of a player not in a quick move: it walks, and attacks while the user asks to. */
+  private void walkAndAttack() {
+    walk();
+    input.attackPoint().filter(point -> canAttack()).ifPresent(this::attackTowards);
+  }
+
+  /**
+   * Returns the item on the ground the player would pick up now: the nearest one whose centre is
+   * within {@link #PICK_UP_RANGE} of the player's centre, not taken yet (GDD 1.4).
+   *
+   * @return that item on the ground, or nothing if none is in range
+   */
+  public final Optional<ItemDrop> getPickUpTarget() {
+    Vector2 centre = centre();
+    return world().getEntities().stream()
+        .filter(ItemDrop.class::isInstance)
+        .map(ItemDrop.class::cast)
+        .filter(drop -> !drop.isRemoved())
+        .filter(drop -> distanceTo(drop, centre) <= PICK_UP_RANGE)
+        .min(Comparator.comparingDouble(drop -> distanceTo(drop, centre)));
+  }
+
+  /**
+   * Takes an item off the ground; what does not fit falls back where the player stands. Publishes
+   * {@link ItemPickedUp} only when the item is kept.
+   */
+  private void take(ItemDrop drop) {
+    drop.remove();
+    Item item = drop.getItem();
+    Optional<Item> left = pickUp(item);
+    if (left.filter(item::equals).isEmpty()) {
+      world().getEventBus().publish(new ItemPickedUp(this, item));
+    }
+    left.ifPresent(
+        dropped -> world().getEventBus().publish(new ItemDropped(this, dropped, centre())));
+  }
+
+  /** Returns the centre of the player's body, in pixels. */
+  private Vector2 centre() {
+    Aabb body = getBodyBox();
+    return new Vector2(body.x() + body.width() / 2f, body.y() + body.height() / 2f);
+  }
+
+  /** Returns how far the centre of an item on the ground is from a point, in pixels. */
+  private static float distanceTo(ItemDrop drop, Vector2 point) {
+    Aabb box = drop.getBodyBox();
+    return point.dst(box.x() + box.width() / 2f, box.y() + box.height() / 2f);
+  }
+
+  /**
+   * Returns what the player would interact with now, when no item lies in reach: the nearest {@link
+   * Interactable} whose box is within {@link #INTERACT_RANGE} of the player's centre (GDD 2.4).
+   *
+   * @return that interactable, or nothing if none is in range
+   */
+  public final Optional<Interactable> getInteractTarget() {
+    Vector2 centre = centre();
+    return world().getEntities().stream()
+        .filter(entity -> entity instanceof Interactable && !entity.isRemoved())
+        .filter(entity -> distanceToBox(entity.getBodyBox(), centre) <= INTERACT_RANGE)
+        .min(Comparator.comparingDouble(entity -> distanceToBox(entity.getBodyBox(), centre)))
+        .map(Interactable.class::cast);
+  }
+
+  /** Returns how far a point is from a box, in pixels: 0 inside it. */
+  private static float distanceToBox(Aabb box, Vector2 point) {
+    float dx = Math.max(0f, Math.max(box.x() - point.x, point.x - (box.x() + box.width())));
+    float dy = Math.max(0f, Math.max(box.y() - point.y, point.y - (box.y() + box.height())));
+    return (float) Math.hypot(dx, dy);
+  }
+
+  /**
+   * Walks one tick in the direction of the input, at the SPEED stat (pixels per second). A
+   * direction longer than 1 is shortened to 1, so a diagonal is not faster than a straight line.
+   */
+  private void walk() {
+    Vector2 direction = input.moveDirection();
+    if (direction.len2() > 1f) {
+      direction.nor();
+    }
+    moving = !isDead() && !direction.isZero();
+    if (!moving) {
+      return;
+    }
+    step(direction.scl(getSpeed() / GameConstants.TICKS_PER_SECOND));
+  }
+
+  /**
+   * Moves by a step, one axis at a time. A wall stops the step on its axis only, so the player
+   * slides along it, and it stops against the wall rather than short of it.
+   */
+  private void step(Vector2 step) {
+    Vector2 position = position();
+    Vector2 alongX = new Vector2(step.x, 0f);
+    position.mulAdd(alongX, reachablePart(position, alongX));
+    Vector2 alongY = new Vector2(0f, step.y);
+    position.mulAdd(alongY, reachablePart(position, alongY));
+    moveTo(position);
+  }
+
+  /**
+   * Returns how much of a move the body can make from a corner: all of it when nothing is in the
+   * way, else the longest part that still fits, found by halving the part that does not.
+   *
+   * @return from 0 (blocked at once) to 1 (the whole move)
+   */
+  private float reachablePart(Vector2 corner, Vector2 move) {
+    if (canStandAt(new Vector2(corner).add(move))) {
+      return 1f;
+    }
+    float fits = 0f;
+    float blocked = 1f;
+    for (int i = 0; i < CONTACT_SEARCH_STEPS; i++) {
+      float middle = (fits + blocked) / 2f;
+      if (canStandAt(new Vector2(corner).mulAdd(move, middle))) {
+        fits = middle;
+      } else {
+        blocked = middle;
+      }
+    }
+    return fits;
+  }
+
+  /** Attacks with the attack of the build, aimed from the player's centre to the point. */
+  private void attackTowards(Vector2 point) {
+    Aabb body = getBodyBox();
+    float aim =
+        new Vector2(point)
+            .sub(body.x() + body.width() / 2f, body.y() + body.height() / 2f)
+            .angleDeg();
+    startAttack(getBuild().attack(), aim, world());
+  }
+
+  /** Tells whether the player's body fits at the given bottom-left corner. */
+  private boolean canStandAt(Vector2 corner) {
+    Aabb body = getBodyBox();
+    return world().isFree(new Aabb(corner.x, corner.y, body.width(), body.height()), this);
+  }
+
+  /**
+   * Tells whether the player walked during the last tick. The renderer picks the animation with it.
+   *
+   * @return true if it is alive and moved
+   */
+  public boolean isMoving() {
+    return moving;
+  }
+
+  /**
+   * Writes the character part, then whether the player walks, so the rewind shows the right
+   * animation even though no tick runs while R is held, then the quick move in progress and the
+   * cooldowns, then its inventory, so an item picked up after the photo leaves the bag again.
+   *
+   * @param out the photo being taken
+   */
+  @Override
+  public void writeState(StateBuffer out) {
+    super.writeState(out);
+    out.writeBoolean(moving);
+    out.writeInt(evade.map(Evade::ordinal).orElse(NO_EVADE));
+    out.writeInt(evadeTicksLeft);
+    out.writeFloat(evadeDirection.x);
+    out.writeFloat(evadeDirection.y);
+    for (int ticks : evadeCooldownTicksLeft) {
+      out.writeInt(ticks);
+    }
+    inventory.writeState(out);
+  }
+
+  /**
+   * Puts back what {@link #writeState} wrote, in the same order, then rebuilds from the inventory
+   * put back: the build is not in the photo, it follows the inventory.
+   *
+   * @param in the photo being restored
+   */
+  @Override
+  public void readState(StateBuffer in) {
+    super.readState(in);
+    moving = in.readBoolean();
+    int ordinal = in.readInt();
+    evade = ordinal == NO_EVADE ? Optional.empty() : Optional.of(Evade.values()[ordinal]);
+    evadeTicksLeft = in.readInt();
+    evadeDirection.set(in.readFloat(), in.readFloat());
+    for (int i = 0; i < evadeCooldownTicksLeft.length; i++) {
+      evadeCooldownTicksLeft[i] = in.readInt();
+    }
+    inventory.readState(in);
+    rebuild(inventory.getModifiers());
+  }
+}

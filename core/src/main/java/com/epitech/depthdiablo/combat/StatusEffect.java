@@ -1,6 +1,6 @@
 package com.epitech.depthdiablo.combat;
 
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
 
 /**
  * An effect that lasts a number of ticks on a character, such as a burn (GDD 1.3.1, 1.6). The

@@ -1,7 +1,7 @@
 package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.combat.DotSpec;
-import com.epitech.depthdiablo.entity.Stat;
+import com.epitech.depthdiablo.entity.stats.Stat;
 
 /**
  * The values of one entry of {@code data/items.json} (Q93, Q129), typed by its {@code "class"}.

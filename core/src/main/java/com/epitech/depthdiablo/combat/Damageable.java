@@ -1,6 +1,6 @@
 package com.epitech.depthdiablo.combat;
 
-import com.epitech.depthdiablo.entity.Aabb;
+import com.epitech.depthdiablo.geometry.Aabb;
 
 /** Represents an object that can take damage and have a hurtbox. */
 public interface Damageable {

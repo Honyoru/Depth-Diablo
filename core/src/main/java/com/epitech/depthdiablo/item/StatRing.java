@@ -1,7 +1,7 @@
 package com.epitech.depthdiablo.item;
 
-import com.epitech.depthdiablo.entity.Stat;
-import com.epitech.depthdiablo.entity.StatSource;
+import com.epitech.depthdiablo.entity.stats.Stat;
+import com.epitech.depthdiablo.entity.stats.StatSource;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;

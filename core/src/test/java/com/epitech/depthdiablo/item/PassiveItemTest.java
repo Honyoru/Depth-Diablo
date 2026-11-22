@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.epitech.depthdiablo.combat.Attack;
 import com.epitech.depthdiablo.combat.HitResult;
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Character;
-import com.epitech.depthdiablo.entity.CharacterBuild;
-import com.epitech.depthdiablo.entity.StatSource;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.entity.stats.CharacterBuild;
+import com.epitech.depthdiablo.entity.stats.StatSource;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

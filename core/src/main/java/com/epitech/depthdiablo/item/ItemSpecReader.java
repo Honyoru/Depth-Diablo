@@ -2,7 +2,7 @@ package com.epitech.depthdiablo.item;
 
 import com.badlogic.gdx.utils.JsonValue;
 import com.epitech.depthdiablo.combat.DotSpec;
-import com.epitech.depthdiablo.entity.Stat;
+import com.epitech.depthdiablo.entity.stats.Stat;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;

@@ -2,11 +2,11 @@ package com.epitech.depthdiablo.desktop.ui;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.epitech.depthdiablo.entity.Enemy;
 import com.epitech.depthdiablo.entity.Entity;
-import com.epitech.depthdiablo.entity.ItemDrop;
-import com.epitech.depthdiablo.entity.Projectile;
 import com.epitech.depthdiablo.entity.TeleportZone;
+import com.epitech.depthdiablo.entity.enemy.Enemy;
+import com.epitech.depthdiablo.entity.projectile.Projectile;
+import com.epitech.depthdiablo.loot.ItemDrop;
 import java.util.Objects;
 
 /**

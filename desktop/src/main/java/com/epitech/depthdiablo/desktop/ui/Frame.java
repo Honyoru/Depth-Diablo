@@ -3,7 +3,7 @@ package com.epitech.depthdiablo.desktop.ui;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Player;
+import com.epitech.depthdiablo.entity.character.Player;
 
 /**
  * Everything a {@link Renderer} needs to draw one frame. Renderers only read it: drawing never

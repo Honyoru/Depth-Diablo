@@ -3,8 +3,8 @@ package com.epitech.depthdiablo.item;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.epitech.depthdiablo.entity.Stat;
-import com.epitech.depthdiablo.entity.StatSource;
+import com.epitech.depthdiablo.entity.stats.Stat;
+import com.epitech.depthdiablo.entity.stats.StatSource;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

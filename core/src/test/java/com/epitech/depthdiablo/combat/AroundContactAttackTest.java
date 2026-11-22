@@ -4,8 +4,9 @@ import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Aabb;
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.geometry.Aabb;
+import com.epitech.depthdiablo.geometry.Obb;
 import org.junit.jupiter.api.Test;
 
 /** DECISIONS §5: the all-around contact attack covers the body grown by its reach. */

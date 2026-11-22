@@ -1,6 +1,6 @@
 package com.epitech.depthdiablo.item;
 
-import com.epitech.depthdiablo.entity.BuildModifier;
+import com.epitech.depthdiablo.entity.stats.BuildModifier;
 
 /**
  * An item the player equips in a portrait slot: a weapon or an armor (GDD 1.3.1, 2.2).

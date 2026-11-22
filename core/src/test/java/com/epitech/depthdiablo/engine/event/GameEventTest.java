@@ -1,0 +1,105 @@
+package com.epitech.depthdiablo.engine.event;
+
+import static com.epitech.depthdiablo.testdata.CharacterBuilder.aCharacter;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.testdata.Items;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+
+/** GDD 1.1.2: every event names its emitter, and a switch over events covers every type. */
+class GameEventTest {
+  private final Character character = aCharacter().build();
+
+  @Test
+  void should_return_the_attacker_when_a_damage_event_gives_its_source() {
+    GameEvent event = new DamageDealt(character, aCharacter().build(), 1);
+
+    assertSame(character, event.source());
+  }
+
+  @Test
+  void should_return_the_victim_when_a_death_event_gives_its_source() {
+    GameEvent event = new EntityDied(character, Optional.empty());
+
+    assertSame(character, event.source());
+  }
+
+  @Test
+  void should_return_the_hit_character_when_a_damage_event_gives_its_receiver() {
+    Character victim = aCharacter().build();
+    GameEvent event = new DamageDealt(character, victim, 1);
+
+    Optional<?> receiver = event.receiver();
+
+    assertEquals(Optional.of(victim), receiver);
+  }
+
+  @Test
+  void should_have_no_receiver_when_a_death_event_gives_it() {
+    GameEvent event = new EntityDied(character, Optional.of(aCharacter().build()));
+
+    Optional<?> receiver = event.receiver();
+
+    assertTrue(receiver.isEmpty());
+  }
+
+  @Test
+  void should_return_the_picker_when_a_pickup_event_gives_its_source() {
+    GameEvent event = new ItemPickedUp(character, Items.potion());
+
+    assertSame(character, event.source());
+  }
+
+  @Test
+  void should_have_no_receiver_when_a_pickup_event_gives_it() {
+    GameEvent event = new ItemPickedUp(character, Items.potion());
+
+    Optional<?> receiver = event.receiver();
+
+    assertTrue(receiver.isEmpty());
+  }
+
+  @Test
+  void should_return_the_attacker_when_an_attack_event_gives_its_source() {
+    GameEvent event = new AttackStarted(character);
+
+    assertSame(character, event.source());
+  }
+
+  @Test
+  void should_have_no_receiver_when_an_attack_event_gives_it() {
+    GameEvent event = new AttackStarted(character);
+
+    Optional<?> receiver = event.receiver();
+
+    assertTrue(receiver.isEmpty());
+  }
+
+  @Test
+  void should_identify_each_type_when_a_switch_covers_every_event() {
+    GameEvent damage = new DamageDealt(character, aCharacter().build(), 1);
+    GameEvent death = new EntityDied(character, Optional.empty());
+
+    String damageKind = kindOf(damage);
+    String deathKind = kindOf(death);
+
+    assertEquals("damage", damageKind);
+    assertEquals("death", deathKind);
+  }
+
+  /** No default branch: a new event type stops this compiling until it is handled here. */
+  private static String kindOf(GameEvent event) {
+    return switch (event) {
+      case AttackStarted attack -> "attack";
+      case DamageDealt damage -> "damage";
+      case EntityDied death -> "death";
+      case ItemDropped drop -> "drop";
+      case ItemPickedUp pickup -> "pickup";
+      case ShopOpened shop -> "shop";
+    };
+  }
+}

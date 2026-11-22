@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.epitech.depthdiablo.combat.Obb;
 import com.epitech.depthdiablo.engine.World;
-import com.epitech.depthdiablo.entity.Character;
+import com.epitech.depthdiablo.entity.character.Character;
+import com.epitech.depthdiablo.geometry.Obb;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
