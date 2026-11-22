@@ -45,7 +45,7 @@ public final class GameAudio implements Disposable {
    */
   public void play(SoundEffect effect, Object source) {
     if (overlapGuard.tryStart(effect, source, TimeUtils.millis())) {
-      sounds.get(effect).play();
+      sounds.get(effect).play(effect.getVolume());
     }
   }
 
