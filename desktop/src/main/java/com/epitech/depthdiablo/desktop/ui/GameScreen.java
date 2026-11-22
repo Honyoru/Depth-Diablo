@@ -67,6 +67,9 @@ public final class GameScreen extends ScreenAdapter {
   /** Name of the map layer that holds the enemy spawn tiles. */
   private static final String SPAWN_LAYER = "spawn";
 
+  /** Endless has a single floor for now; this follows the floor once floors change (Q77). */
+  private static final int ENDLESS_FLOOR = 1;
+
   /** Name of the map layer that holds the boss spawn tiles. */
   private static final String BOSS_LAYER = "spawner_boss";
 
@@ -356,6 +359,11 @@ public final class GameScreen extends ScreenAdapter {
 
     hudState.syncFromCharacter(player);
     hudState.syncHotbar(player.getInventory());
+    if (arenaMode) {
+      hudState.syncArena(arenaCycle);
+    } else {
+      hudState.syncFloor(ENDLESS_FLOOR);
+    }
 
     Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

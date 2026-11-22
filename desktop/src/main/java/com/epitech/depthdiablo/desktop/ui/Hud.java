@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -23,6 +24,9 @@ import java.util.Objects;
 
 /** Scene2D HUD displaying the health bar, coin counter, 3 quick-access slots, and minimap frame. */
 public final class Hud implements Disposable {
+
+  /** Size of the HUD texts: the skin's font is 32 px, too big for a corner. */
+  private static final float TEXT_SCALE = 0.6f;
 
   private final Stage stage;
 
@@ -46,6 +50,12 @@ public final class Hud implements Disposable {
   private final ItemTextures textures;
 
   private final Image minimapBox;
+
+  /** Bottom left: the wave in the Arena, the floor in Endless. */
+  private final Label progressLabel;
+
+  /** Top centre: the Arena countdown or the shop; empty during a wave. */
+  private final Label timerLabel;
 
   /**
    * Builds the Scene2D HUD table using the provided skin and state model.
@@ -91,13 +101,17 @@ public final class Hud implements Disposable {
     }
 
     this.minimapBox = new Image(skin.get("minimap_bg", TextureRegionDrawable.class));
+    this.progressLabel = new Label("", skin);
+    progressLabel.setFontScale(TEXT_SCALE);
+    this.timerLabel = new Label("", skin);
+    timerLabel.setFontScale(TEXT_SCALE);
 
     Table root = new Table();
     root.setFillParent(true);
 
     // Top row: Health bar (top-left) and Coin counter (top-right)
     root.add(healthBar).width(180f).height(24f).top().left().pad(12f);
-    root.add().expandX();
+    root.add(timerLabel).expandX().top().padTop(14f);
     root.add(coinCounter).top().right().pad(12f);
     root.row();
 
@@ -106,7 +120,7 @@ public final class Hud implements Disposable {
     root.row();
 
     // Bottom row: Empty bottom-left, 3 quick slots (bottom-center), Minimap (bottom-right)
-    root.add().bottom().left().width(96f);
+    root.add(progressLabel).bottom().left().pad(12f).width(96f);
     root.add(quickAccessTable).bottom().padBottom(12f);
     root.add(minimapBox).size(96f, 96f).bottom().right().pad(12f);
 
@@ -126,6 +140,8 @@ public final class Hud implements Disposable {
   public void render(float delta) {
     healthBar.setValue(state.getHealthPercentage());
     coinCounter.setText(String.valueOf(state.getCoins()));
+    progressLabel.setText(state.getProgressText());
+    timerLabel.setText(state.getTimerText());
     for (int i = 0; i < HudState.SLOT_COUNT; i++) {
       float scale = (i == state.getActiveSlot()) ? 1.15f : 1.0f;
       slotStacks[i].setTransform(true);
