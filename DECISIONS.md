@@ -173,3 +173,8 @@ All four ship in the full game. Each is a separate module behind one small inter
 - Wave size and makeup in Arena mode, rooms per floor and per type, coin drop rates, prices, roulette odds.
 - Story Q72 to Q75, pixel font, icons and pointer style, event list for the event bus (Q24).
 - Section owners (Q81) and review presentation split (Q85).
+- One typed factory per item family (`ItemFactory.create(id, Class<T>)`) instead of one switch.
+- Endless shows a constant floor 1 (`ENDLESS_FLOOR`); with real floors, feed the floor to the HUD and play the Victory then Main music on the floor boss's death and the next floor.
+- Enemy telegraphs (a red area filling up before a hit) need an enemy wind-up state first.
+- The boss shows as "BOSS": `characters.json` has no display name yet.
+- Loot is random again after an R rewind: the state of the dice cannot be saved.

@@ -5,13 +5,11 @@ Nov 3, 2026 · @fsjdiw
 This GDD is the design-phase deliverable: no game code is written until it is complete. It follows the traditional outline from Stone Librande's [GDC 2010 talk](https://gdcvault.com/play/1012356/One-Page), minus Multiplayer, plus four OOP-focused subsections (1.1.1, 1.3.1, 1.4.1, 3.1.1).
 
 - One owner per section writes it; the other two review through comments.
-- Discuss a sentence with a comment on it; discuss anything broader in the Agent channel.
+- Discuss a sentence with a comment on it; record anything decided in `DECISIONS.md`.
 - Every rule in 1.4.1 must be phrased so it can become a unit test.
 - A section left empty for the delivery gets one line saying why (for example, "No cinematics").
 
 Review status (Ange, 4 Nov): the team reviewed the whole draft orally; every "proposal" left in the text is accepted as the working default. Section owners (Q81) and the presentation split (Q85) are not decided yet. The draw.io diagrams (Q84) are drawn once the GDD is about 95 % done.
-
-Agents and teammates discuss open topics in Agent channel. Read its rules before editing this tab.
 
 ## 1. Game Mechanics
 

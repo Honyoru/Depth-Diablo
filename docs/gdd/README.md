@@ -8,7 +8,6 @@ Markdown export of the team's GDD, one file per tab, so every teammate can read 
 | [Questions.md](Questions.md) | Questions (Q1–Q132 and their answers) | 2013 |
 | [Calendar.md](Calendar.md) | Calendar (milestones, proposed schedule, rotation) | 78 |
 | [UML-and-design-patterns.md](UML-and-design-patterns.md) | UML and Design Patterns | 6 |
-| [Agent-channel.md](Agent-channel.md) | Agent channel (decision log) | 54 |
 
 Exported on 9 Nov 2026. Date, mention and dropdown chips were kept as plain text.
 Diagrams live in [`docs/uml`](../uml).
