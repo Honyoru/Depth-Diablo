@@ -349,7 +349,7 @@ Open: a cap on summoned enemies; detection range; what enemies do after losing s
 
 ## 2. User Interface
 
-**HUD (decided, 4 Nov):** minimal, in the corners, like the pixel dungeon reference: HP bar, the 3 hotbar slots, coin counter, current floor (Q54, Q55). No minimap (Q56), no floating damage numbers (Q57). The inventory (21 slots: 3 hotbar + 18 passive, 1.4) opens as an overlay that pauses the game (Q58).
+**HUD (decided, 4 Nov):** minimal, in the corners, like the pixel dungeon reference: HP bar, the 3 hotbar slots, coin counter, current floor (Q54, Q55). No minimap (Q56), no floating damage numbers (Q57). The inventory (21 slots: 3 hotbar + 18 passive, 1.4) opens as an overlay that pauses the game (Q58). Added 22 Nov (DECISIONS §12): the wave or floor at the bottom left, the Arena countdown or shop at the top, the boss's life bar while it fights, the keys on the hotbar, an "E: pick up" hint above the item in range, and an H help panel.
 
 **Built so far (Ange, 12 Nov, PR #33 and #34):** the title screen has Play and Quit; Play opens a mode select (Arena Mode, Endless Mode), then the character select (Knight playable, Mage and Archer locked), then the game screen, and Escape goes back to the title. The HUD shows the HP bar (top-left), the coin counter (top-right), the 3 hotbar slots (bottom-centre, keys 1–3) and a minimap (bottom-right). Differences with the decisions above, for the team to settle \[OPEN\]: there is a minimap although Q56 says none; the current floor is not shown yet; Arena is reached through a mode select, not a title button, and the other mode is named Endless; the Options, pause and game over screens are to do.
 
@@ -430,6 +430,7 @@ Default controls. Decided (Ange, 4 Nov): standard keyboard + mouse, and the same
 | Interact (chest, door, shop) | E | X | proposal; E also picks up items, to decide when interactions exist |
 | Pick up item | E | Y | decided (20 Nov): the nearest item within 32 px, once per press |
 | Inventory | I | Select | decided (20 Nov): opens the inventory page and pauses the game |
+| Help (every control) | H | — | decided (22 Nov): a panel over the game, which keeps running |
 | Pause | Esc | Start | proposal |
 | Rewind (hold) | R | none | decided (1.1.2) |
 | View switcher / event laser | F1 / F2 | none | decided (1.1.2) |
