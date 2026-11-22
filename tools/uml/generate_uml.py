@@ -83,8 +83,8 @@ DIAGRAMS = [
     ]),
     ("08-arena-shop-input", "Arena, floors, shop, input and randomness", [
         "arena.ArenaCycle", "arena.WaveDirector", "arena.WavePlan", "arena.EnemySpawner",
-        "level.FloorSequence", "shop.Shopkeeper", "input.PlayerInput", "input.PlayerOrders",
-        "random.RandomSource", "random.SeededRandomSource",
+        "level.FloorSequence", "level.FloorPlan", "shop.Shopkeeper", "input.PlayerInput",
+        "input.PlayerOrders", "random.RandomSource", "random.SeededRandomSource",
     ]),
     ("09-debug", "Debug features: F1 views, F2 event laser, F5 hot reload, R rewind", [
         "debug.DebugFeature", "debug.ViewSwitcher", "debug.ViewMode", "debug.EventLaser",
