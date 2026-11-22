@@ -57,9 +57,9 @@ public final class ItemDrop extends Entity {
    * @param tick the number of the current logic tick
    */
   @Override
-  protected void onUpdate(long tick){
+  protected void onUpdate(long tick) {
     ticksLeft--;
-    if (ticksLeft <= 0){
+    if (ticksLeft <= 0) {
       remove();
     }
   }
@@ -69,7 +69,7 @@ public final class ItemDrop extends Entity {
    *
    * @param out the photo being taken
    */
-  public void writeSate(StateBuffer out){
+  public void writeSate(StateBuffer out) {
     super.writeState(out);
     out.writeInt(ticksLeft);
   }
@@ -83,10 +83,7 @@ public final class ItemDrop extends Entity {
   public void readState(StateBuffer in) {
     super.readState(in);
     ticksLeft = in.readInt();
-
   }
-
-
 
   private static Aabb boxAround(Vector2 centre) {
     return new Aabb(centre.x - SIZE / 2f, centre.y - SIZE / 2f, SIZE, SIZE);

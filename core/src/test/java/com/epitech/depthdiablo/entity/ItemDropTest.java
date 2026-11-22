@@ -44,7 +44,7 @@ class ItemDropTest {
     assertEquals(new Vector2(92, 42), drop.position());
   }
 
-    @Test
+  @Test
   void should_still_lie_there_just_before_its_lifetime_ends() {
     World world = new World();
     ItemDrop drop = aDropIn(world);
@@ -81,7 +81,6 @@ class ItemDropTest {
     assertEquals(ItemDrop.LIFETIME_TICKS, drop.getTicksLeft());
   }
 
-
   @Test
   void should_throw_when_the_item_is_null() {
     Vector2 centre = new Vector2();
@@ -95,7 +94,6 @@ class ItemDropTest {
 
     assertThrows(NullPointerException.class, () -> new ItemDrop(potion, null));
   }
-
 
   private static ItemDrop aDropIn(World world) {
     ItemDrop drop = new ItemDrop(Items.potion(), new Vector2(100, 50));
