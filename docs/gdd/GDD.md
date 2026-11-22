@@ -317,6 +317,7 @@ Every rule below becomes a unit test, written first (Q121), in the rules/ test p
 - **Aim:** mouse or arrow keys, switched in Options (decided, 4 Nov; Q39); right stick on the gamepad.
 - **Dash:** fast, straight-line move; the player can still be hit. **Dodge roll:** a bit faster than walking, invincible. Values (20 Nov, tuned during balancing): dash 0.2 s at 3x SPEED, cooldown 0.5 s; roll 0.4 s at 1.5x SPEED, cooldown 0.8 s; each cooldown starts once the move is over (Q40, DECISIONS §4).
 - **Collision:** axis-aligned bounding boxes (AABB) (Q41). Decided (Ange, 4 Nov): hurtbox and hitbox are separate. The **hurtbox** is where a Character can be hit; the **hitbox** is the area of an attack (melee swing, projectile, contact attack) that deals damage. Damage happens only when an attacker's hitbox overlaps a target's hurtbox. Walls block a separate body box at the feet (proposal). Proposal: our own AABB code in core rather than Box2D, so it stays simple and testable.
+- **Hit preview (22 Nov):** the player sees where its weapon hurts: the area a melee swing has swept, and a dashed line as long as a bow's or a staff's range towards the mouse (DECISIONS §5). Enemy telegraphs (a red area filling up before an enemy hits) are proposed once enemies get a wind-up.
 - **Knockback:** a push on every hit, for feedback (Q29). Open: does it depend on weight?
 - **Projectiles:** move every tick; their hitbox hits the first Damageable hurtbox it touches (proposal).
 
