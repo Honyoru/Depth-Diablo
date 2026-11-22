@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.epitech.depthdiablo.desktop"},{"l":"com.epitech.depthdiablo.desktop.audio"},{"l":"com.epitech.depthdiablo.desktop.ui"}];updateSearchResults();
