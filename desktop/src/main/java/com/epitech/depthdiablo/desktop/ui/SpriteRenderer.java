@@ -5,11 +5,12 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.epitech.depthdiablo.entity.Enemy;
 import com.epitech.depthdiablo.entity.Entity;
 import com.epitech.depthdiablo.entity.ItemDrop;
+import com.epitech.depthdiablo.entity.Projectile;
 import java.util.Objects;
 
 /**
  * The normal view: the Tiled map, then the dying enemies, the items on the ground, the living
- * enemies, and the player's sprite on top of them.
+ * enemies, the projectiles, and the player's sprite on top of them.
  */
 final class SpriteRenderer implements Renderer {
   private final OrthogonalTiledMapRenderer mapRenderer;
@@ -17,6 +18,7 @@ final class SpriteRenderer implements Renderer {
   private final PlayerView playerView;
   private final EnemyView enemyView;
   private final ItemView itemView;
+  private final ProjectileView projectileView;
 
   /**
    * Creates the sprite renderer. It borrows its tools: the game screen still owns and disposes
@@ -27,18 +29,21 @@ final class SpriteRenderer implements Renderer {
    * @param playerView draws the player's animation
    * @param enemyView draws the enemies' animation
    * @param itemView draws the items on the ground
+   * @param projectileView draws the projectiles in flight
    */
   SpriteRenderer(
       OrthogonalTiledMapRenderer mapRenderer,
       Batch batch,
       PlayerView playerView,
       EnemyView enemyView,
-      ItemView itemView) {
+      ItemView itemView,
+      ProjectileView projectileView) {
     this.mapRenderer = Objects.requireNonNull(mapRenderer, "The map renderer must not be null");
     this.batch = Objects.requireNonNull(batch, "The sprite batch must not be null");
     this.playerView = Objects.requireNonNull(playerView, "The player view must not be null");
     this.enemyView = Objects.requireNonNull(enemyView, "The enemy view must not be null");
     this.itemView = Objects.requireNonNull(itemView, "itemView is null");
+    this.projectileView = Objects.requireNonNull(projectileView, "projectileView is null");
   }
 
   @Override
@@ -58,6 +63,11 @@ final class SpriteRenderer implements Renderer {
     for (Entity entity : frame.world().getEntities()) {
       if (entity instanceof Enemy enemy) {
         enemyView.draw(batch, enemy);
+      }
+    }
+    for (Entity entity : frame.world().getEntities()) {
+      if (entity instanceof Projectile projectile && !projectile.isRemoved()) {
+        projectileView.draw(batch, projectile);
       }
     }
     playerView.draw(batch, frame.player(), frame.playerDrawPosition(), frame.delta());

@@ -159,6 +159,8 @@ public final class GameScreen extends ScreenAdapter {
   /** Draws the items on the ground in the sprite view. */
   private final ItemView itemView = new ItemView(itemTextures);
 
+  private final ProjectileView projectileView = new ProjectileView(itemTextures);
+
   private final SpriteBatch batch;
 
   private final Player player;
@@ -263,7 +265,8 @@ public final class GameScreen extends ScreenAdapter {
     this.enemyView = new EnemyView();
     this.previousPosition.set(player.position());
     renderers.put(
-        ViewMode.SPRITES, new SpriteRenderer(mapRenderer, batch, playerView, enemyView, itemView));
+        ViewMode.SPRITES,
+        new SpriteRenderer(mapRenderer, batch, playerView, enemyView, itemView, projectileView));
     renderers.put(ViewMode.XRAY, new XRayRenderer());
     renderers.put(ViewMode.HIGH_CONTRAST, new HighContrastRenderer());
     world.getEventBus().subscribeAll(eventLaser);
