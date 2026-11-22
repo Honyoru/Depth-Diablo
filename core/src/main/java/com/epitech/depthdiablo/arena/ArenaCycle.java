@@ -84,6 +84,15 @@ public final class ArenaCycle {
   }
 
   /**
+   * Gets the ticks left before the next wave, so the HUD can show a countdown.
+   *
+   * @return the ticks left in the break; 0 outside a break
+   */
+  public int getBreakTicksLeft() {
+    return breakTicksLeft;
+  }
+
+  /**
    * Gets the number of waves defeated.
    *
    * @return the score

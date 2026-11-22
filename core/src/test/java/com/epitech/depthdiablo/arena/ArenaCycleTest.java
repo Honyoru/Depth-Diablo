@@ -88,6 +88,32 @@ class ArenaCycleTest {
   }
 
   @Test
+  void should_count_the_whole_break_when_a_normal_wave_is_cleared() {
+    ArenaCycle arena = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS);
+
+    arena.waveCleared();
+
+    org.junit.jupiter.api.Assertions.assertEquals(BREAK_TICKS, arena.getBreakTicksLeft());
+  }
+
+  @Test
+  void should_count_the_break_down_one_tick_per_update() {
+    ArenaCycle arena = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS);
+    arena.waveCleared();
+
+    arena.update();
+
+    org.junit.jupiter.api.Assertions.assertEquals(BREAK_TICKS - 1, arena.getBreakTicksLeft());
+  }
+
+  @Test
+  void should_have_no_break_left_during_a_wave() {
+    ArenaCycle arena = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS);
+
+    org.junit.jupiter.api.Assertions.assertEquals(0, arena.getBreakTicksLeft());
+  }
+
+  @Test
   void should_stay_in_break_when_the_timer_has_not_reached_0() {
     ArenaCycle arena = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS);
     arena.waveCleared();

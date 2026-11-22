@@ -3,6 +3,8 @@ package com.epitech.depthdiablo.desktop.ui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.epitech.depthdiablo.GameConstants;
+import com.epitech.depthdiablo.arena.ArenaCycle;
 import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.item.Armor;
 import com.epitech.depthdiablo.item.Consumable;
@@ -56,5 +58,69 @@ class HudStateTest {
     HudState state = new HudState();
 
     assertThrows(IndexOutOfBoundsException.class, () -> state.getHotbarSpriteId(3));
+  }
+
+  @Test
+  void should_show_the_wave_and_no_timer_while_a_wave_fights() {
+    HudState state = new HudState();
+    ArenaCycle cycle = new ArenaCycle(5, 15 * GameConstants.TICKS_PER_SECOND);
+
+    state.syncArena(cycle);
+
+    assertEquals("Wave 1", state.getProgressText());
+    assertEquals("", state.getTimerText());
+  }
+
+  @Test
+  void should_count_the_break_down_in_whole_seconds() {
+    HudState state = new HudState();
+    ArenaCycle cycle = new ArenaCycle(5, 15 * GameConstants.TICKS_PER_SECOND);
+    cycle.waveCleared();
+    state.syncArena(cycle);
+    assertEquals("Next wave in 15 s", state.getTimerText());
+
+    for (int tick = 0; tick < 14 * GameConstants.TICKS_PER_SECOND + 1; tick++) {
+      cycle.update();
+    }
+    state.syncArena(cycle);
+
+    assertEquals("Next wave in 1 s", state.getTimerText()); // 59 ticks left: still 1 s
+  }
+
+  @Test
+  void should_mark_the_boss_wave() {
+    HudState state = new HudState();
+    ArenaCycle cycle = new ArenaCycle(1, 1); // every wave is a boss wave
+
+    state.syncArena(cycle);
+
+    assertEquals("Wave 1 - BOSS", state.getProgressText());
+  }
+
+  @Test
+  void should_show_the_shop_once_the_boss_is_beaten() {
+    HudState state = new HudState();
+    ArenaCycle cycle = new ArenaCycle(1, 1);
+    cycle.waveCleared();
+
+    state.syncArena(cycle);
+
+    assertEquals("Shop open", state.getTimerText());
+    assertEquals("Wave 1", state.getProgressText()); // the boss is no longer fighting
+  }
+
+  @Test
+  void should_show_the_floor_and_no_timer_in_endless() {
+    HudState state = new HudState();
+
+    state.syncFloor(1);
+
+    assertEquals("Floor 1", state.getProgressText());
+    assertEquals("", state.getTimerText());
+  }
+
+  @Test
+  void should_throw_when_the_floor_is_below_1() {
+    assertThrows(IllegalArgumentException.class, () -> new HudState().syncFloor(0));
   }
 }

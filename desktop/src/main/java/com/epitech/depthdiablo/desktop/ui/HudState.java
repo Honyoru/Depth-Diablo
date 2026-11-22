@@ -1,5 +1,7 @@
 package com.epitech.depthdiablo.desktop.ui;
 
+import com.epitech.depthdiablo.GameConstants;
+import com.epitech.depthdiablo.arena.ArenaCycle;
 import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.item.Inventory;
 import java.util.Arrays;
@@ -28,6 +30,10 @@ public final class HudState {
 
   private float playerY;
 
+  private String progressText = "";
+
+  private String timerText = "";
+
   /** Creates a HUD model with free hotbar slots. */
   public HudState() {
     Arrays.fill(hotbarSpriteIds, FREE_SLOT_SPRITE);
@@ -46,6 +52,24 @@ public final class HudState {
   /** Returns maximum HP. */
   public int getMaxHp() {
     return maxHp;
+  }
+
+  /**
+   * Returns what the bottom-left corner shows: the wave in the Arena, the floor in Endless.
+   *
+   * @return e.g. "Wave 3", "Wave 5 - BOSS" or "Floor 1"; empty before the first sync
+   */
+  public String getProgressText() {
+    return progressText;
+  }
+
+  /**
+   * Returns what the top of the screen shows in the Arena: the countdown of the break or the shop.
+   *
+   * @return e.g. "Next wave in 4 s" or "Shop open"; empty while a wave fights and in Endless
+   */
+  public String getTimerText() {
+    return timerText;
   }
 
   /** Returns current coin count. */
@@ -126,5 +150,42 @@ public final class HudState {
    */
   public String getHotbarSpriteId(int slot) {
     return hotbarSpriteIds[Objects.checkIndex(slot, SLOT_COUNT)];
+  }
+
+  /**
+   * Reads the wave and the timer from the Arena cycle; called every frame in Arena mode.
+   *
+   * @param cycle the arena cycle
+   * @throws NullPointerException if {@code cycle} is {@code null}
+   */
+  public void syncArena(ArenaCycle cycle) {
+    Objects.requireNonNull(cycle, "cycle is null");
+    boolean bossFights = cycle.getPhase() == ArenaCycle.Phase.WAVE && cycle.isBossWave();
+    progressText = "Wave " + cycle.getWaveNumber() + (bossFights ? " - BOSS" : "");
+    timerText =
+        switch (cycle.getPhase()) {
+          case BREAK -> "Next wave in " + secondsLeft(cycle.getBreakTicksLeft()) + " s";
+          case SHOP -> "Shop open";
+          case WAVE -> "";
+        };
+  }
+
+  /**
+   * Shows the floor in Endless mode, which has no timer.
+   *
+   * @param floor the floor the player is on; 1 or more
+   * @throws IllegalArgumentException if {@code floor} is below 1
+   */
+  public void syncFloor(int floor) {
+    if (floor < 1) {
+      throw new IllegalArgumentException("The floor must be 1 or more, was " + floor);
+    }
+    progressText = "Floor " + floor;
+    timerText = "";
+  }
+
+  /** Whole seconds left, rounded up: 59 ticks still show 1 s, never 0 s. */
+  private static int secondsLeft(int ticks) {
+    return (ticks + GameConstants.TICKS_PER_SECOND - 1) / GameConstants.TICKS_PER_SECOND;
   }
 }
