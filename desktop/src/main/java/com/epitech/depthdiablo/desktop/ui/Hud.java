@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.epitech.depthdiablo.GameConstants;
+import java.util.List;
 import java.util.Objects;
 
 /** Scene2D HUD displaying the health bar, coin counter, 3 quick-access slots, and minimap frame. */
@@ -32,6 +33,25 @@ public final class Hud implements Disposable {
 
   /** Size of the key letters on the hotbar. */
   private static final float KEY_SCALE = 0.4f;
+
+  /** Size of the texts of the help panel. */
+  private static final float HELP_SCALE = 0.45f;
+
+  /** Every control, key then action, in AZERTY: libGDX reads key positions (Z Q S D = W A S D). */
+  private static final List<String[]> CONTROLS =
+      List.of(
+          new String[] {"Z Q S D", "Move"},
+          new String[] {"Left click", "Attack"},
+          new String[] {"Shift", "Dash"},
+          new String[] {"Space", "Dodge roll (invincible)"},
+          new String[] {"E", "Pick up / shop"},
+          new String[] {"1 2 3", "Select a consumable"},
+          new String[] {"A", "Use it"},
+          new String[] {"I", "Inventory (pause)"},
+          new String[] {"Esc", "Back to the menu"},
+          new String[] {"R (hold)", "Rewind"},
+          new String[] {"F1 / F2 / F5", "Debug views / event laser / reload data"},
+          new String[] {"H", "Show or hide this help"});
 
   /** Size of the BOSS title above its life bar. */
   private static final float BOSS_TITLE_SCALE = 0.7f;
@@ -72,6 +92,12 @@ public final class Hud implements Disposable {
 
   /** "E: pick up", above the item in range; placed freely on the stage, not in the table. */
   private final Label pickUpHint;
+
+  /** Every control, at the centre, while H is on. */
+  private final Table helpPanel;
+
+  /** "H: controls", bottom left, during the first seconds of a run. */
+  private final Label helpHint;
 
   /**
    * Builds the Scene2D HUD table using the provided skin and state model.
@@ -127,6 +153,9 @@ public final class Hud implements Disposable {
     this.minimapBox = new Image(skin.get("minimap_bg", TextureRegionDrawable.class));
     this.progressLabel = new Label("", skin);
     progressLabel.setFontScale(TEXT_SCALE);
+    this.helpHint = new Label("H: controls", skin);
+    helpHint.setFontScale(KEY_SCALE);
+    this.helpPanel = helpPanel(skin);
     this.timerLabel = new Label("", skin);
     timerLabel.setFontScale(TEXT_SCALE);
     Label bossTitle = new Label("BOSS", skin);
@@ -155,7 +184,10 @@ public final class Hud implements Disposable {
     root.row();
 
     // Bottom row: Empty bottom-left, 3 quick slots (bottom-center), Minimap (bottom-right)
-    root.add(progressLabel).bottom().left().pad(12f).width(96f);
+    Table bottomLeft = new Table();
+    bottomLeft.add(helpHint).left().row();
+    bottomLeft.add(progressLabel).left();
+    root.add(bottomLeft).bottom().left().pad(12f).width(96f);
     root.add(quickAccessTable).bottom().padBottom(12f);
     root.add(minimapBox).size(96f, 96f).bottom().right().pad(12f);
 
@@ -164,6 +196,12 @@ public final class Hud implements Disposable {
     pickUpHint.setFontScale(KEY_SCALE);
     pickUpHint.setVisible(false);
     stage.addActor(pickUpHint);
+    helpPanel.setVisible(false);
+    Table centre = new Table();
+    centre.setFillParent(true);
+    centre.setTouchable(Touchable.disabled);
+    centre.add(helpPanel);
+    stage.addActor(centre);
   }
 
   /**
@@ -192,6 +230,8 @@ public final class Hud implements Disposable {
     healthBar.setValue(state.getHealthPercentage());
     bossTable.setVisible(state.isBossShown());
     bossBar.setValue(state.getBossHealthPercentage());
+    helpPanel.setVisible(state.isHelpShown());
+    helpHint.setVisible(state.isHelpHintShown());
     pickUpHint.setVisible(state.isPickUpHintShown());
     pickUpHint.setPosition(
         state.getPickUpHintX() - pickUpHint.getPrefWidth() / 2f, state.getPickUpHintY());
@@ -208,6 +248,23 @@ public final class Hud implements Disposable {
     stage.getViewport().apply(); // its 16:9 area, the one its clicks are read in
     stage.act(delta);
     stage.draw();
+  }
+
+  /** Builds the help panel: one row per control, the key on the left and its action. */
+  private static Table helpPanel(Skin skin) {
+    Table panel = new Table(skin);
+    panel.setBackground("inventory_card_bg");
+    panel.pad(14f);
+    for (String[] control : CONTROLS) {
+      Label key = new Label(control[0], skin);
+      key.setFontScale(HELP_SCALE);
+      key.setColor(Color.GOLD);
+      Label action = new Label(control[1], skin);
+      action.setFontScale(HELP_SCALE);
+      panel.add(key).left().padRight(18f);
+      panel.add(action).left().row();
+    }
+    return panel;
   }
 
   /** Changes the picture of a slot icon when its consumable changed. */

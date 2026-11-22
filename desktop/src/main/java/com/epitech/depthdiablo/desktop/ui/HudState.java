@@ -13,6 +13,9 @@ public final class HudState {
   /** Number of quick-access inventory slots on the HUD. */
   public static final int SLOT_COUNT = 3;
 
+  /** How long the "H: controls" hint shows at the start of a run, in seconds. */
+  static final float HELP_HINT_SECONDS = 6f;
+
   /** The picture of a free hotbar slot. */
   private static final String FREE_SLOT_SPRITE = "items/empty";
 
@@ -39,6 +42,10 @@ public final class HudState {
   private float bossHealthPercentage;
 
   private boolean pickUpHintShown;
+
+  private boolean helpShown;
+
+  private float helpHintSecondsLeft = HELP_HINT_SECONDS;
 
   private float pickUpHintX;
 
@@ -125,6 +132,25 @@ public final class HudState {
    */
   public float getPickUpHintY() {
     return pickUpHintY;
+  }
+
+  /**
+   * Tells whether the help panel with every control is open.
+   *
+   * @return true while it is open
+   */
+  public boolean isHelpShown() {
+    return helpShown;
+  }
+
+  /**
+   * Tells whether the "H: controls" hint shows: during the first seconds of a run, while the panel
+   * was never opened.
+   *
+   * @return true while it shows
+   */
+  public boolean isHelpHintShown() {
+    return helpHintSecondsLeft > 0f && !helpShown;
   }
 
   /** Returns current coin count. */
@@ -276,6 +302,21 @@ public final class HudState {
   /** Hides the hint: no item in range, or the game is paused. */
   public void hidePickUpHint() {
     pickUpHintShown = false;
+  }
+
+  /** Opens or closes the help panel (H); once opened, the start hint is no longer needed. */
+  public void toggleHelp() {
+    helpShown = !helpShown;
+    helpHintSecondsLeft = 0f;
+  }
+
+  /**
+   * Counts the start hint down.
+   *
+   * @param delta the frame time, in seconds
+   */
+  public void advanceHints(float delta) {
+    helpHintSecondsLeft = Math.max(0f, helpHintSecondsLeft - delta);
   }
 
   /** Whole seconds left, rounded up: 59 ticks still show 1 s, never 0 s. */

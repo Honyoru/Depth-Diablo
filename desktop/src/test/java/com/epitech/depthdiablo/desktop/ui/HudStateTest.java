@@ -181,4 +181,42 @@ class HudStateTest {
 
     assertFalse(state.isPickUpHintShown());
   }
+
+  @Test
+  void should_show_the_help_hint_at_the_start_and_hide_the_panel() {
+    HudState state = new HudState();
+
+    assertTrue(state.isHelpHintShown());
+    assertFalse(state.isHelpShown());
+  }
+
+  @Test
+  void should_hide_the_help_hint_after_6_seconds() {
+    HudState state = new HudState();
+
+    state.advanceHints(HudState.HELP_HINT_SECONDS);
+
+    assertFalse(state.isHelpHintShown());
+  }
+
+  @Test
+  void should_open_and_close_the_help_panel_with_h() {
+    HudState state = new HudState();
+
+    state.toggleHelp();
+    assertTrue(state.isHelpShown());
+
+    state.toggleHelp();
+    assertFalse(state.isHelpShown());
+  }
+
+  @Test
+  void should_end_the_help_hint_once_the_panel_was_opened() {
+    HudState state = new HudState();
+    state.toggleHelp();
+
+    state.toggleHelp();
+
+    assertFalse(state.isHelpHintShown());
+  }
 }

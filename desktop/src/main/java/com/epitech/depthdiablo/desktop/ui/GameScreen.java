@@ -333,6 +333,10 @@ public final class GameScreen extends ScreenAdapter {
     if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
       toggleEventLaser();
     }
+    if (Gdx.input.isKeyJustPressed(Input.Keys.H)) {
+      hudState.toggleHelp();
+    }
+    hudState.advanceHints(delta);
     if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
       hotReload.request();
       LOG.info("Hot reload requested");
