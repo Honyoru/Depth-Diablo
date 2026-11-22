@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.badlogic.gdx.math.Vector2;
+import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.item.Potion;
 import com.epitech.depthdiablo.testdata.Items;
 import org.junit.jupiter.api.Test;
@@ -53,5 +54,18 @@ class ItemDropTest {
     Potion potion = Items.potion();
 
     assertThrows(NullPointerException.class, () -> new ItemDrop(potion, null));
+  }
+
+
+  private static ItemDrop aDropIn(World world) {
+    ItemDrop drop = new ItemDrop(Items.potion(), new Vector2(100, 50));
+    world.add(drop);
+    return drop;
+  }
+
+  private static void ticks(World world, int count) {
+    for (int i = 0; i < count; i++) {
+      world.tick();
+    }
   }
 }
