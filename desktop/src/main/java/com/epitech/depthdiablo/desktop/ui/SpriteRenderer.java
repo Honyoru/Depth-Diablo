@@ -6,11 +6,12 @@ import com.epitech.depthdiablo.entity.Enemy;
 import com.epitech.depthdiablo.entity.Entity;
 import com.epitech.depthdiablo.entity.ItemDrop;
 import com.epitech.depthdiablo.entity.Projectile;
+import com.epitech.depthdiablo.entity.TeleportZone;
 import java.util.Objects;
 
 /**
- * The normal view: the Tiled map, then the dying enemies, the items on the ground, the living
- * enemies, the projectiles, and the player's sprite on top of them.
+ * The normal view: the Tiled map, then the open teleport zone, the dying enemies, the items on the
+ * ground, the living enemies, the projectiles, and the player's sprite on top of them.
  */
 final class SpriteRenderer implements Renderer {
   private final OrthogonalTiledMapRenderer mapRenderer;
@@ -20,6 +21,7 @@ final class SpriteRenderer implements Renderer {
   private final ItemView itemView;
   private final ProjectileView projectileView;
   private final HitPreviewView hitPreview;
+  private final TeleporterView teleporterView;
 
   /**
    * Creates the sprite renderer. It borrows its tools: the game screen still owns and disposes
@@ -32,6 +34,7 @@ final class SpriteRenderer implements Renderer {
    * @param itemView draws the items on the ground
    * @param projectileView draws the projectiles in flight
    * @param hitPreview draws where the player's weapon hurts, under the sprites
+   * @param teleporterView draws the open teleport zone, on the floor
    */
   SpriteRenderer(
       OrthogonalTiledMapRenderer mapRenderer,
@@ -40,7 +43,8 @@ final class SpriteRenderer implements Renderer {
       EnemyView enemyView,
       ItemView itemView,
       ProjectileView projectileView,
-      HitPreviewView hitPreview) {
+      HitPreviewView hitPreview,
+      TeleporterView teleporterView) {
     this.mapRenderer = Objects.requireNonNull(mapRenderer, "The map renderer must not be null");
     this.batch = Objects.requireNonNull(batch, "The sprite batch must not be null");
     this.playerView = Objects.requireNonNull(playerView, "The player view must not be null");
@@ -48,6 +52,7 @@ final class SpriteRenderer implements Renderer {
     this.itemView = Objects.requireNonNull(itemView, "itemView is null");
     this.projectileView = Objects.requireNonNull(projectileView, "projectileView is null");
     this.hitPreview = Objects.requireNonNull(hitPreview, "hitPreview is null");
+    this.teleporterView = Objects.requireNonNull(teleporterView, "teleporterView is null");
   }
 
   @Override
@@ -58,6 +63,12 @@ final class SpriteRenderer implements Renderer {
 
     batch.setProjectionMatrix(frame.camera().combined);
     batch.begin();
+    teleporterView.advance(frame.delta());
+    for (Entity entity : frame.world().getEntities()) {
+      if (entity instanceof TeleportZone zone) {
+        teleporterView.draw(batch, zone); // on the floor, under everything else
+      }
+    }
     enemyView.advance(frame.delta());
     enemyView.drawCorpses(batch); // under the living enemies
     for (Entity entity : frame.world().getEntities()) {

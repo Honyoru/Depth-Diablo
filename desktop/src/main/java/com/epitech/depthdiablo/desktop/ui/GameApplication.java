@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.epitech.depthdiablo.desktop.audio.GameAudio;
+import com.epitech.depthdiablo.entity.Player;
 
 /** Root LibGDX {@link Game} managing shared rendering resources and screen transitions. */
 public final class GameApplication extends Game {
@@ -82,6 +83,21 @@ public final class GameApplication extends Game {
       getScreen().dispose();
     }
     setScreen(new GameScreen(this, hudSkin, mode, hero));
+  }
+
+  /**
+   * Leaves the floor the player just finished and starts the next one of the Endless run, with the
+   * HP and the inventory the player had.
+   *
+   * @param hero the hero of the run
+   * @param floor the floor to start, 2 or more
+   * @param previous the player of the floor just finished
+   */
+  public void startNextFloor(MenuFlowState.HeroType hero, int floor, Player previous) {
+    if (getScreen() != null) {
+      getScreen().dispose();
+    }
+    setScreen(new GameScreen(this, hudSkin, hero, floor, previous));
   }
 
   /** Renders the current screen, then moves the music fades on, whatever the screen. */

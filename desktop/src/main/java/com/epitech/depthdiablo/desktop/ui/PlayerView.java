@@ -1,10 +1,12 @@
 package com.epitech.depthdiablo.desktop.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.epitech.depthdiablo.combat.Swing;
@@ -17,6 +19,9 @@ import java.util.Optional;
  */
 final class PlayerView implements Disposable {
   private static final float FRAME_SECONDS = 0.15f;
+
+  /** How many times a second the sprite pulses blue while the player charges a teleport zone. */
+  private static final float PULSES_PER_SECOND = 2f;
 
   /** The size one frame is drawn at, in world pixels. */
   private final float drawSize;
@@ -32,6 +37,8 @@ final class PlayerView implements Disposable {
   private final Animation<TextureRegion> attack;
   private float stateTime;
   private boolean lookingLeft;
+  private boolean pulsingBlue;
+  private final Color tint = new Color();
 
   /**
    * Returns the view of a hero, from its id in {@code data/characters.json}.
@@ -96,6 +103,15 @@ final class PlayerView implements Disposable {
   }
 
   /**
+   * Makes the sprite pulse blue or stops it, such as while the player stands in a teleport zone.
+   *
+   * @param on true to pulse blue, false for the normal colours
+   */
+  void pulseBlue(boolean on) {
+    pulsingBlue = on;
+  }
+
+  /**
    * Draws the current frame. The batch must have begun, with the world camera's projection.
    *
    * @param batch the batch to draw with
@@ -115,11 +131,16 @@ final class PlayerView implements Disposable {
     }
     float left = position.x + (player.getBodyBox().width() - drawSize) / 2f;
     float bottom = position.y - footMargin;
+    if (pulsingBlue) {
+      float strength = 0.5f + 0.5f * MathUtils.sin(stateTime * MathUtils.PI2 * PULSES_PER_SECOND);
+      batch.setColor(tint.set(1f - 0.6f * strength, 1f - 0.35f * strength, 1f, 1f));
+    }
     if (lookingLeft) {
       batch.draw(frame, left + drawSize, bottom, -drawSize, drawSize);
     } else {
       batch.draw(frame, left, bottom, drawSize, drawSize);
     }
+    batch.setColor(Color.WHITE);
   }
 
   /** Picks the attack frame from how far the swing is, so the sprite follows the real blade. */

@@ -48,11 +48,13 @@ import com.epitech.depthdiablo.entity.ItemDropper;
 import com.epitech.depthdiablo.entity.LootDrops;
 import com.epitech.depthdiablo.entity.Player;
 import com.epitech.depthdiablo.entity.PlayerFactory;
+import com.epitech.depthdiablo.entity.TeleportZone;
 import com.epitech.depthdiablo.entity.Wall;
 import com.epitech.depthdiablo.input.PlayerOrders;
 import com.epitech.depthdiablo.item.Item;
 import com.epitech.depthdiablo.item.ItemFactory;
 import com.epitech.depthdiablo.item.LootTable;
+import com.epitech.depthdiablo.level.FloorSequence;
 import com.epitech.depthdiablo.random.SeededRandomSource;
 import com.epitech.depthdiablo.shop.Shopkeeper;
 import java.util.ArrayList;
@@ -73,8 +75,11 @@ public final class GameScreen extends ScreenAdapter {
   /** The chance that a killed enemy drops an item. */
   private static final double LOOT_CHANCE = 0.2;
 
-  /** Endless has a single floor for now; this follows the floor once floors change (Q77). */
-  private static final int ENDLESS_FLOOR = 1;
+  /** Tile property of the tiles the teleport zone is centred on, such as the stele's centre. */
+  private static final String TELEPORT_PROPERTY = "tp";
+
+  /** The teleport zone covers three tiles by three. */
+  private static final int TELEPORT_TILES = 3;
 
   /** Name of the map layer that holds the boss spawn tiles. */
   private static final String BOSS_LAYER = "spawner_boss";
@@ -82,8 +87,20 @@ public final class GameScreen extends ScreenAdapter {
   /** Name of the map layer that draws the merchant; shown only while the shopkeeper trades. */
   private static final String MERCHANT_LAYER = "merchant";
 
-  /** The Tiled map of the selected mode. */
+  /** The Tiled map of the selected mode; in Endless, the map of the current floor. */
   private final String mapPath;
+
+  /** The hero of the run, kept for the next floor. */
+  private final MenuFlowState.HeroType hero;
+
+  /** The floor of the run: 1 in Arena; 1 or more in Endless, one more after each teleport. */
+  private final int floor;
+
+  /** Endless only: the way to the next floor, open once every enemy is dead. Null otherwise. */
+  private final TeleportZone teleportZone;
+
+  /** Draws the teleport zone in the sprite view. */
+  private final TeleporterView teleporterView = new TeleporterView();
 
   private final CharacterFactory characters;
 
@@ -225,13 +242,39 @@ public final class GameScreen extends ScreenAdapter {
    */
   public GameScreen(
       GameApplication app, Skin skin, MenuFlowState.GameMode mode, MenuFlowState.HeroType hero) {
+    this(app, skin, mode, hero, 1, Optional.empty());
+  }
+
+  /**
+   * Creates the screen of the next Endless floor: the player starts there with the HP and the
+   * inventory it had on the floor before.
+   *
+   * @param app the parent game application; must not be {@code null}
+   * @param skin the loaded UI skin; must not be {@code null}
+   * @param hero the hero of the run; must not be {@code null}
+   * @param floor the floor to play, 1 or more
+   * @param previous the player of the floor before; must not be {@code null}
+   */
+  GameScreen(
+      GameApplication app, Skin skin, MenuFlowState.HeroType hero, int floor, Player previous) {
+    this(app, skin, MenuFlowState.GameMode.ENDLESS, hero, floor, Optional.of(previous));
+  }
+
+  private GameScreen(
+      GameApplication app,
+      Skin skin,
+      MenuFlowState.GameMode mode,
+      MenuFlowState.HeroType hero,
+      int floor,
+      Optional<Player> previous) {
     Objects.requireNonNull(skin, "The UI skin must not be null");
-    Objects.requireNonNull(hero, "The selected hero must not be null");
+    this.hero = Objects.requireNonNull(hero, "The selected hero must not be null");
 
     MenuFlowState.GameMode selectedMode =
         Objects.requireNonNull(mode, "The selected game mode must not be null");
     this.arenaMode = selectedMode == MenuFlowState.GameMode.ARENA;
-    this.mapPath = selectedMode.getMapPath();
+    this.floor = floor;
+    this.mapPath = arenaMode ? selectedMode.getMapPath() : FloorSequence.mapOf(floor);
 
     this.app = Objects.requireNonNull(app, "The game application must not be null");
     this.hudState = new HudState();
@@ -266,6 +309,7 @@ public final class GameScreen extends ScreenAdapter {
     this.spawns = findSpawnPoints();
     this.player = characters.create(hero.getCharacterId(), spawns.player(), Player.class);
     this.world.add(player);
+    previous.ifPresent(player::carryOver); // the HP and the bag of the floor before
 
     if (arenaMode) {
       // the first tick spawns wave 1
@@ -273,12 +317,17 @@ public final class GameScreen extends ScreenAdapter {
       this.shopkeeper = new Shopkeeper(merchantBox(), arenaCycle, world);
       this.world.add(shopkeeper); // away until the first boss wave is cleared
       this.rewind = new Rewind(new RewindGroup(world, arenaCycle, waveDirector), Rewind.CAPACITY);
+      this.teleportZone = null;
     } else {
       this.waveDirector = null;
       this.shopkeeper = null;
       this.rewind = new Rewind(world, Rewind.CAPACITY);
       for (int i = 0; i < spawns.enemies().size(); i++) {
         spawnEnemy("rat", false); // one rat per enemy tile, in turn
+      }
+      this.teleportZone = findTeleportBox().map(box -> new TeleportZone(box, world)).orElse(null);
+      if (teleportZone != null) {
+        world.add(teleportZone); // closed until every enemy of the floor is dead
       }
     }
     this.playerView = PlayerView.of(hero.getCharacterId());
@@ -287,7 +336,14 @@ public final class GameScreen extends ScreenAdapter {
     renderers.put(
         ViewMode.SPRITES,
         new SpriteRenderer(
-            mapRenderer, batch, playerView, enemyView, itemView, projectileView, hitPreview));
+            mapRenderer,
+            batch,
+            playerView,
+            enemyView,
+            itemView,
+            projectileView,
+            hitPreview,
+            teleporterView));
     renderers.put(ViewMode.XRAY, new XRayRenderer());
     renderers.put(ViewMode.HIGH_CONTRAST, new HighContrastRenderer());
     world.getEventBus().subscribeAll(eventLaser);
@@ -372,12 +428,18 @@ public final class GameScreen extends ScreenAdapter {
       return;
     }
 
+    // The player stood 3 s in the open teleport zone: on to the next floor (Endless only).
+    if (teleportZone != null && teleportZone.isReady()) {
+      app.startNextFloor(hero, floor + 1, player);
+      return; // this screen is disposed now
+    }
+
     hudState.syncFromCharacter(player);
     hudState.syncHotbar(player.getInventory());
     if (arenaMode) {
       hudState.syncArena(arenaCycle);
     } else {
-      hudState.syncFloor(ENDLESS_FLOOR);
+      hudState.syncFloor(floor);
     }
     currentBoss
         .filter(king -> !king.isDead() && !king.isRemoved())
@@ -395,6 +457,7 @@ public final class GameScreen extends ScreenAdapter {
     if (merchantLayer != null) {
       merchantLayer.setVisible(shopkeeper != null && shopkeeper.isOpen()); // drawn while he trades
     }
+    playerView.pulseBlue(teleportZone != null && teleportZone.isCharging());
     followPlayer();
     Optional<ItemDrop> pickUpTarget = isPaused() ? Optional.empty() : player.getPickUpTarget();
     pickUpTarget.ifPresentOrElse(this::showPickUpHintAbove, hudState::hidePickUpHint);
@@ -617,6 +680,7 @@ public final class GameScreen extends ScreenAdapter {
     enemyView.dispose();
     spriteTextures.dispose();
     hitPreview.dispose();
+    teleporterView.dispose();
     mapRenderer.dispose();
     tiledMap.dispose();
   }
@@ -684,6 +748,45 @@ public final class GameScreen extends ScreenAdapter {
       }
     }
     return List.copyOf(bosses);
+  }
+
+  /**
+   * Returns where the teleport zone lies: three tiles by three, centred on the tiles whose "tp"
+   * property is true, on any tile layer, with that layer's offset. Empty, with a warning, when the
+   * map has no such tile.
+   */
+  private Optional<Aabb> findTeleportBox() {
+    float left = Float.MAX_VALUE;
+    float bottom = Float.MAX_VALUE;
+    float right = -Float.MAX_VALUE;
+    float top = -Float.MAX_VALUE;
+    float tile = GameConstants.TILE_SIZE;
+    for (MapLayer mapLayer : tiledMap.getLayers()) {
+      if (!(mapLayer instanceof TiledMapTileLayer layer)) {
+        continue;
+      }
+      for (int x = 0; x < layer.getWidth(); x++) {
+        for (int y = 0; y < layer.getHeight(); y++) {
+          MapProperties properties = tileProperties(layer, x, y);
+          if (properties != null && properties.get(TELEPORT_PROPERTY, false, Boolean.class)) {
+            float cellX = x * tile + layer.getOffsetX(); // Tiled's offset moves the drawn tiles
+            float cellY = y * tile - layer.getOffsetY(); // a positive Tiled y offset goes down
+            left = Math.min(left, cellX);
+            bottom = Math.min(bottom, cellY);
+            right = Math.max(right, cellX + tile);
+            top = Math.max(top, cellY + tile);
+          }
+        }
+      }
+    }
+    if (left == Float.MAX_VALUE) {
+      LOG.warn("No tile with {}=true in {}: no teleport zone", TELEPORT_PROPERTY, mapPath);
+      return Optional.empty();
+    }
+    float size = TELEPORT_TILES * tile;
+    float centreX = (left + right) / 2f;
+    float centreY = (bottom + top) / 2f;
+    return Optional.of(new Aabb(centreX - size / 2f, centreY - size / 2f, size, size));
   }
 
   /** The properties of the tile at (x, y), or null when the cell is empty. */
