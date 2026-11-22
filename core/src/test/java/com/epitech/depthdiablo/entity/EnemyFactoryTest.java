@@ -94,10 +94,44 @@ class EnemyFactoryTest {
     }
   }
 
+  @Test
+  void should_multiply_the_hp_and_attack_of_an_enemy_on_a_deeper_floor() {
+    Enemy rat = create(new EnemyFactory(new World(), 2f), RAT);
+
+    assertEquals(6, rat.getHp());
+    assertEquals(6, rat.getMaxHp());
+    assertEquals(2, rat.getAttack());
+  }
+
+  @Test
+  void should_keep_the_other_stats_of_an_enemy_on_a_deeper_floor() {
+    Enemy rat = create(new EnemyFactory(new World(), 2f), RAT);
+
+    assertEquals(1, rat.getDefense());
+    assertEquals(90f, rat.getSpeed());
+    assertEquals(1f, rat.getAttackSpeed());
+  }
+
+  @Test
+  void should_round_the_multiplied_stats() {
+    Enemy rat = create(new EnemyFactory(new World(), 1.5f), RAT); // 3 HP x 1.5 = 4.5
+
+    assertEquals(5, rat.getHp());
+  }
+
+  @Test
+  void should_reject_a_stat_multiplier_that_is_not_above_zero() {
+    assertThrows(IllegalArgumentException.class, () -> new EnemyFactory(new World(), 0f));
+  }
+
   /** Reads the entry with the real reader, then builds it on {@link #BODY}. */
   private Enemy create(String json) {
+    return create(factory, json);
+  }
+
+  private static Enemy create(EnemyFactory builder, String json) {
     JsonValue entry = new JsonReader().parse(json);
     CharacterSpec spec = CharacterSpecReader.read("rat", entry);
-    return factory.create((EnemyKind) spec.kind(), spec, entry, BODY, false, NO_SUMMONER);
+    return builder.create((EnemyKind) spec.kind(), spec, entry, BODY, false, NO_SUMMONER);
   }
 }

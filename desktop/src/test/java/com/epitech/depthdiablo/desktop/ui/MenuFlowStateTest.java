@@ -117,6 +117,24 @@ class MenuFlowStateTest {
   }
 
   @Test
+  void should_show_the_waves_defeated_after_an_arena_run() {
+    MenuFlowState state = aStateInGame(MenuFlowState.GameMode.ARENA);
+
+    state.showGameOver(4);
+
+    assertEquals("Waves defeated: 4", state.scoreLine());
+  }
+
+  @Test
+  void should_show_the_floor_reached_after_an_endless_run() {
+    MenuFlowState state = aStateInGame(MenuFlowState.GameMode.ENDLESS);
+
+    state.showGameOver(12);
+
+    assertEquals("Floor reached: 12", state.scoreLine());
+  }
+
+  @Test
   void eachModeIsPlayedOnItsOwnMap() {
     assertEquals("arena_mapV1.tmx", MenuFlowState.GameMode.ARENA.getMapPath());
     assertEquals("Floor1.tmx", MenuFlowState.GameMode.ENDLESS.getMapPath());
