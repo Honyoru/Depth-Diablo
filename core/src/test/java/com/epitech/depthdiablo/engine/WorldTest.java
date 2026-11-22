@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.epitech.depthdiablo.combat.Obb;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.entity.Entity;
@@ -213,6 +214,29 @@ class WorldTest {
   }
 
   @Test
+  void should_be_free_when_a_turned_shape_fits_between_two_walls() {
+    RecordingEntity mover = new RecordingEntity();
+    world.add(mover);
+    world.add(new Wall(new Aabb(-40, -100, 44, 300))); // ends at x = 4
+    world.add(new Wall(new Aabb(12, -100, 40, 300))); // starts at x = 12
+
+    boolean free = world.isFree(new Obb(8, 2, 90, 16, 4), mover); // x from 6 to 10
+
+    assertTrue(free);
+  }
+
+  @Test
+  void should_not_be_free_when_a_turned_shape_touches_a_wall() {
+    RecordingEntity mover = new RecordingEntity();
+    world.add(mover);
+    world.add(aWallAt(9, 0));
+
+    boolean free = world.isFree(new Obb(8, 2, 90, 16, 4), mover);
+
+    assertFalse(free);
+  }
+
+  @Test
   void should_never_block_a_mover_with_itself() {
     Wall mover = aWallAt(0, 0);
     world.add(mover);
@@ -276,7 +300,14 @@ class WorldTest {
   void should_reject_a_missing_box_when_checking_if_it_is_free() {
     RecordingEntity mover = new RecordingEntity();
 
-    assertThrows(NullPointerException.class, () -> world.isFree(null, mover));
+    assertThrows(NullPointerException.class, () -> world.isFree((Aabb) null, mover));
+  }
+
+  @Test
+  void should_reject_a_missing_shape_when_checking_if_it_is_free() {
+    RecordingEntity mover = new RecordingEntity();
+
+    assertThrows(NullPointerException.class, () -> world.isFree((Obb) null, mover));
   }
 
   private static GameEvent aDeathEvent() {

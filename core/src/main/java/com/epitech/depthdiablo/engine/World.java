@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.engine;
 
+import com.epitech.depthdiablo.combat.Obb;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.Entity;
 import java.util.ArrayList;
@@ -102,6 +103,28 @@ public final class World implements Rewindable {
         continue;
       }
       if (other.getBodyBox().overlaps(box)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Tells whether a turned shape touches no wall, such as the next hitbox of a projectile.
+   *
+   * @param shape the shape to check
+   * @param mover the entity that would stand there; never a wall to itself
+   * @return true if no blocking entity overlaps the shape
+   * @throws NullPointerException if an argument is {@code null}
+   */
+  public boolean isFree(Obb shape, Entity mover) {
+    Objects.requireNonNull(shape, "shape is null");
+    Objects.requireNonNull(mover, "mover is null");
+    for (Entity other : entities) {
+      if (!other.equals(mover)
+          && !other.isRemoved()
+          && other.blocks()
+          && shape.overlaps(other.getBodyBox())) {
         return false;
       }
     }

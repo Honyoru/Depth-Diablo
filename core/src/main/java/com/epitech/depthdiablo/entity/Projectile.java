@@ -105,7 +105,7 @@ public abstract class Projectile extends Entity {
   @Override
   protected final void onUpdate(long tick) {
     Aabb next = getBodyBox().translated(velocity.x, velocity.y);
-    if (!world.isFree(next, this)) {
+    if (!world.isFree(shapeOf(next, velocity), this)) { // the turned shape, as for the hits
       remove();
       return;
     }

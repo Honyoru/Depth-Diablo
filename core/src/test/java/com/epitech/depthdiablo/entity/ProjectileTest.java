@@ -70,6 +70,28 @@ class ProjectileTest {
   }
 
   @Test
+  void should_fly_up_a_corridor_narrower_than_its_length() {
+    world.add(new Wall(new Aabb(-40, -100, 44, 300))); // ends at x = 4
+    world.add(new Wall(new Aabb(12, -100, 40, 300))); // starts at x = 12
+    Arrow arrow =
+        new Arrow(
+            new Aabb(0, 0, 16, 4), // turned up, it spans x from 6 to 10
+            owner,
+            90,
+            TEN_PIXELS_PER_TICK,
+            LIFETIME_TICKS,
+            ARROW_SPRITE,
+            world);
+    world.add(arrow);
+
+    for (int i = 0; i < 5; i++) {
+      world.tick();
+    }
+
+    assertFalse(arrow.isRemoved());
+  }
+
+  @Test
   void should_be_removed_when_a_wall_is_in_its_way() {
     world.add(new Wall(new Aabb(112, 90, 32, 32)));
     Arrow arrow = arrowAt(100, 100, 0);
