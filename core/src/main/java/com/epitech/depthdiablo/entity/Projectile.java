@@ -88,6 +88,15 @@ public abstract class Projectile extends Entity {
   }
 
   /**
+   * Returns the area that hurts right now, turned along the flight; the X-ray view draws it.
+   *
+   * @return the shape of its hitbox
+   */
+  public final Obb getHitShape() {
+    return hitbox.getShape();
+  }
+
+  /**
    * Returns the character who shot this projectile.
    *
    * @return its owner, whose attack and side the projectile uses

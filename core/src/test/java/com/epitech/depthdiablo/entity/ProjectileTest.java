@@ -287,6 +287,13 @@ class ProjectileTest {
   }
 
   @Test
+  void should_hurt_through_a_shape_turned_along_its_flight() {
+    Projectile arrow = arrowAt(0f, 0f, 90f);
+
+    assertEquals(90f, arrow.getHitShape().angleDegrees(), 0.01f);
+  }
+
+  @Test
   void should_keep_the_sprite_it_was_given() {
     assertEquals(ARROW_SPRITE, arrowAt(0f, 0f, 0f).getSpriteId());
   }

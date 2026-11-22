@@ -291,6 +291,8 @@ public final class GameScreen extends ScreenAdapter {
     dropper.spawn("fire_ring", new Vector2(spawns.player()).add(48, 0));
     dropper.spawn("potion_small", new Vector2(spawns.player()).add(0, 48));
     dropper.spawn("sword", new Vector2(spawns.player()).add(-48, 0));
+    dropper.spawn("short_bow", new Vector2(spawns.player()).add(0, -48));
+    dropper.spawn("fire_staff", new Vector2(spawns.player()).add(48, 48));
   }
 
   /**

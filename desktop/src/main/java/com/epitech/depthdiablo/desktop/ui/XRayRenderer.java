@@ -7,11 +7,12 @@ import com.epitech.depthdiablo.combat.Obb;
 import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.Character;
 import com.epitech.depthdiablo.entity.Entity;
+import com.epitech.depthdiablo.entity.Projectile;
 
 /**
  * The X-ray view (GDD 1.1.2): no sprites, only what the logic sees. Body boxes in grey, hurtboxes
  * in green for the player (blue while it is invincible) and magenta for the others, the blade of a
- * running swing in red, and the player's velocity as a yellow line.
+ * running swing and the hitbox of a projectile in red, and the player's velocity as a yellow line.
  */
 final class XRayRenderer implements Renderer {
   private static final Color BODY_COLOR = Color.GRAY;
@@ -54,6 +55,9 @@ final class XRayRenderer implements Renderer {
       float shiftX = dx;
       float shiftY = dy;
       character.getCurrentSwing().ifPresent(swing -> drawBlade(swing.getShape(), shiftX, shiftY));
+    }
+    if (entity instanceof Projectile projectile) {
+      drawBlade(projectile.getHitShape(), 0f, 0f); // red, like a blade: what hurts
     }
   }
 
