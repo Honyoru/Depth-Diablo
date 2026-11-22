@@ -39,6 +39,11 @@ public final class StateBuffer {
   private int longRead;
   private int refRead;
 
+  /** Creates an empty photo, ready to be written. */
+  public StateBuffer() {
+    // its fields start with their declared values
+  }
+
   /**
    * Forgets everything written and keeps the arrays, so the next photo in this buffer allocates
    * nothing. The references are dropped too, so a dead entity is no longer held here.

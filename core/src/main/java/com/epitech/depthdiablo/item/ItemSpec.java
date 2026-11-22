@@ -106,7 +106,21 @@ public sealed interface ItemSpec {
   record FireRingSpec(String id, String nameKey, String spriteId, int price, DotSpec burn)
       implements ItemSpec {}
 
-  /** An {@code "Axe"} entry; same values as a sword. */
+  /**
+   * An {@code "Axe"} entry; same values as a sword.
+   *
+   * @param id the item's key
+   * @param nameKey the translation key of its name
+   * @param spriteId its picture
+   * @param rarity its loot tier
+   * @param price its shop price in coins
+   * @param attackBonus the flat bonus it adds to the attack
+   * @param attackSpeed its base attack speed
+   * @param range how far it reaches, in pixels
+   * @param width the width of its blade, in pixels
+   * @param arcDegrees the angle its blade sweeps
+   * @param swingTicks how many ticks one swing lasts
+   */
   record AxeSpec(
       String id,
       String nameKey,
@@ -121,25 +135,72 @@ public sealed interface ItemSpec {
       int swingTicks)
       implements ItemSpec {}
 
-  /** A {@code "Shield"} entry. */
+  /**
+   * A {@code "Shield"} entry.
+   *
+   * @param id the item's key
+   * @param nameKey the translation key of its name
+   * @param spriteId its picture
+   * @param rarity its loot tier
+   * @param price its shop price in coins
+   * @param defenseBonus the defense it adds to its holder's
+   */
   record ShieldSpec(
       String id, String nameKey, String spriteId, Rarity rarity, int price, int defenseBonus)
       implements ItemSpec {}
 
-  /** A {@code "StatRing"} entry. */
+  /**
+   * A {@code "StatRing"} entry.
+   *
+   * @param id the item's key
+   * @param nameKey the translation key of its name
+   * @param spriteId its picture
+   * @param price its shop price in coins
+   * @param stat the stat it raises
+   * @param amount what it adds to that stat
+   */
   record StatRingSpec(
       String id, String nameKey, String spriteId, int price, Stat stat, float amount)
       implements ItemSpec {}
 
-  /** A {@code "LifeStealRing"} entry. */
+  /**
+   * A {@code "LifeStealRing"} entry.
+   *
+   * @param id the item's key
+   * @param nameKey the translation key of its name
+   * @param spriteId its picture
+   * @param price its shop price in coins
+   * @param fraction the part of the damage healed
+   */
   record LifeStealRingSpec(String id, String nameKey, String spriteId, int price, float fraction)
       implements ItemSpec {}
 
-  /** An {@code "ExecutionerRing"} entry. */
+  /**
+   * An {@code "ExecutionerRing"} entry.
+   *
+   * @param id the item's key
+   * @param nameKey the translation key of its name
+   * @param spriteId its picture
+   * @param price its shop price in coins
+   * @param threshold the part of max HP under which a hit target dies
+   */
   record ExecutionerRingSpec(String id, String nameKey, String spriteId, int price, float threshold)
       implements ItemSpec {}
 
-  /** A {@code "PlainBow"} entry: a bow that shoots plain arrows. */
+  /**
+   * A {@code "PlainBow"} entry: a bow that shoots plain arrows.
+   *
+   * @param id the item's key
+   * @param nameKey the translation key of its name
+   * @param spriteId its picture
+   * @param rarity its loot tier
+   * @param price its shop price in coins
+   * @param attackBonus the flat bonus it adds to the attack
+   * @param attackSpeed its base attack speed
+   * @param range how far it reaches, in pixels
+   * @param projectileSpeed how fast its projectile flies, in pixels per second
+   * @param projectileSpriteId the picture of its projectiles
+   */
   record PlainBowSpec(
       String id,
       String nameKey,
@@ -153,7 +214,21 @@ public sealed interface ItemSpec {
       String projectileSpriteId)
       implements ItemSpec {}
 
-  /** A {@code "FireStaff"} entry: a bow's values and the burn of its fireball. */
+  /**
+   * A {@code "FireStaff"} entry: a bow's values and the burn of its fireball.
+   *
+   * @param id the item's key
+   * @param nameKey the translation key of its name
+   * @param spriteId its picture
+   * @param rarity its loot tier
+   * @param price its shop price in coins
+   * @param attackBonus the flat bonus it adds to the attack
+   * @param attackSpeed its base attack speed
+   * @param range how far it reaches, in pixels
+   * @param projectileSpeed how fast its projectile flies, in pixels per second
+   * @param projectileSpriteId the picture of its projectiles
+   * @param burn the burn its fireball leaves
+   */
   record FireStaffSpec(
       String id,
       String nameKey,

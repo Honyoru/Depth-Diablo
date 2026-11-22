@@ -12,6 +12,11 @@ public final class FixedTimestep {
 
   private double accumulator;
 
+  /** Creates a timestep with no time accumulated yet. */
+  public FixedTimestep() {
+    // its fields start with their declared values
+  }
+
   /**
    * Returns how far the current frame is between the last tick and the next one. The renderer uses
    * it to draw moving things between their previous and current positions.

@@ -49,6 +49,11 @@ public final class EventLaser implements DebugFeature, EventListener {
 
   private boolean enabled;
 
+  /** Creates the F2 event laser, turned off, with no line to draw. */
+  public EventLaser() {
+    // its fields start with their declared values
+  }
+
   @Override
   public String getName() {
     return "Event laser";

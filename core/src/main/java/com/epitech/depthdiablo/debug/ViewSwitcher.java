@@ -11,6 +11,11 @@ public final class ViewSwitcher implements DebugFeature {
 
   private ViewMode mode = ViewMode.SPRITES;
 
+  /** Creates the F1 view switcher, on, showing the sprites. */
+  public ViewSwitcher() {
+    // its fields start with their declared values
+  }
+
   @Override
   public String getName() {
     return "View switcher";

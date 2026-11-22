@@ -56,17 +56,29 @@ public final class HudState {
     Arrays.fill(hotbarSpriteIds, FREE_SLOT_SPRITE);
   }
 
-  /** Returns health normalized to {@code [0, 100]} for the Scene2D progress bar. */
+  /**
+   * Returns health normalized to {@code [0, 100]} for the Scene2D progress bar.
+   *
+   * @return the player's HP as a percentage, from 0 to 100
+   */
   public float getHealthPercentage() {
     return maxHp <= 0 ? 0f : (hp * 100f) / maxHp;
   }
 
-  /** Returns current HP. */
+  /**
+   * Returns current HP.
+   *
+   * @return the player's HP
+   */
   public int getHp() {
     return hp;
   }
 
-  /** Returns maximum HP. */
+  /**
+   * Returns maximum HP.
+   *
+   * @return the player's maximum HP
+   */
   public int getMaxHp() {
     return maxHp;
   }
@@ -153,22 +165,38 @@ public final class HudState {
     return helpHintSecondsLeft > 0f && !helpShown;
   }
 
-  /** Returns current coin count. */
+  /**
+   * Returns current coin count.
+   *
+   * @return the coins the player holds
+   */
   public int getCoins() {
     return coins;
   }
 
-  /** Returns the currently selected quick-access slot index (0, 1, or 2). */
+  /**
+   * Returns the currently selected quick-access slot index (0, 1, or 2).
+   *
+   * @return the selected hotbar slot, 0, 1 or 2
+   */
   public int getActiveSlot() {
     return activeSlot;
   }
 
-  /** Returns the player's world X coordinate for the minimap. */
+  /**
+   * Returns the player's world X coordinate for the minimap.
+   *
+   * @return the player's x in world pixels
+   */
   public float getPlayerX() {
     return playerX;
   }
 
-  /** Returns the player's world Y coordinate for the minimap. */
+  /**
+   * Returns the player's world Y coordinate for the minimap.
+   *
+   * @return the player's y in world pixels
+   */
   public float getPlayerY() {
     return playerY;
   }

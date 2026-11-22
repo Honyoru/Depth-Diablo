@@ -12,6 +12,11 @@ import java.util.Optional;
 public final class ShopPageState {
   private Optional<Shopkeeper> shopkeeper = Optional.empty();
 
+  /** Creates the shop page state, closed. */
+  public ShopPageState() {
+    // its fields start with their declared values
+  }
+
   /**
    * Tells whether the page is open.
    *

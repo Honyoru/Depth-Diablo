@@ -26,6 +26,11 @@ public final class WavePlan {
   /** One more nest every 2 waves: none in waves 1 and 2, then 1, 1, 2, 2, 3... */
   private static final int WAVES_PER_NEST = 2;
 
+  /** Creates the wave plan of the Arena; it holds no state of its own. */
+  public WavePlan() {
+    // its fields start with their declared values
+  }
+
   /**
    * Returns the ids of every enemy of a wave, the king first on a boss wave.
    *

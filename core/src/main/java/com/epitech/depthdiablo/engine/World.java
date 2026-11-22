@@ -24,6 +24,11 @@ public final class World implements Rewindable {
 
   private boolean ticking;
 
+  /** Creates an empty world at tick 0, with its own event bus. */
+  public World() {
+    // its fields start with their declared values
+  }
+
   /**
    * Returns the bus to pass to emitters and listeners.
    *

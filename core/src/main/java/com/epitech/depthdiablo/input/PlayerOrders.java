@@ -26,6 +26,11 @@ public final class PlayerOrders implements PlayerInput {
 
   private boolean dodgeRoll;
 
+  /** Creates orders that stand still and ask for nothing, on hotbar slot 0. */
+  public PlayerOrders() {
+    // its fields start with their declared values
+  }
+
   @Override
   public Vector2 moveDirection() {
     return new Vector2(direction);
@@ -111,7 +116,7 @@ public final class PlayerOrders implements PlayerInput {
     use = true;
   }
 
-  /** The user lets go of the use key */
+  /** The user lets go of the use key. */
   public void releaseUse() {
     use = false;
   }

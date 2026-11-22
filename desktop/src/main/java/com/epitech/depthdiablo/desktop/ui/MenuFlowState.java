@@ -7,16 +7,23 @@ public final class MenuFlowState {
 
   /** Steps in the menu navigation flow. */
   public enum ScreenStep {
+    /** The title screen. */
     MAIN_MENU,
+    /** Choosing the Arena or Endless. */
     MODE_SELECTION,
+    /** Choosing the hero. */
     CHARACTER_SELECTION,
+    /** A run is being played. */
     IN_GAME,
+    /** The run ended; its score shows. */
     GAME_OVER
   }
 
   /** Available game modes, each with the map it is played on. */
   public enum GameMode {
+    /** Waves of enemies in one arena, a boss every fifth wave. */
     ARENA("Arena Mode", "arena_mapV1.tmx"),
+    /** Floors explored one after the other. */
     ENDLESS("Endless Mode", "Floor1.tmx");
 
     private final String displayName;
@@ -27,7 +34,11 @@ public final class MenuFlowState {
       this.mapPath = mapPath;
     }
 
-    /** Returns the human-readable title of the mode. */
+    /**
+     * Returns the human-readable title of the mode.
+     *
+     * @return e.g. {@code "Arena Mode"}
+     */
     public String getDisplayName() {
       return displayName;
     }
@@ -44,8 +55,11 @@ public final class MenuFlowState {
 
   /** Character archetypes displayed on the selection screen (1 playable in PoC). */
   public enum HeroType {
+    /** The Knight, a melee fighter. */
     WARRIOR("Knight", true, "knight"),
+    /** The Mage, locked for now. */
     MAGE("Mage (Locked)", false, "mage"),
+    /** The Assassin. */
     ROGUE("Assassin", true, "assassin");
 
     private final String displayName;
@@ -58,12 +72,20 @@ public final class MenuFlowState {
       this.characterId = characterId;
     }
 
-    /** Returns the display label of the hero. */
+    /**
+     * Returns the display label of the hero.
+     *
+     * @return e.g. {@code "Knight"}
+     */
     public String getDisplayName() {
       return displayName;
     }
 
-    /** Returns whether this hero can be selected in the current PoC. */
+    /**
+     * Tells whether this hero can be selected in the current PoC.
+     *
+     * @return true if it can be played
+     */
     public boolean isPlayable() {
       return playable;
     }
@@ -86,6 +108,11 @@ public final class MenuFlowState {
 
   private int lastScore;
 
+  /** Creates the menu flow on the main menu, with the Arena and the Knight selected. */
+  public MenuFlowState() {
+    // its fields start with their declared values
+  }
+
   /**
    * Returns the score of the last finished run.
    *
@@ -95,17 +122,29 @@ public final class MenuFlowState {
     return lastScore;
   }
 
-  /** Returns the current menu screen step. */
+  /**
+   * Returns the current menu screen step.
+   *
+   * @return the step the menus show
+   */
   public ScreenStep getCurrentStep() {
     return currentStep;
   }
 
-  /** Returns the currently selected game mode. */
+  /**
+   * Returns the currently selected game mode.
+   *
+   * @return the mode chosen, the Arena by default
+   */
   public GameMode getSelectedMode() {
     return selectedMode;
   }
 
-  /** Returns the currently selected hero. */
+  /**
+   * Returns the currently selected hero.
+   *
+   * @return the hero chosen, the Knight by default
+   */
   public HeroType getSelectedHero() {
     return selectedHero;
   }

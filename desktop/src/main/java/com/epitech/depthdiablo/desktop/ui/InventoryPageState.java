@@ -16,6 +16,11 @@ public final class InventoryPageState {
 
   private boolean switching;
 
+  /** Creates the inventory page state: closed, nothing selected, no Switch pending. */
+  public InventoryPageState() {
+    // its fields start with their declared values
+  }
+
   /**
    * Tells whether the page is open, so the game is paused.
    *

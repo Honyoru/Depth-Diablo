@@ -17,7 +17,16 @@ public final class GameApplication extends Game {
 
   private GameAudio audio;
 
-  /** Returns the shared {@link SpriteBatch}. */
+  /** Creates the application; libGDX calls {@link #create()} once the window is up. */
+  public GameApplication() {
+    // its fields start with their declared values
+  }
+
+  /**
+   * Returns the shared {@link SpriteBatch}.
+   *
+   * @return the batch every screen draws with
+   */
   public SpriteBatch getBatch() {
     return batch;
   }

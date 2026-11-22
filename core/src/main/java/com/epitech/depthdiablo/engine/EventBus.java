@@ -21,6 +21,11 @@ public final class EventBus {
   private final List<EventListener> everyEvent = new ArrayList<>();
   private final Queue<GameEvent> queue = new ArrayDeque<>();
 
+  /** Creates a bus with no listener and no event waiting. */
+  public EventBus() {
+    // its fields start with their declared values
+  }
+
   /**
    * Registers a listener for one type of event.
    *
