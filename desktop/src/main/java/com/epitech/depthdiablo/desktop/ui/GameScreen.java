@@ -27,6 +27,7 @@ import com.epitech.depthdiablo.debug.HotReload;
 import com.epitech.depthdiablo.debug.Rewind;
 import com.epitech.depthdiablo.debug.ViewMode;
 import com.epitech.depthdiablo.debug.ViewSwitcher;
+import com.epitech.depthdiablo.desktop.audio.MusicTrack;
 import com.epitech.depthdiablo.desktop.audio.SoundEffect;
 import com.epitech.depthdiablo.desktop.audio.SoundEvents;
 import com.epitech.depthdiablo.engine.DamageDealt;
@@ -307,7 +308,7 @@ public final class GameScreen extends ScreenAdapter {
   @Override
   public void show() {
     Gdx.input.setInputProcessor(hud.getStage());
-    app.getAudio().playMusic(false);
+    app.getAudio().playMusic(MusicTrack.MAIN);
   }
 
   @Override

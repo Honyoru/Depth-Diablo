@@ -1,6 +1,7 @@
 package com.epitech.depthdiablo.desktop.ui;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.epitech.depthdiablo.desktop.audio.GameAudio;
@@ -72,6 +73,13 @@ public final class GameApplication extends Game {
       getScreen().dispose();
     }
     setScreen(new GameScreen(this, hudSkin, mode, hero));
+  }
+
+  /** Renders the current screen, then moves the music fades on, whatever the screen. */
+  @Override
+  public void render() {
+    super.render();
+    audio.updateMusic(Gdx.graphics.getDeltaTime());
   }
 
   @Override

@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.epitech.depthdiablo.GameConstants;
+import com.epitech.depthdiablo.desktop.audio.MusicTrack;
 import com.epitech.depthdiablo.desktop.audio.SoundEffect;
 import java.util.Objects;
 
@@ -47,7 +48,7 @@ public final class MenuScreen extends ScreenAdapter {
   @Override
   public void show() {
     Gdx.input.setInputProcessor(stage);
-    app.getAudio().playMusic(true);
+    app.getAudio().playMusic(MusicTrack.MENU);
     rebuildUi();
   }
 
