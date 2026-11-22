@@ -259,6 +259,16 @@ public abstract class Character extends Entity implements Damageable {
   }
 
   /**
+   * Sets the HP to a value taken from elsewhere, such as the player arriving on the next floor with
+   * the HP they had. The value is kept between 0 and the maximum HP.
+   *
+   * @param value the HP to set
+   */
+  protected final void restoreHp(int value) {
+    hp = Math.max(0, Math.min(getMaxHp(), value));
+  }
+
+  /**
    * Grants invincibility for at least the given number of ticks, such as a dodge roll. It never
    * shortens the invincibility already running.
    *

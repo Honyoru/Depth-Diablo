@@ -196,6 +196,23 @@ public abstract class Player extends Character {
   }
 
   /**
+   * Takes over what the player of the previous floor had: every slot of its inventory, then its HP
+   * once the build follows the new inventory. This player stays where it stands.
+   *
+   * @param previous the player of the previous floor
+   * @throws NullPointerException if {@code previous} is {@code null}
+   */
+  public final void carryOver(Player previous) {
+    Objects.requireNonNull(previous, "previous is null");
+    StateBuffer bag = new StateBuffer();
+    previous.inventory.writeState(bag);
+    bag.startReading();
+    inventory.readState(bag);
+    rebuild(inventory.getModifiers());
+    restoreHp(previous.getHp());
+  }
+
+  /**
    * Returns the player's side. Knight, Mage and Archer all fight for it, so it is final.
    *
    * @return {@link Faction#PLAYER}
