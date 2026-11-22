@@ -14,7 +14,7 @@ import java.util.Optional;
  * of its rats alive; a dead rat frees a slot. Its rats are summoned, so they never drop loot (Q16).
  * It never moves: its speed is 0 and it never chases.
  *
- * <p>Pattern: Template Method (fills the {@link Enemy} hooks for a summoner).
+ * <p>Pattern: Template Method (fills the {@link Enemy} hooks for a summoner) .
  */
 public final class RatNest extends Enemy {
   /** The nest never strikes: summoning is its attack, done in {@link #attackTarget}. */
