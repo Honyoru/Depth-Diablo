@@ -32,6 +32,7 @@ public abstract class Bow extends RangedWeapon {
    *     and finite
    * @param range how far its arrow flies, in pixels; above 0 and finite
    * @param projectileSpeed how fast its arrow flies, in pixels per second; above 0 and finite
+   * @param projectileSpriteId the picture of its arrow, pointing right; not blank
    * @throws NullPointerException if a text or the rarity is {@code null}
    * @throws IllegalArgumentException if a value is out of range
    */
@@ -44,8 +45,19 @@ public abstract class Bow extends RangedWeapon {
       int attackBonus,
       float attackSpeed,
       float range,
-      float projectileSpeed) {
-    super(id, nameKey, spriteId, rarity, price, attackBonus, attackSpeed, range, projectileSpeed);
+      float projectileSpeed,
+      String projectileSpriteId) {
+    super(
+        id,
+        nameKey,
+        spriteId,
+        rarity,
+        price,
+        attackBonus,
+        attackSpeed,
+        range,
+        projectileSpeed,
+        projectileSpriteId);
   }
 
   /**
@@ -67,6 +79,7 @@ public abstract class Bow extends RangedWeapon {
         aimDegrees,
         getProjectileSpeed(),
         getProjectileLifetimeTicks(),
+        getProjectileSpriteId(),
         world);
   }
 }

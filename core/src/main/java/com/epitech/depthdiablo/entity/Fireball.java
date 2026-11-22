@@ -20,12 +20,13 @@ public final class Fireball extends Projectile {
    * @param aimDegrees the direction it flies to, in degrees (0 = right, 90 = up)
    * @param speed how fast it flies, in pixels per second; above 0
    * @param lifetimeTicks how many ticks it flies before it is removed; above 0
+   * @param spriteId the picture the renderer draws for it, pointing right
    * @param burn the burn it leaves on the character it hurts, read from the data files (Q93)
    * @param world the world it flies in
-   * @throws NullPointerException if {@code bodyBox}, {@code owner}, {@code burn} or {@code world}
-   *     is {@code null}
+   * @throws NullPointerException if {@code bodyBox}, {@code owner}, {@code spriteId}, {@code burn}
+   *     or {@code world} is {@code null}
    * @throws IllegalArgumentException if the aim or the speed is not a finite number, the speed is 0
-   *     or less, or the lifetime is 0 or less
+   *     or less, the lifetime is 0 or less, or the sprite id is blank
    */
   public Fireball(
       Aabb bodyBox,
@@ -33,9 +34,10 @@ public final class Fireball extends Projectile {
       float aimDegrees,
       float speed,
       int lifetimeTicks,
+      String spriteId,
       DotSpec burn,
       World world) {
-    super(bodyBox, owner, aimDegrees, speed, lifetimeTicks, world);
+    super(bodyBox, owner, aimDegrees, speed, lifetimeTicks, spriteId, world);
     this.burn = Objects.requireNonNull(burn, "The burn of a fireball must not be null");
   }
 

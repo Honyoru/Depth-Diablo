@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 class ProjectileTest {
   private static final float TEN_PIXELS_PER_TICK = 10F * GameConstants.TICKS_PER_SECOND;
   private static final int LIFETIME_TICKS = 30;
+  private static final String ARROW_SPRITE = "projectiles/arrow";
   private final World world = new World();
 
   /** Shoots every arrow; on the ENEMY side, like the Skeleton Archer. */
@@ -30,7 +31,13 @@ class ProjectileTest {
   private Arrow arrowAt(float x, float y, float aimDegrees) {
     Arrow arrow =
         new Arrow(
-            new Aabb(x, y, 16, 16), owner, aimDegrees, TEN_PIXELS_PER_TICK, LIFETIME_TICKS, world);
+            new Aabb(x, y, 16, 16),
+            owner,
+            aimDegrees,
+            TEN_PIXELS_PER_TICK,
+            LIFETIME_TICKS,
+            ARROW_SPRITE,
+            world);
     world.add(arrow);
     return arrow;
   }
@@ -186,7 +193,8 @@ class ProjectileTest {
     Aabb body = new Aabb(0, 0, 8, 4);
 
     assertThrows(
-        IllegalArgumentException.class, () -> new Arrow(body, owner, 0, 0f, LIFETIME_TICKS, world));
+        IllegalArgumentException.class,
+        () -> new Arrow(body, owner, 0, 0f, LIFETIME_TICKS, ARROW_SPRITE, world));
   }
 
   @Test
@@ -195,7 +203,9 @@ class ProjectileTest {
 
     assertThrows(
         IllegalArgumentException.class,
-        () -> new Arrow(body, owner, Float.NaN, TEN_PIXELS_PER_TICK, LIFETIME_TICKS, world));
+        () ->
+            new Arrow(
+                body, owner, Float.NaN, TEN_PIXELS_PER_TICK, LIFETIME_TICKS, ARROW_SPRITE, world));
   }
 
   @Test
@@ -204,7 +214,7 @@ class ProjectileTest {
 
     assertThrows(
         IllegalArgumentException.class,
-        () -> new Arrow(body, owner, 0, TEN_PIXELS_PER_TICK, 0, world));
+        () -> new Arrow(body, owner, 0, TEN_PIXELS_PER_TICK, 0, ARROW_SPRITE, world));
   }
 
   private StateBuffer photoOfTheWorld() {
@@ -245,5 +255,35 @@ class ProjectileTest {
     world.tick();
 
     assertTrue(player.getHp() < 10);
+  }
+
+  @Test
+  void should_point_where_it_flies() {
+    Projectile arrow = arrowAt(0f, 0f, 135f);
+
+    assertEquals(135f, arrow.getAngleDegrees(), 0.01f);
+  }
+
+  @Test
+  void should_keep_the_sprite_it_was_given() {
+    assertEquals(ARROW_SPRITE, arrowAt(0f, 0f, 0f).getSpriteId());
+  }
+
+  @Test
+  void should_throw_when_its_sprite_is_null() {
+    Aabb body = new Aabb(0, 0, 8, 4);
+
+    assertThrows(
+        NullPointerException.class,
+        () -> new Arrow(body, owner, 0, TEN_PIXELS_PER_TICK, LIFETIME_TICKS, null, world));
+  }
+
+  @Test
+  void should_throw_when_its_sprite_is_blank() {
+    Aabb body = new Aabb(0, 0, 8, 4);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new Arrow(body, owner, 0, TEN_PIXELS_PER_TICK, LIFETIME_TICKS, " ", world));
   }
 }

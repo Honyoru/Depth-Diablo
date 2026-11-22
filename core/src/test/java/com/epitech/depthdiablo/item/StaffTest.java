@@ -40,7 +40,8 @@ class StaffTest {
           1,
           1f,
           120f,
-          240f);
+          240f,
+          "projectiles/arrow");
     }
 
     @Override
@@ -51,6 +52,7 @@ class StaffTest {
           aimDegrees,
           getProjectileSpeed(),
           getProjectileLifetimeTicks(),
+          getProjectileSpriteId(),
           world);
     }
   }

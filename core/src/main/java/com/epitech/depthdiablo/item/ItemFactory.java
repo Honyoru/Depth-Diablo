@@ -92,7 +92,21 @@ public final class ItemFactory {
               bow.attackBonus(),
               bow.attackSpeed(),
               bow.range(),
-              bow.projectileSpeed());
+              bow.projectileSpeed(),
+              bow.projectileSpriteId());
+      case ItemSpec.FireStaffSpec staff ->
+          new FireStaff(
+              staff.id(),
+              staff.nameKey(),
+              staff.spriteId(),
+              staff.rarity(),
+              staff.price(),
+              staff.attackBonus(),
+              staff.attackSpeed(),
+              staff.range(),
+              staff.projectileSpeed(),
+              staff.projectileSpriteId(),
+              staff.burn());
       case ItemSpec.ShieldSpec shield ->
           new Shield(
               shield.id(),

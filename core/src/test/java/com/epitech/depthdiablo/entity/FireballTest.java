@@ -25,7 +25,14 @@ class FireballTest {
   private Fireball fireballAt(float x, float y) {
     Fireball fireball =
         new Fireball(
-            new Aabb(x, y, 16, 16), owner, 0, TEN_PIXELS_PER_TICK, LIFETIME_TICKS, BURN, world);
+            new Aabb(x, y, 16, 16),
+            owner,
+            0,
+            TEN_PIXELS_PER_TICK,
+            LIFETIME_TICKS,
+            "projectiles/fireball",
+            BURN,
+            world);
     world.add(fireball);
     return fireball;
   }
@@ -84,6 +91,15 @@ class FireballTest {
 
     assertThrows(
         NullPointerException.class,
-        () -> new Fireball(body, owner, 0, TEN_PIXELS_PER_TICK, LIFETIME_TICKS, null, world));
+        () ->
+            new Fireball(
+                body,
+                owner,
+                0,
+                TEN_PIXELS_PER_TICK,
+                LIFETIME_TICKS,
+                "projectiles/fireball",
+                null,
+                world));
   }
 }

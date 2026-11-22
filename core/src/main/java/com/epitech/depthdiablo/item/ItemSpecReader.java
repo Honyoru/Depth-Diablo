@@ -17,108 +17,134 @@ public final class ItemSpecReader {
 
   /** One reader per {@code "class"} of the data file; a new item kind is one more entry. */
   private static final Map<String, BiFunction<String, JsonValue, ItemSpec>> READERS =
-      Map.of(
-          "Potion",
-          (id, json) ->
-              new ItemSpec.PotionSpec(
-                  id,
-                  json.getString("nameKey"),
-                  json.getString("spriteId"),
-                  json.getInt("price"),
-                  json.getInt("healAmount")),
-          "Sword",
-          (id, json) ->
-              new ItemSpec.SwordSpec(
-                  id,
-                  json.getString("nameKey"),
-                  json.getString("spriteId"),
-                  Rarity.valueOf(json.getString("rarity")),
-                  json.getInt("price"),
-                  json.getInt("attackBonus"),
-                  json.getFloat("attackSpeed"),
-                  json.getFloat("range"),
-                  json.getFloat("width"),
-                  json.getFloat("arcDegrees"),
-                  json.getInt("swingTicks")),
-          "LeatherArmor",
-          (id, json) ->
-              new ItemSpec.LeatherArmorSpec(
-                  id,
-                  json.getString("nameKey"),
-                  json.getString("spriteId"),
-                  Rarity.valueOf(json.getString("rarity")),
-                  json.getInt("price"),
-                  json.getInt("defenseBonus")),
-          "FireRing",
-          (id, json) ->
-              new ItemSpec.FireRingSpec(
-                  id,
-                  json.getString("nameKey"),
-                  json.getString("spriteId"),
-                  json.getInt("price"),
-                  readBurn(id, json.get("burn"))),
-          "ShortBow",
-          (id, json) ->
-              new ItemSpec.ShortBowSpec(
-                  id,
-                  json.getString("nameKey"),
-                  json.getString("spriteId"),
-                  Rarity.valueOf(json.getString("rarity")),
-                  json.getInt("price"),
-                  json.getInt("attackBonus"),
-                  json.getFloat("attackSpeed"),
-                  json.getFloat("range"),
-                  json.getFloat("projectileSpeed")),
-          "Axe",
-          (id, json) ->
-              new ItemSpec.AxeSpec(
-                  id,
-                  json.getString("nameKey"),
-                  json.getString("spriteId"),
-                  Rarity.valueOf(json.getString("rarity")),
-                  json.getInt("price"),
-                  json.getInt("attackBonus"),
-                  json.getFloat("attackSpeed"),
-                  json.getFloat("range"),
-                  json.getFloat("width"),
-                  json.getFloat("arcDegrees"),
-                  json.getInt("swingTicks")),
-          "Shield",
-          (id, json) ->
-              new ItemSpec.ShieldSpec(
-                  id,
-                  json.getString("nameKey"),
-                  json.getString("spriteId"),
-                  Rarity.valueOf(json.getString("rarity")),
-                  json.getInt("price"),
-                  json.getInt("defenseBonus")),
-          "StatRing",
-          (id, json) ->
-              new ItemSpec.StatRingSpec(
-                  id,
-                  json.getString("nameKey"),
-                  json.getString("spriteId"),
-                  json.getInt("price"),
-                  Stat.valueOf(json.getString("stat")),
-                  json.getFloat("amount")),
-          "LifeStealRing",
-          (id, json) ->
-              new ItemSpec.LifeStealRingSpec(
-                  id,
-                  json.getString("nameKey"),
-                  json.getString("spriteId"),
-                  json.getInt("price"),
-                  json.getFloat("fraction")),
-          "ExecutionerRing",
-          (id, json) ->
-              new ItemSpec.ExecutionerRingSpec(
-                  id,
-                  json.getString("nameKey"),
-                  json.getString("spriteId"),
-                  json.getInt("price"),
-                  json.getFloat("threshold")));
+      Map.ofEntries(
+          Map.entry(
+              "Potion",
+              (id, json) ->
+                  new ItemSpec.PotionSpec(
+                      id,
+                      json.getString("nameKey"),
+                      json.getString("spriteId"),
+                      json.getInt("price"),
+                      json.getInt("healAmount"))),
+          Map.entry(
+              "Sword",
+              (id, json) ->
+                  new ItemSpec.SwordSpec(
+                      id,
+                      json.getString("nameKey"),
+                      json.getString("spriteId"),
+                      Rarity.valueOf(json.getString("rarity")),
+                      json.getInt("price"),
+                      json.getInt("attackBonus"),
+                      json.getFloat("attackSpeed"),
+                      json.getFloat("range"),
+                      json.getFloat("width"),
+                      json.getFloat("arcDegrees"),
+                      json.getInt("swingTicks"))),
+          Map.entry(
+              "LeatherArmor",
+              (id, json) ->
+                  new ItemSpec.LeatherArmorSpec(
+                      id,
+                      json.getString("nameKey"),
+                      json.getString("spriteId"),
+                      Rarity.valueOf(json.getString("rarity")),
+                      json.getInt("price"),
+                      json.getInt("defenseBonus"))),
+          Map.entry(
+              "FireRing",
+              (id, json) ->
+                  new ItemSpec.FireRingSpec(
+                      id,
+                      json.getString("nameKey"),
+                      json.getString("spriteId"),
+                      json.getInt("price"),
+                      readBurn(id, json.get("burn")))),
+          Map.entry(
+              "ShortBow",
+              (id, json) ->
+                  new ItemSpec.ShortBowSpec(
+                      id,
+                      json.getString("nameKey"),
+                      json.getString("spriteId"),
+                      Rarity.valueOf(json.getString("rarity")),
+                      json.getInt("price"),
+                      json.getInt("attackBonus"),
+                      json.getFloat("attackSpeed"),
+                      json.getFloat("range"),
+                      json.getFloat("projectileSpeed"),
+                      json.getString("projectileSpriteId"))),
+          Map.entry(
+              "FireStaff",
+              (id, json) ->
+                  new ItemSpec.FireStaffSpec(
+                      id,
+                      json.getString("nameKey"),
+                      json.getString("spriteId"),
+                      Rarity.valueOf(json.getString("rarity")),
+                      json.getInt("price"),
+                      json.getInt("attackBonus"),
+                      json.getFloat("attackSpeed"),
+                      json.getFloat("range"),
+                      json.getFloat("projectileSpeed"),
+                      json.getString("projectileSpriteId"),
+                      readBurn(id, json.get("burn")))),
+          Map.entry(
+              "Axe",
+              (id, json) ->
+                  new ItemSpec.AxeSpec(
+                      id,
+                      json.getString("nameKey"),
+                      json.getString("spriteId"),
+                      Rarity.valueOf(json.getString("rarity")),
+                      json.getInt("price"),
+                      json.getInt("attackBonus"),
+                      json.getFloat("attackSpeed"),
+                      json.getFloat("range"),
+                      json.getFloat("width"),
+                      json.getFloat("arcDegrees"),
+                      json.getInt("swingTicks"))),
+          Map.entry(
+              "Shield",
+              (id, json) ->
+                  new ItemSpec.ShieldSpec(
+                      id,
+                      json.getString("nameKey"),
+                      json.getString("spriteId"),
+                      Rarity.valueOf(json.getString("rarity")),
+                      json.getInt("price"),
+                      json.getInt("defenseBonus"))),
+          Map.entry(
+              "StatRing",
+              (id, json) ->
+                  new ItemSpec.StatRingSpec(
+                      id,
+                      json.getString("nameKey"),
+                      json.getString("spriteId"),
+                      json.getInt("price"),
+                      Stat.valueOf(json.getString("stat")),
+                      json.getFloat("amount"))),
+          Map.entry(
+              "LifeStealRing",
+              (id, json) ->
+                  new ItemSpec.LifeStealRingSpec(
+                      id,
+                      json.getString("nameKey"),
+                      json.getString("spriteId"),
+                      json.getInt("price"),
+                      json.getFloat("fraction"))),
+          Map.entry(
+              "ExecutionerRing",
+              (id, json) ->
+                  new ItemSpec.ExecutionerRingSpec(
+                      id,
+                      json.getString("nameKey"),
+                      json.getString("spriteId"),
+                      json.getInt("price"),
+                      json.getFloat("threshold"))));
 
-  /** Reads the {@code "burn"} object of a fire ring entry. */
+  /** Reads the {@code "burn"} object of an entry: a fire ring or a fire staff. */
   private static DotSpec readBurn(String id, JsonValue burn) {
     if (burn == null) {
       throw new IllegalArgumentException("Item " + id + " has no \"burn\" object in the data file");

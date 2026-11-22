@@ -22,6 +22,7 @@ import java.util.Optional;
 public abstract class Projectile extends Entity {
   private final Character owner;
   private final Vector2 velocity;
+  private final String spriteId;
   private Hitbox hitbox;
   private final World world;
 
@@ -34,10 +35,13 @@ public abstract class Projectile extends Entity {
    * @param aimDegrees the direction it flies to, in degrees (0 = right, 90 = up)
    * @param speed how fast it flies, in pixels per second; above 0
    * @param lifetimeTicks how many ticks it flies before it is removed; above 0
+   * @param spriteId the picture the renderer draws for it, pointing right; from the data entry of
+   *     the weapon that fired it
    * @param world the world it flies in: its walls stop it, its characters can be hurt
-   * @throws NullPointerException if {@code bodyBox}, {@code owner} or {@code world} is {@code null}
+   * @throws NullPointerException if {@code bodyBox}, {@code owner}, {@code spriteId} or {@code
+   *     world} is {@code null}
    * @throws IllegalArgumentException if the aim or the speed is not a finite number, the speed is 0
-   *     or less, or the lifetime is 0 or less
+   *     or less, the lifetime is 0 or less, or the sprite id is blank
    */
   protected Projectile(
       Aabb bodyBox,
@@ -45,6 +49,7 @@ public abstract class Projectile extends Entity {
       float aimDegrees,
       float speed,
       int lifetimeTicks,
+      String spriteId,
       World world) {
     super(bodyBox);
     if (!Float.isFinite(aimDegrees)) {
@@ -55,8 +60,31 @@ public abstract class Projectile extends Entity {
     }
     this.owner = Objects.requireNonNull(owner, "The owner of a projectile must not be null");
     this.world = Objects.requireNonNull(world, "The world of a projectile must not be null");
+    this.spriteId = Objects.requireNonNull(spriteId, "spriteId is null");
+    if (spriteId.isBlank()) {
+      throw new IllegalArgumentException("The sprite id of a projectile must not be blank");
+    }
     this.velocity = new Vector2(speed / GameConstants.TICKS_PER_SECOND, 0f).setAngleDeg(aimDegrees);
     this.hitbox = new Hitbox(shapeOf(bodyBox, velocity), owner, owner.getFaction(), lifetimeTicks);
+  }
+
+  /**
+   * Returns the picture the renderer draws for this projectile, pointing right; it comes from the
+   * data entry of the weapon that fired it (Q93).
+   *
+   * @return its sprite id, e.g. {@code "projectiles/arrow"}
+   */
+  public final String getSpriteId() {
+    return spriteId;
+  }
+
+  /**
+   * Returns the direction this projectile flies to; the renderer turns its picture by it.
+   *
+   * @return the angle in degrees (0 = right, 90 = up), from 0 to 360
+   */
+  public final float getAngleDegrees() {
+    return velocity.angleDeg();
   }
 
   /**

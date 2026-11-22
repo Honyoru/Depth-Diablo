@@ -173,6 +173,29 @@ class ItemFactoryTest {
     assertEquals(entry.getFloat("attackSpeed"), bow.getAttackSpeed());
     assertEquals(entry.getFloat("range"), bow.getRange());
     assertEquals(entry.getFloat("projectileSpeed"), bow.getProjectileSpeed());
+    assertEquals(entry.getString("projectileSpriteId"), bow.getProjectileSpriteId());
+  }
+
+  @Test
+  void should_build_a_fire_staff_with_the_values_of_its_entry() throws IOException {
+    DataRegistry items = realItems();
+
+    FireStaff staff =
+        assertInstanceOf(FireStaff.class, new ItemFactory(items).create("fire_staff"));
+
+    JsonValue entry = items.definition("fire_staff");
+    JsonValue burn = entry.get("burn");
+    assertEquals(Rarity.valueOf(entry.getString("rarity")), staff.getRarity());
+    assertEquals(entry.getInt("price"), staff.getPrice());
+    assertEquals(entry.getInt("attackBonus"), staff.getAttackBonus());
+    assertEquals(entry.getFloat("attackSpeed"), staff.getAttackSpeed());
+    assertEquals(entry.getFloat("range"), staff.getRange());
+    assertEquals(entry.getFloat("projectileSpeed"), staff.getProjectileSpeed());
+    assertEquals(entry.getString("projectileSpriteId"), staff.getProjectileSpriteId());
+    assertEquals(
+        new DotSpec(
+            burn.getInt("damage"), burn.getInt("intervalTicks"), burn.getInt("durationTicks")),
+        staff.getBurn());
   }
 
   @Test

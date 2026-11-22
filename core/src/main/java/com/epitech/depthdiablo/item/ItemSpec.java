@@ -149,6 +149,22 @@ public sealed interface ItemSpec {
       int attackBonus,
       float attackSpeed,
       float range,
-      float projectileSpeed)
+      float projectileSpeed,
+      String projectileSpriteId)
+      implements ItemSpec {}
+
+  /** A {@code "FireStaff"} entry: a bow's values and the burn of its fireball. */
+  record FireStaffSpec(
+      String id,
+      String nameKey,
+      String spriteId,
+      Rarity rarity,
+      int price,
+      int attackBonus,
+      float attackSpeed,
+      float range,
+      float projectileSpeed,
+      String projectileSpriteId,
+      DotSpec burn)
       implements ItemSpec {}
 }

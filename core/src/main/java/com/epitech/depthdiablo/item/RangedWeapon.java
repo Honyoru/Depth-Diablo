@@ -18,6 +18,8 @@ public abstract class RangedWeapon extends Weapon {
 
   private final float projectileSpeed;
 
+  private final String projectileSpriteId;
+
   /**
    * Creates a ranged weapon.
    *
@@ -31,6 +33,7 @@ public abstract class RangedWeapon extends Weapon {
    *     and finite
    * @param range how far its projectile flies, in pixels; above 0 and finite
    * @param projectileSpeed how fast its projectile flies, in pixels per second; above 0 and finite
+   * @param projectileSpriteId the picture of its projectiles, pointing right; not blank
    * @throws NullPointerException if a text or the rarity is {@code null}
    * @throws IllegalArgumentException if a value is out of range
    */
@@ -43,13 +46,28 @@ public abstract class RangedWeapon extends Weapon {
       int attackBonus,
       float attackSpeed,
       float range,
-      float projectileSpeed) {
+      float projectileSpeed,
+      String projectileSpriteId) {
     super(id, nameKey, spriteId, rarity, price, attackBonus, attackSpeed, range);
     if (projectileSpeed <= 0 || Float.isNaN(projectileSpeed) || Float.isInfinite(projectileSpeed)) {
       throw new IllegalArgumentException(
           "Projectile speed must be a finite number above 0: " + projectileSpeed);
     }
     this.projectileSpeed = projectileSpeed;
+    this.projectileSpriteId =
+        Objects.requireNonNull(projectileSpriteId, "projectileSpriteId is null");
+    if (projectileSpriteId.isBlank()) {
+      throw new IllegalArgumentException("The projectile sprite id must not be blank");
+    }
+  }
+
+  /**
+   * Returns the picture of its projectiles, from its data entry.
+   *
+   * @return the sprite id it gives every projectile it fires
+   */
+  public final String getProjectileSpriteId() {
+    return projectileSpriteId;
   }
 
   /**

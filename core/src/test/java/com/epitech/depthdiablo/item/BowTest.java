@@ -88,9 +88,24 @@ class BowTest {
     assertEquals(1, arrowsIn(world).size());
   }
 
+  @Test
+  void should_give_its_arrows_the_projectile_sprite_of_its_entry() {
+    Character owner = aCharacter().withWorld(world).build();
+    Bow bow = aBow(120f, 240f);
+
+    bow.attack(owner, 0f, world);
+
+    assertEquals(bow.getProjectileSpriteId(), arrowsIn(world).get(0).getSpriteId());
+  }
+
+  @Test
+  void should_throw_when_its_projectile_sprite_is_blank() {
+    assertThrows(IllegalArgumentException.class, () -> new TestBow(120f, 240f, " "));
+  }
+
   /** A bow with the given range and arrow speed; the other values do not matter here. */
   private static Bow aBow(float range, float projectileSpeed) {
-    return new TestBow(range, projectileSpeed);
+    return new TestBow(range, projectileSpeed, "projectiles/arrow");
   }
 
   /** The arrows in the world, in the order they were added. */
@@ -103,7 +118,7 @@ class BowTest {
 
   /** The smallest real bow: the family with no value of its own. */
   private static final class TestBow extends Bow {
-    TestBow(float range, float projectileSpeed) {
+    TestBow(float range, float projectileSpeed, String projectileSpriteId) {
       super(
           "test_bow",
           "item.test_bow.name",
@@ -113,7 +128,8 @@ class BowTest {
           1,
           1f,
           range,
-          projectileSpeed);
+          projectileSpeed,
+          projectileSpriteId);
     }
   }
 }
