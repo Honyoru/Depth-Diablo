@@ -6,14 +6,23 @@ The two UML diagrams already show seven GoF patterns. The main gap is Observer: 
 
 ## Diagrams
 
-The diagrams live in [`docs/uml`](../uml). Each diagram has its own file: `entities.drawio`, `events.drawio`, `arena.drawio` and `items.drawio`.
+The diagrams live in [`docs/uml`](../uml). Since 22 Nov they are generated from the compiled classes by [`tools/uml/generate_uml.py`](../../tools/uml/generate_uml.py) (`./gradlew classes`, then `python3 tools/uml/generate_uml.py`), so they show every class with its real fields and methods; re-run it after each pull request. The PNG previews are exported by hand from draw.io. The first drafts of 5–9 Nov, which also hold classes still planned (Dark Mage, chests, doors…), are kept in [`docs/uml/drafts`](../uml/drafts).
 
-| Diagram | Editable source | Preview |
+| # | Diagram | Editable source |
 | --- | --- | --- |
-| Entities | [entities.drawio](../uml/entities.drawio) | [entities-preview.png](../uml/entities-preview.png) |
-| Events (Observer) | [events.drawio](../uml/events.drawio) | [events-preview.png](../uml/events-preview.png) |
-| Arena (ArenaCycle) | [arena.drawio](../uml/arena.drawio) | [arena-preview.png](../uml/arena-preview.png) |
-| Items | [items.drawio](../uml/items.drawio) | [items-preview.png](../uml/items-preview.png) |
+| 0 | Overview: packages and their dependencies | [00-overview.drawio](../uml/00-overview.drawio) |
+| 1 | Engine: world, fixed step, events, rewind photo | [01-engine.drawio](../uml/01-engine.drawio) |
+| 2 | Entities: what lives in the world | [02-entities.drawio](../uml/02-entities.drawio) |
+| 3 | Characters: players, enemies, stats and builds | [03-characters.drawio](../uml/03-characters.drawio) |
+| 4 | Character data: characters.json to characters | [04-character-data.drawio](../uml/04-character-data.drawio) |
+| 5 | Combat: attacks, hitboxes, damage, status effects | [05-combat.drawio](../uml/05-combat.drawio) |
+| 6 | Items: weapons, armor, consumables, passive items | [06-items.drawio](../uml/06-items.drawio) |
+| 7 | Item data: inventory, items.json, loot | [07-item-data.drawio](../uml/07-item-data.drawio) |
+| 8 | Arena, shop, input, randomness | [08-arena-shop-input.drawio](../uml/08-arena-shop-input.drawio) |
+| 9 | Debug features: F1, F2, F5, R | [09-debug.drawio](../uml/09-debug.drawio) |
+| 10 | Desktop: application, screens, drawing | [10-desktop-screens.drawio](../uml/10-desktop-screens.drawio) |
+| 11 | Desktop: HUD, inventory page, shop page | [11-desktop-hud.drawio](../uml/11-desktop-hud.drawio) |
+| 12 | Desktop: sound effects and music | [12-desktop-audio.drawio](../uml/12-desktop-audio.drawio) |
 
 ## 1. Pattern correspondence
 
