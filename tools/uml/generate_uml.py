@@ -11,6 +11,10 @@ Usage, from the repository root:
 Each diagram lists its classes below (DIAGRAMS). A parent class or interface drawn in another
 diagram shows as a small grey box with its name only, so every arrow stays visible. Re-run it after
 each pull request; then open each file in draw.io and export its PNG preview by hand.
+
+The design diagrams (20-23) start from the first drafts in docs/uml/drafts: each class of a draft
+that exists is drawn from the code, each one still planned keeps the draft's text in a yellow box,
+and the classes of the same area that the draft did not have are added.
 """
 
 import html
@@ -110,14 +114,12 @@ DIAGRAMS = [
     ]),
 ]
 
-CHAR_WIDTH = 6.7  # Courier New 11 px
+CHAR_WIDTH = 7.2  # Courier New 11 px is 6.6; room for a wider fallback font
 LINE_HEIGHT = 15
-HEADER_HEIGHT = 36
 MAX_COLUMNS = 6  # a row wraps after this many boxes
 MARGIN = 40  # around the whole grid
 CORRIDOR = 36  # smallest corridor between two rows or two columns, in pixels
 LANE = 10  # space between two lanes of a corridor
-LABEL_ROOM = 16  # extra room in a row corridor for the field names written on arrows
 
 
 # ---------- reading the classes ----------
@@ -272,17 +274,26 @@ def stereotype(t):
         t.kind, "«abstract»" if t.abstract else "")
 
 
+SEPARATOR = "<div style='border-top:1px solid #333333;margin:3px -6px'></div>"
+SEPARATOR_HEIGHT = 7  # 3 px above, the 1 px line, 3 px below
+
+
 def box(t):
+    """The label of a class box and its exact size: fixed line height and fixed separators."""
     sections = box_lines(t)
     name = esc(t.name)
     title = f"<i>{name}</i>" if t.abstract or t.kind == "interface" else name
-    head = f"<div style='text-align:center'>{stereotype(t)}{'<br>' if stereotype(t) else ''}<b>{title}</b></div>"
-    body = "<hr size='1'>".join("<br>".join(s) if s else "&nbsp;" for s in sections)
-    plain = [re.sub(r"<[^>]+>", "", html.unescape(x)) for s in sections for x in s]
-    width = max([len(t.name) + 4, len(stereotype(t))] + [len(p) for p in plain]) * CHAR_WIDTH + 24
-    count = sum(max(1, len(s)) for s in sections)
-    height = HEADER_HEIGHT + count * LINE_HEIGHT + len(sections) * 8
-    return f"{head}<hr size='1'>{body}", max(140, width), height
+    head_lines = 2 if stereotype(t) else 1
+    head = (f"<div style='text-align:center'>{stereotype(t)}"
+            f"{'<br>' if stereotype(t) else ''}<b>{title}</b></div>")
+    body = SEPARATOR.join("<br>".join(s) if s else "&nbsp;" for s in sections)
+    label = f"<div style='line-height:{LINE_HEIGHT}px'>{head}{SEPARATOR}{body}</div>"
+    plain = [html.unescape(re.sub(r"<[^>]+>", "", x)) for s in sections for x in s]  # tags first
+    width = max([len(t.name) + 4, len(stereotype(t))] + [len(p) for p in plain]) * CHAR_WIDTH + 30
+    member_lines = sum(max(1, len(s)) for s in sections)
+    height = (2 + head_lines * LINE_HEIGHT + len(sections) * SEPARATOR_HEIGHT
+              + member_lines * LINE_HEIGHT + 10)
+    return label, max(140, width), height
 
 
 def depth_of(node, parents_of, cache):
@@ -351,12 +362,10 @@ def route(nodes, rows, edges):
             v_lanes[v].setdefault(lane_key, len(v_lanes[v]))
         plans.append((source, target, kind, label, ha, hb, v, exit_y, entry_y, lane_key))
 
-    def corridor_size(lanes, extra=0):
-        return max(CORRIDOR, 2 * LANE + len(lanes) * LANE + extra)
+    def corridor_size(lanes):
+        return max(CORRIDOR, 2 * LANE + len(lanes) * LANE)
 
-    labelled = {plan[4] for plan in plans if plan[3]}
-    h_size = [corridor_size(h_lanes[h], LABEL_ROOM if h in labelled else 0)
-              for h in range(len(rows) + 1)]
+    h_size = [corridor_size(h_lanes[h]) for h in range(len(rows) + 1)]
     v_size = [corridor_size(v_lanes[v]) for v in range(columns + 1)]
     v_left, column_left = [], []
     x = MARGIN
@@ -394,8 +403,7 @@ def route(nodes, rows, edges):
     styles = {
         "extends": "endArrow=block;endFill=0;endSize=12;",
         "implements": "endArrow=block;endFill=0;endSize=12;dashed=1;",
-        "field": "endArrow=open;endFill=0;strokeColor=#6c8ebf;fontColor=#6c8ebf;fontSize=10;"
-                 "labelBackgroundColor=#ffffff;",
+        "field": "endArrow=open;endFill=0;strokeColor=#6c8ebf;",
         "uses": "endArrow=open;endFill=0;dashed=1;strokeColor=#999999;",
     }
     for i, (source, target, kind, label, ha, hb, v, exit_y, entry_y, key) in enumerate(plans):
@@ -416,11 +424,9 @@ def route(nodes, rows, edges):
         style = (styles[kind] + "html=1;rounded=0;edgeStyle=none;"
                  f"exitX={exit_x};exitY={exit_y};exitDx=0;exitDy=0;exitPerimeter=0;"
                  f"entryX={entry_x};entryY={entry_y};entryDx=0;entryDy=0;entryPerimeter=0;")
-        label_attr = f' value="{xml_attr(esc(label))}"' if label else ""
-        label_geometry = ' x="-0.7" y="0"' if label else ""
-        cells.append(f'<mxCell id="e{i}"{label_attr} style="{style}" edge="1" parent="1" '
+        cells.append(f'<mxCell id="e{i}" style="{style}" edge="1" parent="1" '
                      f'source="{source}" target="{target}"><mxGeometry relative="1"'
-                     f'{label_geometry} as="geometry"><Array as="points">{array}</Array>'
+                     f' as="geometry"><Array as="points">{array}</Array>'
                      '</mxGeometry></mxCell>')
     return cells
 
@@ -440,8 +446,8 @@ BOX_STYLE = ("rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spac
 STUB_STYLE = ("rounded=0;whiteSpace=wrap;html=1;fillColor=#eeeeee;strokeColor=#999999;"
               "fontColor=#666666;fontFamily=Courier New;fontSize=11;dashed=1;")
 LEGEND = ("Generated by tools/uml/generate_uml.py from the compiled classes. Hollow arrow: extends "
-          "(dashed: implements). Blue open arrow: a field of that type, named on the arrow. Grey "
-          "dashed boxes are drawn in another diagram.")
+          "(dashed: implements). Blue open arrow: the class has a field of that "
+          "type (see its box). Grey dashed boxes are drawn in another diagram.")
 
 
 def diagram(file_name, title, members, types):
@@ -472,13 +478,14 @@ def diagram(file_name, title, members, types):
             parents_of[node_id(fqcn)].append(node_id(parent))
             edges.append((node_id(fqcn), node_id(parent), kind, ""))
     for fqcn in full:
-        by_target = defaultdict(list)
-        for _, _, name, ftype in types[fqcn].fields:
+        targets = []  # one arrow per class it has a field of, in field order
+        for _, _, _, ftype in types[fqcn].fields:
             for other in full:
-                if other != fqcn and re.search(r"\b" + re.escape(short(other)) + r"\b", ftype):
-                    by_target[other].append(name)
-        for other, names in by_target.items():
-            edges.append((node_id(fqcn), node_id(other), "field", ", ".join(names)))
+                if (other != fqcn and other not in targets
+                        and re.search(r"\b" + re.escape(short(other)) + r"\b", ftype)):
+                    targets.append(other)
+        for other in targets:
+            edges.append((node_id(fqcn), node_id(other), "field", ""))
     cache = {}
     levels = defaultdict(list)
     for n in nodes:
@@ -539,6 +546,180 @@ def overview(types):
     return len(packages), len(edges)
 
 
+# ---------- design diagrams: the first drafts, completed with the code ----------
+
+DRAFT_DIR = OUT_DIR / "drafts"
+
+# Each design diagram: file name, title, draft file, generated diagrams whose classes it adds.
+DESIGNS = [
+    ("20-design-arena", "Design, Arena: the 6 Nov draft completed with the code",
+     "arena.drawio", ["08-arena-shop-input"]),
+    ("21-design-entities", "Design, entities: the 5-9 Nov draft completed with the code",
+     "entities.drawio", ["02-entities", "03-characters"]),
+    ("22-design-events", "Design, events: the 9 Nov draft completed with the code",
+     "events.drawio", ["01-engine"]),
+    ("23-design-items", "Design, items: the 5 Nov draft completed with the code",
+     "items.drawio", ["06-items", "07-item-data"]),
+]
+
+PLANNED_STYLE = ("rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;"
+                 "spacingTop=2;fontFamily=Courier New;fontSize=11;fillColor=#fff2cc;"
+                 "strokeColor=#d6b656;dashed=1;")
+DESIGN_LEGEND = ("Generated by tools/uml/generate_uml.py from the first draft (docs/uml/drafts) and "
+                 "the compiled classes. White: in the code, drawn from it. Yellow «planned»: still a "
+                 "design, as the draft wrote it. Hollow arrow: extends (dashed: implements); blue "
+                 "open arrow: a field of that type or a link from the draft.")
+
+
+def plain_text(value):
+    """The text of a draft cell: tags removed, entities decoded."""
+    text = re.sub(r"<br\s*/?>", "\n", value or "")
+    return html.unescape(re.sub(r"<[^>]+>", "", text)).strip()
+
+
+def read_draft(path):
+    """Reads a draft: its classes (name -> stereotype, sections of member lines) and its arrows.
+
+    A class is a swimlane cell; its member lines are its text children, and its line children
+    split them into sections. A small box "<b>Name</b><br>..." is a class drawn elsewhere: it only
+    gives its name. Arrows are (source name, target name, kind).
+    """
+    import xml.etree.ElementTree as ElementTree
+    root = ElementTree.parse(path).getroot()
+    cells = {c.get("id"): c for c in root.iter("mxCell")}
+    children = defaultdict(list)
+    for c in cells.values():
+        children[c.get("parent")].append(c)
+    owner, classes = {}, {}
+    for c in cells.values():
+        style = c.get("style") or ""
+        value = c.get("value") or ""
+        if c.get("vertex") != "1":
+            continue
+        if "swimlane" in style:
+            names = re.findall(r"<b>\s*(?:<i>)?\s*([\w.]+)", html.unescape(value))
+            if not names:
+                continue
+            name = names[-1].split(".")[-1]
+            head = plain_text(value).split("\n")
+            stereotype_text = head[0] if len(head) > 1 else ""
+            sections, current = [], []
+            for child in sorted(children[c.get("id")],
+                                key=lambda k: float(k.find("mxGeometry").get("y", "0"))):
+                if (child.get("style") or "").startswith("line"):
+                    sections.append(current)
+                    current = []
+                elif plain_text(child.get("value")):
+                    current.append(plain_text(child.get("value")))
+                owner[child.get("id")] = name
+            sections.append(current)
+            classes[name] = (stereotype_text, [s for s in sections if s] or [[]])
+            owner[c.get("id")] = name
+        elif c.get("parent") == "1":
+            match = re.match(r"\s*<b>([A-Z]\w+)</b>\s*<br", html.unescape(value))
+            if match:
+                owner[c.get("id")] = match.group(1)
+                classes.setdefault(match.group(1), None)  # drawn elsewhere: name only
+    arrows = []
+    for c in cells.values():
+        if c.get("edge") != "1":
+            continue
+        source, target = owner.get(c.get("source")), owner.get(c.get("target"))
+        if not source or not target or source == target:
+            continue
+        style = c.get("style") or ""
+        if "endArrow=block" in style and "endFill=0" in style:
+            arrows.append((source, target, "implements" if "dashed=1" in style else "extends"))
+        elif "endArrow=none" not in style:
+            arrows.append((source, target, "field"))
+    return classes, arrows
+
+
+def planned_box(name, stereotype_text, sections):
+    """A yellow box for a class of the draft that the code does not have yet."""
+    lines = [[esc(line) for line in section] for section in sections]
+    tag = "«planned»" + (" " + stereotype_text if stereotype_text else "")
+    head = f"<div style='text-align:center'>{esc(tag)}<br><b>{esc(name)}</b></div>"
+    body = SEPARATOR.join("<br>".join(s) if s else "&nbsp;" for s in lines)
+    label = f"<div style='line-height:{LINE_HEIGHT}px'>{head}{SEPARATOR}{body}</div>"
+    longest = max([len(name) + 4, len(tag)] + [len(x) for s in sections for x in s])
+    member_lines = sum(max(1, len(s)) for s in sections)
+    height = (2 + 2 * LINE_HEIGHT + len(sections) * SEPARATOR_HEIGHT
+              + member_lines * LINE_HEIGHT + 10)
+    return label, max(140, longest * CHAR_WIDTH + 30), height
+
+
+def design(file_name, title, draft_file, generated, types):
+    classes, arrows = read_draft(DRAFT_DIR / draft_file)
+    by_name = {}
+    for fqcn in types:
+        by_name.setdefault(fqcn.rsplit(".", 1)[-1].split("$")[-1], fqcn)
+    members = {m for f, _, ms in DIAGRAMS if f in generated for m in ms}
+    real = {BASE + "." + m for m in members}
+    real |= {by_name[n] for n in classes if n in by_name and by_name[n].startswith(BASE)}
+    ids = {}
+
+    def node_id(key):
+        return ids.setdefault(key, f"c{len(ids)}")
+
+    nodes, edges, parents_of = {}, [], defaultdict(list)
+    for fqcn in sorted(real):
+        value, width, height = box(types[fqcn])
+        nodes[node_id(fqcn)] = (value, width, height, BOX_STYLE)
+    planned = 0
+    for name, drawn in classes.items():
+        if name in by_name and by_name[name] in real:
+            continue
+        if drawn is None:
+            continue  # only referenced by the draft, and not in the code
+        stereotype_text, sections = drawn
+        value, width, height = planned_box(name, stereotype_text, sections)
+        nodes[node_id("planned:" + name)] = (value, width, height, PLANNED_STYLE)
+        planned += 1
+
+    def key_of(name):
+        if name in by_name and by_name[name] in real:
+            return by_name[name]
+        return "planned:" + name if "planned:" + name in ids else None
+
+    def add_edge(source_key, target_key, kind):
+        if node_id(target_key) not in nodes:
+            name = short(target_key.split(":")[-1])
+            nodes[node_id(target_key)] = (esc(name), len(name) * CHAR_WIDTH + 30, 30, STUB_STYLE)
+        if kind in ("extends", "implements"):
+            parents_of[node_id(source_key)].append(node_id(target_key))
+        edges.append((node_id(source_key), node_id(target_key), kind, ""))
+
+    for fqcn in sorted(real):
+        t = types[fqcn]
+        for parent, kind in ([(t.parent, "extends")] if t.parent else []) + [
+                (i, "implements") for i in t.interfaces]:
+            if parent.startswith(BASE):
+                add_edge(fqcn, parent, kind)
+        targets = []
+        for _, _, _, ftype in t.fields:
+            for other in sorted(real):
+                if (other != fqcn and other not in targets
+                        and re.search(r"\b" + re.escape(short(other)) + r"\b", ftype)):
+                    targets.append(other)
+        for other in targets:
+            add_edge(fqcn, other, "field")
+    for source, target, kind in arrows:
+        source_key, target_key = key_of(source), key_of(target)
+        if not source_key or not target_key:
+            continue
+        if not source_key.startswith("planned:") and not target_key.startswith("planned:"):
+            continue  # both in the code: the code's own arrows are already drawn
+        if (node_id(source_key), node_id(target_key), kind, "") not in edges:
+            add_edge(source_key, target_key, kind)
+    cache, levels = {}, defaultdict(list)
+    for n in nodes:
+        levels[depth_of(n, parents_of, cache)].append(n)
+    rows = grid_rows(levels, parents_of)
+    write(file_name, title, header_cells(title, DESIGN_LEGEND) + route(nodes, rows, edges))
+    return len(real), planned
+
+
 def main():
     for directory in CLASS_DIRS:
         if not directory.exists():
@@ -559,6 +740,9 @@ def main():
         count, stubs = diagram(file_name, title, members, types)
         drawn.update(BASE + "." + m for m in members)
         print(f"{file_name}: {count} classes, {stubs} from other diagrams")
+    for file_name, title, draft_file, generated in DESIGNS:
+        count, planned = design(file_name, title, draft_file, generated, types)
+        print(f"{file_name}: {count} classes from the code, {planned} planned from the draft")
     left_out = sorted(short(f) for f in types if f not in drawn and "$" not in f)
     if left_out:
         print("Not in any diagram:", ", ".join(left_out))

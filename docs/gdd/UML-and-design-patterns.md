@@ -23,6 +23,12 @@ The diagrams live in [`docs/uml`](../uml). Since 22 Nov they are generated from 
 | 10 | Desktop: application, screens, drawing | [10-desktop-screens.drawio](../uml/10-desktop-screens.drawio) |
 | 11 | Desktop: HUD, inventory page, shop page | [11-desktop-hud.drawio](../uml/11-desktop-hud.drawio) |
 | 12 | Desktop: sound effects and music | [12-desktop-audio.drawio](../uml/12-desktop-audio.drawio) |
+| 20 | Design, Arena: the 6 Nov draft completed with the code | [20-design-arena.drawio](../uml/20-design-arena.drawio) |
+| 21 | Design, entities: the 5–9 Nov draft completed with the code | [21-design-entities.drawio](../uml/21-design-entities.drawio) |
+| 22 | Design, events: the 9 Nov draft completed with the code | [22-design-events.drawio](../uml/22-design-events.drawio) |
+| 23 | Design, items: the 5 Nov draft completed with the code | [23-design-items.drawio](../uml/23-design-items.drawio) |
+
+The design diagrams (20–23) start from the drafts: a class that exists is drawn from the code (white), a class still planned keeps the draft's text (yellow, «planned»), and the classes of the same area that the draft did not have are added.
 
 ## 1. Pattern correspondence
 
