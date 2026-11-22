@@ -19,7 +19,7 @@ class HitPreviewTest {
           "spriteId": "items/swords/short_sword", "rarity": "COMMON", "price": 30,
           "attackBonus": 2, "attackSpeed": 1, "range": 24, "width": 8, "arcDegrees": 90,
           "swingTicks": 12 },
-        { "id": "short_bow", "class": "ShortBow", "nameKey": "item.short_bow.name",
+        { "id": "short_bow", "class": "PlainBow", "nameKey": "item.short_bow.name",
           "spriteId": "items/bows/short_bow", "rarity": "COMMON", "price": 20,
           "attackBonus": 1, "attackSpeed": 1, "range": 240, "projectileSpeed": 480,
           "projectileSpriteId": "projectiles/arrow" }

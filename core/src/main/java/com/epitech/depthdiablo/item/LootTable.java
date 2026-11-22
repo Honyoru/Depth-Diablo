@@ -25,7 +25,7 @@ public final class LootTable {
           Rarity.EPIC, 10,
           Rarity.LEGENDARY, 3,
           Rarity.CONSUMABLE, 40,
-          Rarity.PASSIVE, 8);
+          Rarity.PASSIVE, 3);
 
   private final DataRegistry items;
   private final ItemFactory factory;

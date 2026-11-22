@@ -164,7 +164,7 @@ class ItemFactoryTest {
   void should_build_a_short_bow_with_the_values_of_its_entry() throws IOException {
     DataRegistry items = realItems();
 
-    ShortBow bow = assertInstanceOf(ShortBow.class, new ItemFactory(items).create("short_bow"));
+    PlainBow bow = assertInstanceOf(PlainBow.class, new ItemFactory(items).create("short_bow"));
 
     JsonValue entry = items.definition("short_bow");
     assertEquals(Rarity.valueOf(entry.getString("rarity")), bow.getRarity());

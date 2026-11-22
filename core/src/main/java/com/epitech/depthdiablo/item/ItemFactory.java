@@ -82,8 +82,8 @@ public final class ItemFactory {
               axe.width(),
               axe.arcDegrees(),
               axe.swingTicks());
-      case ItemSpec.ShortBowSpec bow ->
-          new ShortBow(
+      case ItemSpec.PlainBowSpec bow ->
+          new PlainBow(
               bow.id(),
               bow.nameKey(),
               bow.spriteId(),

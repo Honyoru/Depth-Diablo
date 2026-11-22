@@ -62,9 +62,9 @@ public final class ItemSpecReader {
                       json.getInt("price"),
                       readBurn(id, json.get("burn")))),
           Map.entry(
-              "ShortBow",
+              "PlainBow",
               (id, json) ->
-                  new ItemSpec.ShortBowSpec(
+                  new ItemSpec.PlainBowSpec(
                       id,
                       json.getString("nameKey"),
                       json.getString("spriteId"),

@@ -175,11 +175,11 @@ class InventoryTest {
     Inventory inventory = anInventory();
     Potion potion = Items.potion();
     inventory.add(potion);
-    Character user = aCharacter().withHp(10).build();
-    user.takeDamage(6);
+    Character user = aCharacter().withHp(100).build();
+    user.takeDamage(90); // room for the whole heal
 
     assertTrue(inventory.use(0, user));
-    assertEquals(4 + potion.getHealAmount(), user.getHp());
+    assertEquals(10 + potion.getHealAmount(), user.getHp());
   }
 
   @Test

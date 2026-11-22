@@ -1,14 +1,14 @@
 package com.epitech.depthdiablo.item;
 
 /**
- * The short bow: an Archer's first bow (GDD 1.3.1). It shoots an arrow like every bow; its values
- * come from {@code data/items.json} (Q93), so other bows of this kind are the same class with other
- * data.
+ * A bow with no special effect (GDD 1.3.1): it shoots a plain arrow. Every such bow, from the short
+ * bow to the heavy crossbow, is this class with its own values in {@code data/items.json} (Q93):
+ * damage, cooldown, range and arrow speed.
  */
-public final class ShortBow extends Bow {
+public final class PlainBow extends Bow {
 
   /**
-   * Creates a short bow with the values of its data entry.
+   * Creates a plain bow with the values of its data entry.
    *
    * @param id the item's key in the data files
    * @param nameKey the translation key of its name
@@ -24,7 +24,7 @@ public final class ShortBow extends Bow {
    * @throws NullPointerException if a text or the rarity is {@code null}
    * @throws IllegalArgumentException if a value is out of range
    */
-  ShortBow(
+  PlainBow(
       String id,
       String nameKey,
       String spriteId,

@@ -139,8 +139,8 @@ public sealed interface ItemSpec {
   record ExecutionerRingSpec(String id, String nameKey, String spriteId, int price, float threshold)
       implements ItemSpec {}
 
-  /** A {@code "ShortBow"} entry. */
-  record ShortBowSpec(
+  /** A {@code "PlainBow"} entry: a bow that shoots plain arrows. */
+  record PlainBowSpec(
       String id,
       String nameKey,
       String spriteId,

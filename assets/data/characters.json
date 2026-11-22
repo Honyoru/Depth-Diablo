@@ -5,7 +5,7 @@
       "class": "KNIGHT",
       "spriteId": "player/knight",
       "stats": {
-        "MAX_HP": 1000,
+        "MAX_HP": 100,
         "ATTACK": 5,
         "DEFENSE": 1,
         "SPEED": 250,
@@ -23,7 +23,7 @@
       "class": "ASSASSIN",
       "spriteId": "player/assassin",
       "stats": {
-        "MAX_HP": 700,
+        "MAX_HP": 70,
         "ATTACK": 4,
         "DEFENSE": 1,
         "SPEED": 320,
@@ -42,7 +42,7 @@
       "spriteId": "enemies/rat",
       "stats": {
         "MAX_HP": 10,
-        "ATTACK": 10,
+        "ATTACK": 8,
         "DEFENSE": 1,
         "SPEED": 100,
         "ATTACK_SPEED": 1,
@@ -58,8 +58,8 @@
       "class": "ZOMBIE",
       "spriteId": "enemies/zombie",
       "stats": {
-        "MAX_HP": 8,
-        "ATTACK": 2,
+        "MAX_HP": 18,
+        "ATTACK": 12,
         "DEFENSE": 2,
         "SPEED": 40,
         "ATTACK_SPEED": 0.5,
@@ -75,9 +75,9 @@
       "class": "ZOMBIE",
       "spriteId": "enemies/zombie_king",
       "stats": {
-         "MAX_HP": 120,
-        "ATTACK": 12,
-        "DEFENSE": 3,
+         "MAX_HP": 150,
+        "ATTACK": 16,
+        "DEFENSE": 1,
         "SPEED": 60,
         "ATTACK_SPEED": 0.8,
         "LUCK": 0
@@ -92,7 +92,7 @@
       "class": "RAT_NEST",
       "spriteId": "enemies/rat_nest",
       "stats": {
-        "MAX_HP": 25,
+        "MAX_HP": 20,
         "ATTACK": 0,
         "DEFENSE": 2,
         "SPEED": 0,
@@ -110,9 +110,9 @@
       "class": "RAT",
       "spriteId": "enemies/skeleton_archer",
       "stats": {
-        "MAX_HP": 8,
-        "ATTACK": 6,
-        "DEFENSE": 3,
+        "MAX_HP": 12,
+        "ATTACK": 8,
+        "DEFENSE": 2,
         "SPEED": 80,
         "ATTACK_SPEED": 0.6,
         "LUCK": 0
