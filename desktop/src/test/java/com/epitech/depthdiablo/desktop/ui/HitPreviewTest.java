@@ -10,7 +10,7 @@ import com.epitech.depthdiablo.item.MeleeWeapon;
 import com.epitech.depthdiablo.item.RangedWeapon;
 import org.junit.jupiter.api.Test;
 
-/** GDD 1.5: the player sees the area its weapon reaches, and the area a swing has swept. */
+/** GDD 1.5: the player sees the area a swing has swept, and how far a ranged weapon shoots. */
 class HitPreviewTest {
   private static final String ITEMS =
       """
@@ -26,15 +26,6 @@ class HitPreviewTest {
       ] }
       """;
   private final ItemFactory items = new ItemFactory(new DataRegistry("items", () -> ITEMS));
-
-  @Test
-  void should_cover_the_whole_arc_of_a_melee_weapon_around_the_aim() {
-    MeleeWeapon sword = (MeleeWeapon) items.create("sword");
-
-    Fan reach = HitPreview.reachOf(sword, 10f, 20f, 0f);
-
-    assertEquals(new Fan(10f, 20f, 24f, -45f, 90f), reach);
-  }
 
   @Test
   void should_cover_only_what_the_blade_swept_so_far() {

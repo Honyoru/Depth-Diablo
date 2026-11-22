@@ -4,9 +4,8 @@ import com.epitech.depthdiablo.item.MeleeWeapon;
 import com.epitech.depthdiablo.item.RangedWeapon;
 
 /**
- * The shapes that show the player where its weapon hurts (GDD 1.5): the reach of a melee weapon
- * around the aim, the part of it a swing has swept, and how far a ranged weapon shoots. Pure
- * geometry; the {@code HitPreviewView} draws it.
+ * The shapes that show the player where its weapon hurts (GDD 1.5): the part a melee swing has
+ * swept, and how far a ranged weapon shoots. Pure geometry; the {@code HitPreviewView} draws it.
  */
 final class HitPreview {
   private HitPreview() {}
@@ -31,20 +30,6 @@ final class HitPreview {
    * @param toY where it ends, up
    */
   record Ray(float fromX, float fromY, float toX, float toY) {}
-
-  /**
-   * Returns the whole area a melee weapon sweeps around an aim: aim ± arc / 2, out to its range.
-   *
-   * @param weapon the melee weapon
-   * @param centreX the centre of its holder, across
-   * @param centreY the centre of its holder, up
-   * @param aimDegrees where it aims (0 = right, 90 = up)
-   * @return the slice it reaches
-   */
-  static Fan reachOf(MeleeWeapon weapon, float centreX, float centreY, float aimDegrees) {
-    float arc = weapon.getArcDegrees();
-    return new Fan(centreX, centreY, weapon.getRange(), aimDegrees - arc / 2f, arc);
-  }
 
   /**
    * Returns the part a swing has swept so far: from aim - arc / 2 to where the blade is now, as in

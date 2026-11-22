@@ -14,15 +14,15 @@ import com.epitech.depthdiablo.item.RangedWeapon;
 import com.epitech.depthdiablo.item.Weapon;
 
 /**
- * Draws under the sprites where the player's weapon hurts (GDD 1.5): very faint all the time, a bit
- * stronger while the attack button is held, and the part a swing has swept stronger still. A melee
- * weapon shows a slice of disc, a ranged weapon a dashed line as long as its range.
+ * Draws under the sprites where the player's weapon hurts (GDD 1.5). A melee weapon shows only the
+ * part a swing has swept; a ranged weapon shows a dashed line as long as its range, very faint all
+ * the time and a bit stronger while the attack button is held.
  */
 final class HitPreviewView implements Disposable {
-  /** Alpha of the reach while the player does not attack. */
+  /** Alpha of the ranged line while the player does not attack. */
   static final float IDLE_ALPHA = 0.12f;
 
-  /** Alpha of the reach while the attack button is held. */
+  /** Alpha of the ranged line while the attack button is held. */
   static final float AIMING_ALPHA = 0.25f;
 
   /** Alpha of the part a swing has swept. */
@@ -63,7 +63,6 @@ final class HitPreviewView implements Disposable {
     shapes.begin(ShapeRenderer.ShapeType.Filled);
     Weapon weapon = player.getInventory().getWeapon();
     if (weapon instanceof MeleeWeapon melee) {
-      fill(HitPreview.reachOf(melee, centreX, centreY, aim), alpha);
       player
           .getCurrentSwing()
           .ifPresent(swing ->
