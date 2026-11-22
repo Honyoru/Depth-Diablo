@@ -69,6 +69,9 @@ public final class GameScreen extends ScreenAdapter {
   /** Name of the map layer that holds the enemy spawn tiles. */
   private static final String SPAWN_LAYER = "spawn";
 
+  /** The chance that a killed enemy drops an item. */
+  private static final double LOOT_CHANCE = 0.2;
+
   /** Endless has a single floor for now; this follows the floor once floors change (Q77). */
   private static final int ENDLESS_FLOOR = 1;
 
@@ -295,10 +298,10 @@ public final class GameScreen extends ScreenAdapter {
         .subscribe(
             EntityDied.class,
             new LootDrops(
-                new LootTable(itemData, items, LootTable.DEFAULT_WEIGHTS),
+                new LootTable(itemData, items, LootTable.DEFAULT_SHARES),
                 dropper,
                 new SeededRandomSource(System.nanoTime()),
-                0.3));
+                LOOT_CHANCE));
     // TEMPORARY: items next to the spawn to try the pickup, until loot and rooms exist
     dropper.spawn("fire_ring", new Vector2(spawns.player()).add(48, 0));
     dropper.spawn("potion_small", new Vector2(spawns.player()).add(0, 48));

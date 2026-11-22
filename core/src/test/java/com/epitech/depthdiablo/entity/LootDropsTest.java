@@ -32,7 +32,7 @@ class LootDropsTest {
   private final DataRegistry items = new DataRegistry("items", () -> ONE_POTION);
   private final ItemFactory factory = new ItemFactory(items);
   private final ItemDropper dropper = new ItemDropper(factory, world);
-  private final LootTable table = new LootTable(items, factory, LootTable.DEFAULT_WEIGHTS);
+  private final LootTable table = new LootTable(items, factory, LootTable.DEFAULT_SHARES);
 
   @Test
   void should_drop_an_item_of_the_table_where_an_enemy_dies() {

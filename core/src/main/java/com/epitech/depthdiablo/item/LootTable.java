@@ -2,6 +2,7 @@ package com.epitech.depthdiablo.item;
 
 import com.epitech.depthdiablo.data.DataRegistry;
 import com.epitech.depthdiablo.random.RandomSource;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -9,76 +10,79 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Picks the item a dead enemy drops (GDD 1.4): each entry of {@code data/items.json} weighs as much
- * as its rarity, so commons drop often and legendaries rarely. The entries are read at each roll,
- * so new items and F5 count at once.
+ * Picks the item a dead enemy drops (GDD 1.4): first a rarity, by its share of the drops, then one
+ * entry of {@code data/items.json} of that rarity, each with the same chance. Adding items to a
+ * rarity never changes how often the other rarities drop. The entries are read at each roll, so new
+ * items and F5 count at once.
  */
 public final class LootTable {
   /**
-   * The weight of one entry of each rarity: a common entry drops about 17 times as often as a
-   * legendary one.
+   * The share of the drops of each rarity, in percent: potions and rings most of the time, a
+   * legendary 2 drops in 100.
    */
-  public static final Map<Rarity, Integer> DEFAULT_WEIGHTS =
+  public static final Map<Rarity, Integer> DEFAULT_SHARES =
       Map.of(
-          Rarity.COMMON, 50,
-          Rarity.RARE, 25,
-          Rarity.EPIC, 10,
-          Rarity.LEGENDARY, 3,
-          Rarity.CONSUMABLE, 40,
-          Rarity.PASSIVE, 3);
+          Rarity.CONSUMABLE, 35,
+          Rarity.PASSIVE, 25,
+          Rarity.COMMON, 20,
+          Rarity.RARE, 13,
+          Rarity.EPIC, 5,
+          Rarity.LEGENDARY, 2);
 
   private final DataRegistry items;
   private final ItemFactory factory;
-  private final Map<Rarity, Integer> weights;
+  private final Map<Rarity, Integer> shares;
 
   /**
    * Creates a loot table.
    *
    * @param items the entries of {@code data/items.json}
    * @param factory builds an entry to read its rarity
-   * @param weights the weight of each rarity; a missing rarity weighs 0 and never drops
-   * @throws NullPointerException if an argument or a weight is {@code null}
-   * @throws IllegalArgumentException if a weight is negative
+   * @param shares the share of the drops of each rarity; a missing rarity never drops
+   * @throws NullPointerException if an argument or a share is {@code null}
+   * @throws IllegalArgumentException if a share is negative
    */
-  public LootTable(DataRegistry items, ItemFactory factory, Map<Rarity, Integer> weights) {
+  public LootTable(DataRegistry items, ItemFactory factory, Map<Rarity, Integer> shares) {
     this.items = Objects.requireNonNull(items, "items is null");
     this.factory = Objects.requireNonNull(factory, "factory is null");
-    Objects.requireNonNull(weights, "weights is null");
+    Objects.requireNonNull(shares, "shares is null");
     Map<Rarity, Integer> copy = new EnumMap<>(Rarity.class);
-    weights.forEach((rarity, weight) -> {
-      if (weight < 0) {
-        throw new IllegalArgumentException("Weight of " + rarity + " is negative: " + weight);
+    shares.forEach((rarity, share) -> {
+      if (share < 0) {
+        throw new IllegalArgumentException("Share of " + rarity + " is negative: " + share);
       }
-      copy.put(rarity, weight);
+      copy.put(rarity, share);
     });
-    this.weights = copy;
+    this.shares = copy;
   }
 
   /**
-   * Picks an item id, each entry weighing as much as its rarity.
+   * Picks an item id: a rarity by its share, among the rarities that have at least one entry, then
+   * one entry of it, each with the same chance.
    *
    * @param random rolls the pick
-   * @return the id, or empty when no entry has a weight above 0
+   * @return the id, or empty when no rarity with a share above 0 has an entry
    * @throws NullPointerException if the random source is {@code null}
    */
   public Optional<String> roll(RandomSource random) {
     Objects.requireNonNull(random, "random is null");
-    List<String> ids = items.getIds();
-    int[] entryWeights = new int[ids.size()];
-    int total = 0;
-    for (int i = 0; i < ids.size(); i++) {
-      entryWeights[i] = weights.getOrDefault(factory.create(ids.get(i)).getRarity(), 0);
-      total += entryWeights[i];
+    Map<Rarity, List<String>> byRarity = new EnumMap<>(Rarity.class);
+    for (String id : items.getIds()) {
+      byRarity.computeIfAbsent(factory.create(id).getRarity(), r -> new ArrayList<>()).add(id);
     }
+    byRarity.keySet().removeIf(rarity -> shares.getOrDefault(rarity, 0) == 0);
+    int total = byRarity.keySet().stream().mapToInt(shares::get).sum();
     if (total == 0) {
       return Optional.empty();
     }
     int pick = random.nextInt(total);
-    int i = 0;
-    while (pick >= entryWeights[i]) {
-      pick -= entryWeights[i];
-      i++;
+    for (Map.Entry<Rarity, List<String>> entry : byRarity.entrySet()) {
+      pick -= shares.get(entry.getKey());
+      if (pick < 0) {
+        List<String> ids = entry.getValue();
+        return Optional.of(ids.get(random.nextInt(ids.size())));
+      }
     }
-    return Optional.of(ids.get(i));
+    throw new IllegalStateException("The pick went past every rarity");
   }
 }
