@@ -50,7 +50,7 @@ final class InventoryPage implements Disposable {
   };
 
   private final Stage stage;
-  private final ItemTextures textures;
+  private final SpriteTextures textures;
   private final SlotView weapon;
   private final SlotView armor;
   private final SlotView[] hotbar = new SlotView[Inventory.HOTBAR_SIZE];
@@ -86,7 +86,7 @@ final class InventoryPage implements Disposable {
   InventoryPage(
       Skin skin,
       Batch batch,
-      ItemTextures textures,
+      SpriteTextures textures,
       InventoryPageState state,
       Consumer<PageSlot> onDrop,
       Consumer<PassiveSwap> onSwap) {

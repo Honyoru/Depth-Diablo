@@ -154,7 +154,7 @@ public final class GameScreen extends ScreenAdapter {
   private final ItemDropper dropper = new ItemDropper(items, world);
 
   /** The item pictures, shared by the items on the ground, the HUD and the inventory page. */
-  private final ItemTextures itemTextures = new ItemTextures();
+  private final SpriteTextures spriteTextures = new SpriteTextures();
 
   /** The inventory page (key I): the game is paused while it is open. */
   private final InventoryPageState inventoryPage = new InventoryPageState();
@@ -169,9 +169,9 @@ public final class GameScreen extends ScreenAdapter {
   private final ShopPage shopView;
 
   /** Draws the items on the ground in the sprite view. */
-  private final ItemView itemView = new ItemView(itemTextures);
+  private final ItemView itemView = new ItemView(spriteTextures);
 
-  private final ProjectileView projectileView = new ProjectileView(itemTextures);
+  private final ProjectileView projectileView = new ProjectileView(spriteTextures);
 
   private final HitPreviewView hitPreview = new HitPreviewView();
 
@@ -231,12 +231,12 @@ public final class GameScreen extends ScreenAdapter {
 
     this.app = Objects.requireNonNull(app, "The game application must not be null");
     this.hudState = new HudState();
-    this.hud = new Hud(skin, hudState, app.getBatch(), itemTextures);
+    this.hud = new Hud(skin, hudState, app.getBatch(), spriteTextures);
     this.inventoryView =
         new InventoryPage(
             skin,
             app.getBatch(),
-            itemTextures,
+            spriteTextures,
             inventoryPage,
             this::dropFromPage,
             this::swapFromPage);
@@ -302,12 +302,6 @@ public final class GameScreen extends ScreenAdapter {
                 dropper,
                 new SeededRandomSource(System.nanoTime()),
                 LOOT_CHANCE));
-    // TEMPORARY: items next to the spawn to try the pickup, until loot and rooms exist
-    dropper.spawn("fire_ring", new Vector2(spawns.player()).add(48, 0));
-    dropper.spawn("potion_small", new Vector2(spawns.player()).add(0, 48));
-    dropper.spawn("sword", new Vector2(spawns.player()).add(-48, 0));
-    dropper.spawn("short_bow", new Vector2(spawns.player()).add(0, -48));
-    dropper.spawn("fire_staff", new Vector2(spawns.player()).add(48, 48));
   }
 
   /**
@@ -615,7 +609,7 @@ public final class GameScreen extends ScreenAdapter {
     eventLaserOverlay.dispose();
     playerView.dispose();
     enemyView.dispose();
-    itemTextures.dispose();
+    spriteTextures.dispose();
     hitPreview.dispose();
     mapRenderer.dispose();
     tiledMap.dispose();

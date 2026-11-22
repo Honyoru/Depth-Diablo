@@ -13,14 +13,14 @@ import java.util.Objects;
  * centred on it, so a thin arrow keeps its drawn proportions.
  */
 final class ProjectileView {
-  private final ItemTextures textures;
+  private final SpriteTextures textures;
 
   /**
    * Creates the view.
    *
    * @param textures the pictures, by sprite id; the game screen owns and disposes them
    */
-  ProjectileView(ItemTextures textures) {
+  ProjectileView(SpriteTextures textures) {
     this.textures = Objects.requireNonNull(textures, "textures is null");
   }
 

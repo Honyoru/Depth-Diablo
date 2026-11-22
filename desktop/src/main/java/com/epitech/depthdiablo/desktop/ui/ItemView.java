@@ -7,14 +7,14 @@ import java.util.Objects;
 
 /** Draws the items lying on the ground (GDD 1.4) from the {@code spriteId} of their item. */
 final class ItemView {
-  private final ItemTextures textures;
+  private final SpriteTextures textures;
 
   /**
    * Creates the view.
    *
    * @param textures the item pictures; the game screen owns and disposes them
    */
-  ItemView(ItemTextures textures) {
+  ItemView(SpriteTextures textures) {
     this.textures = Objects.requireNonNull(textures, "textures is null");
   }
 

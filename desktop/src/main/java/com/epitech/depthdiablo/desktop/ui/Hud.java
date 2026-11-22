@@ -75,7 +75,7 @@ public final class Hud implements Disposable {
   /** The sprite id each icon shows, to change its picture only when it changes. */
   private final String[] shownSpriteIds = new String[HudState.SLOT_COUNT];
 
-  private final ItemTextures textures;
+  private final SpriteTextures textures;
 
   private final Image minimapBox;
 
@@ -107,7 +107,7 @@ public final class Hud implements Disposable {
    * @param batch the shared sprite batch; must not be {@code null}
    * @param textures the item pictures; the game screen owns and disposes them
    */
-  public Hud(Skin skin, HudState state, Batch batch, ItemTextures textures) {
+  public Hud(Skin skin, HudState state, Batch batch, SpriteTextures textures) {
     Objects.requireNonNull(skin, "The UI skin must not be null");
     this.state = Objects.requireNonNull(state, "The HUD state must not be null");
     this.textures = Objects.requireNonNull(textures, "textures is null");
@@ -216,7 +216,11 @@ public final class Hud implements Disposable {
     return stage.screenToStageCoordinates(new Vector2(x, Gdx.graphics.getHeight() - y));
   }
 
-  /** Returns the Scene2D stage so it can be added to an {@code InputMultiplexer}. */
+  /**
+   * Returns the Scene2D stage so it can be added to an {@code InputMultiplexer}.
+   *
+   * @return the HUD stage
+   */
   public Stage getStage() {
     return stage;
   }
