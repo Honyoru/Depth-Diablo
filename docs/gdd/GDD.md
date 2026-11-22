@@ -514,7 +514,7 @@ Arena: Main during the waves and their breaks, Boss during the boss wave, Victor
 
 #### 4.3.2 System Screens
 
-The ambient loop on every menu, at half the game volume (decided 21 Nov); going back to the menus starts a new run, so the next game plays the intros again.
+The ambient loop on every menu, softer than in game (0.5 against 1, 22 Nov); going back to the menus starts a new run, so the next game plays the intros again.
 
 #### 4.3.3 Level Theme
 

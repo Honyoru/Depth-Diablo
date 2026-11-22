@@ -24,15 +24,24 @@ class SoundEffectTest {
   void should_play_every_other_effect_at_full_volume() {
     EnumSet<SoundEffect> others =
         EnumSet.complementOf(
-            EnumSet.of(SoundEffect.ATTACK_STAFF, SoundEffect.MENU_MOVE, SoundEffect.MENU_CONFIRM));
+            EnumSet.of(
+                SoundEffect.ATTACK_STAFF,
+                SoundEffect.ATTACK_BOW,
+                SoundEffect.MENU_MOVE,
+                SoundEffect.MENU_CONFIRM));
 
     others.forEach(effect -> assertEquals(1f, effect.getVolume(), effect.name()));
   }
 
   @Test
-  void should_keep_every_volume_between_0_and_1() {
+  void should_play_the_bow_louder_than_the_other_attacks() {
+    assertEquals(1.5f, SoundEffect.ATTACK_BOW.getVolume());
+  }
+
+  @Test
+  void should_keep_every_volume_above_0() {
     for (SoundEffect effect : SoundEffect.values()) {
-      assertTrue(effect.getVolume() > 0f && effect.getVolume() <= 1f, effect.name());
+      assertTrue(effect.getVolume() > 0f, effect.name());
     }
   }
 }

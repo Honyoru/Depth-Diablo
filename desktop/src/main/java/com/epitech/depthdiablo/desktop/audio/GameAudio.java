@@ -12,6 +12,11 @@ import java.util.Map;
  * handed to each screen, so a music keeps playing when the screen changes (Q103: no singleton).
  */
 public final class GameAudio implements Disposable {
+  /**
+   * Volume of every sound effect, multiplied by the effect's own volume: the music stays on top.
+   */
+  static final float EFFECTS_VOLUME = 0.3f;
+
   private final Map<SoundEffect, Sound> sounds = new EnumMap<>(SoundEffect.class);
   private final MusicPlayer music;
   private final SoundOverlapGuard overlapGuard = new SoundOverlapGuard();
@@ -33,7 +38,7 @@ public final class GameAudio implements Disposable {
    */
   public void play(SoundEffect effect, Object source) {
     if (overlapGuard.tryStart(effect, source, TimeUtils.millis())) {
-      sounds.get(effect).play(effect.getVolume());
+      sounds.get(effect).play(volumeOf(effect));
     }
   }
 
@@ -54,6 +59,16 @@ public final class GameAudio implements Disposable {
    */
   public void updateMusic(float delta) {
     music.update(delta);
+  }
+
+  /**
+   * Returns how loud an effect really plays: its own volume times the volume of all effects.
+   *
+   * @param effect the sound effect
+   * @return its volume, above 0 and at most {@link #EFFECTS_VOLUME}
+   */
+  static float volumeOf(SoundEffect effect) {
+    return effect.getVolume() * EFFECTS_VOLUME;
   }
 
   /** Frees every sound and the music; called once, when the application closes. */

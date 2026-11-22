@@ -108,4 +108,10 @@ class MusicMixTest {
 
     assertFalse(mix.startsWithIntro());
   }
+
+  @Test
+  void should_play_the_music_at_half_on_the_menus_and_at_full_volume_in_game() {
+    assertEquals(0.5f, MusicMix.MENU_VOLUME);
+    assertEquals(1f, MusicMix.GAME_VOLUME);
+  }
 }

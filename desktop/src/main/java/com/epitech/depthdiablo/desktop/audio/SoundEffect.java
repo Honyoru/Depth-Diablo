@@ -10,7 +10,7 @@ public enum SoundEffect {
   /** A player swings a melee weapon: every {@code MeleeWeapon} ({@code AttackStarted}). */
   ATTACK_MELEE("attack_melee", 600),
   /** A player shoots a bow: every {@code Bow}. */
-  ATTACK_BOW("attack_bow", 449),
+  ATTACK_BOW("attack_bow", 449, 1.5f),
   /** A player casts with a staff: every {@code Staff}. */
   ATTACK_STAFF("attack_staff", 896, 0.7f),
   /** An enemy attacks; the melee sound for now, its own file later. */
@@ -64,9 +64,11 @@ public enum SoundEffect {
   }
 
   /**
-   * Returns how loud the effect plays, tuned by ear per file.
+   * Returns how loud the effect plays against the other effects, tuned by ear per file; above 1
+   * makes it louder than them. What plays is this times {@code GameAudio.EFFECTS_VOLUME}, at most
+   * 1.
    *
-   * @return the volume, above 0 and at most 1
+   * @return its own volume, above 0
    */
   public float getVolume() {
     return volume;

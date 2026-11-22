@@ -15,10 +15,10 @@ final class MusicMix {
   static final float FADE_SECONDS = 1.5f;
 
   /** Music volume on the menus, lower than in game (GDD 4.3.2). */
-  static final float MENU_VOLUME = 0.25f;
+  static final float MENU_VOLUME = 0.5f;
 
-  /** Music volume in game. */
-  static final float GAME_VOLUME = 0.5f;
+  /** Music volume in game: the loudest a stream can play. */
+  static final float GAME_VOLUME = 1f;
 
   private Optional<MusicTrack> current = Optional.empty();
   private Optional<MusicTrack> fadingOut = Optional.empty();
