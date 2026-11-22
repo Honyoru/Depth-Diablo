@@ -4,14 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.item.Potion;
 import com.epitech.depthdiablo.testdata.Items;
 import org.junit.jupiter.api.Test;
 
-/** GDD 1.4: an item lies on the ground until the player picks it up. */
+/** GDD 1.4: an item lies on the ground until the player picks it up, or until it vanishes. */
 class ItemDropTest {
 
   @Test
@@ -41,6 +43,44 @@ class ItemDropTest {
 
     assertEquals(new Vector2(92, 42), drop.position());
   }
+
+    @Test
+  void should_still_lie_there_just_before_its_lifetime_ends() {
+    World world = new World();
+    ItemDrop drop = aDropIn(world);
+
+    ticks(world, ItemDrop.LIFETIME_TICKS - 1);
+
+    assertFalse(drop.isRemoved());
+    assertTrue(world.getEntities().contains(drop));
+  }
+
+  @Test
+  void should_vanish_once_its_lifetime_is_over() {
+    World world = new World();
+    ItemDrop drop = aDropIn(world);
+
+    ticks(world, ItemDrop.LIFETIME_TICKS);
+
+    assertTrue(drop.isRemoved());
+    assertFalse(world.getEntities().contains(drop));
+  }
+
+  @Test
+  void should_get_its_time_back_when_the_world_is_rewound() {
+    World world = new World();
+    ItemDrop drop = aDropIn(world);
+    StateBuffer photo = new StateBuffer();
+    world.writeState(photo);
+    ticks(world, ItemDrop.LIFETIME_TICKS);
+
+    photo.startReading();
+    world.readState(photo);
+
+    assertFalse(drop.isRemoved());
+    assertEquals(ItemDrop.LIFETIME_TICKS, drop.getTicksLeft());
+  }
+
 
   @Test
   void should_throw_when_the_item_is_null() {
