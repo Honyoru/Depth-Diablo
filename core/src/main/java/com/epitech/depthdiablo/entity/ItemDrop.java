@@ -69,7 +69,8 @@ public final class ItemDrop extends Entity {
    *
    * @param out the photo being taken
    */
-  public void writeSate(StateBuffer out) {
+  @Override
+  public void writeState(StateBuffer out) {
     super.writeState(out);
     out.writeInt(ticksLeft);
   }
