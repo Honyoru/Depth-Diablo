@@ -68,6 +68,33 @@ public abstract class Character extends Entity implements Damageable {
       Aabb hurtbox,
       int invincibilityTicksAfterHit,
       World world) {
+    this(bodyBox, stats, baseAttack, hurtbox, invincibilityTicksAfterHit, world, List.of());
+  }
+
+  /**
+   * Creates a character that starts with items already applied to its build, such as a player's
+   * starting weapon and armor. It starts with full HP, cut down to the max HP of that build.
+   *
+   * @param bodyBox the box the character occupies in the world; must not be {@code null}
+   * @param stats where its stats come from (GDD 1.6); must not be {@code null}
+   * @param baseAttack its attack before any item; must not be {@code null}
+   * @param hurtbox the character's hurtbox; must not be {@code null}
+   * @param invincibilityTicksAfterHit the number of invincibility ticks granted after taking
+   *     damage; must not be negative
+   * @param world the world it lives in
+   * @param startingModifiers the modifiers applied to its build from the start, in order, as in
+   *     {@link #rebuild}; must not be {@code null}
+   * @throws IllegalArgumentException if {@code invincibilityTicksAfterHit} is negative
+   * @throws NullPointerException if an argument or one of the modifiers is {@code null}
+   */
+  protected Character(
+      Aabb bodyBox,
+      StatSource stats,
+      Attack baseAttack,
+      Aabb hurtbox,
+      int invincibilityTicksAfterHit,
+      World world,
+      List<BuildModifier> startingModifiers) {
     super(bodyBox);
     if (invincibilityTicksAfterHit < 0) {
       throw new IllegalArgumentException(
@@ -78,8 +105,8 @@ public abstract class Character extends Entity implements Damageable {
     Objects.requireNonNull(hurtbox, "The hurtbox of a character must not be null");
     this.hurtboxFromBody = hurtbox.translated(-bodyBox.x(), -bodyBox.y());
     this.baseBuild = new CharacterBuild(baseAttack, stats);
-    this.build = baseBuild;
-    this.hp = (int) stats.get(Stat.MAX_HP);
+    this.build = applied(baseBuild, startingModifiers);
+    this.hp = Math.min((int) stats.get(Stat.MAX_HP), (int) build.stats().get(Stat.MAX_HP));
     this.invincibilityTicksAfterHit = invincibilityTicksAfterHit;
     this.world = Objects.requireNonNull(world, "...");
   }
@@ -403,13 +430,18 @@ public abstract class Character extends Entity implements Damageable {
    * @throws NullPointerException if {@code modifiers} or one of them is {@code null}
    */
   public final void rebuild(List<BuildModifier> modifiers) {
+    build = applied(baseBuild, modifiers);
+    hp = Math.min(hp, getMaxHp());
+  }
+
+  /** Applies each modifier in order to a build; static, so a constructor can call it safely. */
+  private static CharacterBuild applied(CharacterBuild base, List<BuildModifier> modifiers) {
     Objects.requireNonNull(modifiers, "modifiers is null");
-    CharacterBuild result = baseBuild;
+    CharacterBuild result = base;
     for (BuildModifier modifier : modifiers) {
       result = Objects.requireNonNull(modifier, "modifier is null").modify(result);
     }
-    build = result;
-    hp = Math.min(hp, getMaxHp());
+    return result;
   }
 
   /**

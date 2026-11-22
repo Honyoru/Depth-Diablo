@@ -88,10 +88,40 @@ public abstract class Player extends Character {
       int invincibilityTicksAfterHit,
       PlayerInput input,
       World world) {
-    super(bodyBox, stats, startingWeapon, hurtbox, invincibilityTicksAfterHit, world);
+    this(
+        bodyBox,
+        stats,
+        startingWeapon,
+        new Inventory(startingWeapon, startingArmor),
+        hurtbox,
+        invincibilityTicksAfterHit,
+        input,
+        world);
+  }
+
+  /**
+   * Creates the player around an inventory made before it, so its build starts with the inventory's
+   * items without calling a method of the half-built player.
+   */
+  private Player(
+      Aabb bodyBox,
+      StatSource stats,
+      Weapon startingWeapon,
+      Inventory inventory,
+      Aabb hurtbox,
+      int invincibilityTicksAfterHit,
+      PlayerInput input,
+      World world) {
+    super(
+        bodyBox,
+        stats,
+        startingWeapon,
+        hurtbox,
+        invincibilityTicksAfterHit,
+        world,
+        inventory.getModifiers());
     this.input = Objects.requireNonNull(input, "The input of a player must not be null");
-    this.inventory = new Inventory(startingWeapon, startingArmor);
-    rebuild(inventory.getModifiers());
+    this.inventory = inventory;
   }
 
   /**
