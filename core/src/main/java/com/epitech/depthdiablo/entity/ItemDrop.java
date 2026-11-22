@@ -36,10 +36,12 @@ public final class ItemDrop extends Entity {
     return item;
   }
 
-  @Override
-  protected void onUpdate(long tick) {
-    // An item on the ground does nothing over time.
-  }
+  /**
+   * Returns how long the item still lies there before it vanishes.
+   *
+   * @return the ticks left, from {@link #LIFETIME_TICKS} down to 0
+   */
+  public int getTicksLeft()
 
   private static Aabb boxAround(Vector2 centre) {
     return new Aabb(centre.x - SIZE / 2f, centre.y - SIZE / 2f, SIZE, SIZE);
