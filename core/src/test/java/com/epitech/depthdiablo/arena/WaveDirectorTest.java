@@ -3,6 +3,8 @@ package com.epitech.depthdiablo.arena;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.epitech.depthdiablo.engine.RewindGroup;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -150,5 +152,21 @@ class WaveDirectorTest {
     assertThrows(NullPointerException.class, () -> new WaveDirector(null, plan, spawner));
     assertThrows(NullPointerException.class, () -> new WaveDirector(cycle, null, spawner));
     assertThrows(NullPointerException.class, () -> new WaveDirector(cycle, plan, null));
+  }
+
+  @Test
+  void should_spawn_the_wave_again_when_rewound_to_before_it_spawned() {
+    RewindGroup run = new RewindGroup(cycle, director); // saved together, as in the game
+    StateBuffer photo = new StateBuffer();
+    run.writeState(photo);
+    director.onTick(0); // wave 1 spawns; then a rewind removes its enemies from the world
+
+    photo.startReading();
+    run.readState(photo);
+    director.onTick(0); // no enemy alive, as right after the rewind
+
+    assertEquals(2 * plan.enemiesOf(1, false).size(), spawned.size()); // spawned again
+    assertEquals(0, cycle.getScore()); // not counted as cleared
+    assertEquals(ArenaCycle.Phase.WAVE, cycle.getPhase());
   }
 }

@@ -1,12 +1,16 @@
 package com.epitech.depthdiablo.arena;
 
+import com.epitech.depthdiablo.engine.Rewindable;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import java.util.Objects;
 
 /**
  * Runs the Arena loop on top of an {@link ArenaCycle}: spawns each wave when it starts, tells the
- * cycle when the wave is cleared, and lets the fixed break run between two waves.
+ * cycle when the wave is cleared, and lets the fixed break run between two waves. It is in the
+ * rewind photo (R) with its cycle, so a rewind to before a wave spawned spawns it again instead of
+ * counting it as cleared.
  */
-public final class WaveDirector {
+public final class WaveDirector implements Rewindable {
 
   private final ArenaCycle cycle;
 
@@ -57,5 +61,25 @@ public final class WaveDirector {
       cycle.waveCleared();
     }
     cycle.update();
+  }
+
+  /**
+   * Writes the last wave whose enemies were spawned.
+   *
+   * @param out the photo being taken
+   */
+  @Override
+  public void writeState(StateBuffer out) {
+    out.writeInt(spawnedWave);
+  }
+
+  /**
+   * Puts back what {@link #writeState} wrote.
+   *
+   * @param in the photo being restored
+   */
+  @Override
+  public void readState(StateBuffer in) {
+    spawnedWave = in.readInt();
   }
 }

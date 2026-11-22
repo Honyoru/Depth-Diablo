@@ -35,6 +35,7 @@ import com.epitech.depthdiablo.engine.DamageDealt;
 import com.epitech.depthdiablo.engine.EntityDied;
 import com.epitech.depthdiablo.engine.FixedTimestep;
 import com.epitech.depthdiablo.engine.ItemDropped;
+import com.epitech.depthdiablo.engine.RewindGroup;
 import com.epitech.depthdiablo.engine.ShopOpened;
 import com.epitech.depthdiablo.engine.World;
 import com.epitech.depthdiablo.entity.Aabb;
@@ -201,8 +202,11 @@ public final class GameScreen extends ScreenAdapter {
   /** F2 debug feature (GDD 1.1.2): one line per event, drawn over any view. */
   private final EventLaser eventLaser = new EventLaser();
 
-  /** R debug feature (GDD 1.1.2): hold R to play the last 5 seconds backwards. */
-  private final Rewind rewind = new Rewind(world, Rewind.CAPACITY);
+  /**
+   * R debug feature (GDD 1.1.2): hold R to play the last 5 seconds backwards. In Arena mode its
+   * photo also holds the cycle and the wave director, so a rewind never skips a wave.
+   */
+  private final Rewind rewind;
 
   private final EventLaserOverlay eventLaserOverlay = new EventLaserOverlay(eventLaser);
 
@@ -268,9 +272,11 @@ public final class GameScreen extends ScreenAdapter {
       this.waveDirector = new WaveDirector(arenaCycle, new WavePlan(), this::spawnEnemy);
       this.shopkeeper = new Shopkeeper(merchantBox(), arenaCycle, world);
       this.world.add(shopkeeper); // away until the first boss wave is cleared
+      this.rewind = new Rewind(new RewindGroup(world, arenaCycle, waveDirector), Rewind.CAPACITY);
     } else {
       this.waveDirector = null;
       this.shopkeeper = null;
+      this.rewind = new Rewind(world, Rewind.CAPACITY);
       for (int i = 0; i < spawns.enemies().size(); i++) {
         spawnEnemy("rat", false); // one rat per enemy tile, in turn
       }

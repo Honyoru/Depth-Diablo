@@ -1,6 +1,7 @@
 package com.epitech.depthdiablo.arena;
 
 import com.epitech.depthdiablo.GameConstants;
+import com.epitech.depthdiablo.engine.StateBuffer;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.constraints.IntRange;
@@ -307,5 +308,26 @@ class ArenaCycleTest {
     }
 
     org.junit.jupiter.api.Assertions.assertEquals(count, arena.getScore());
+  }
+
+  @Test
+  void should_get_back_its_wave_phase_break_and_score_when_its_state_is_read_back() {
+    ArenaCycle arena = new ArenaCycle(WAVES_PER_CYCLE, BREAK_TICKS);
+    arena.waveCleared();
+    arena.update(); // wave 1 cleared, one tick into the break
+    StateBuffer photo = new StateBuffer();
+    arena.writeState(photo);
+    for (int tick = 0; tick < BREAK_TICKS; tick++) {
+      arena.update(); // the break ends: wave 2
+    }
+    arena.waveCleared(); // wave 2 cleared: score 2
+
+    photo.startReading();
+    arena.readState(photo);
+
+    org.junit.jupiter.api.Assertions.assertEquals(1, arena.getWaveNumber());
+    org.junit.jupiter.api.Assertions.assertEquals(ArenaCycle.Phase.BREAK, arena.getPhase());
+    org.junit.jupiter.api.Assertions.assertEquals(BREAK_TICKS - 1, arena.getBreakTicksLeft());
+    org.junit.jupiter.api.Assertions.assertEquals(1, arena.getScore());
   }
 }

@@ -1,10 +1,14 @@
 package com.epitech.depthdiablo.arena;
 
+import com.epitech.depthdiablo.engine.Rewindable;
+import com.epitech.depthdiablo.engine.StateBuffer;
+
 /**
  * An arena cycle consists of waves with breaks between them, ending in a boss wave followed by a
- * shop, and tracks the number of waves defeated as the score.
+ * shop, and tracks the number of waves defeated as the score. It is in the rewind photo (R): a
+ * rewind puts back the wave, the phase, the break timer and the score with the world.
  */
-public final class ArenaCycle {
+public final class ArenaCycle implements Rewindable {
 
   /** The current phase of the arena cycle. */
   public enum Phase {
@@ -156,5 +160,31 @@ public final class ArenaCycle {
    */
   public boolean isBossWave() {
     return wave % wavesPerCycle == 0;
+  }
+
+  /**
+   * Writes what changes during a run: the wave, the phase, the break ticks left and the score.
+   *
+   * @param out the photo being taken
+   */
+  @Override
+  public void writeState(StateBuffer out) {
+    out.writeInt(wave);
+    out.writeInt(phase.ordinal());
+    out.writeInt(breakTicksLeft);
+    out.writeInt(score);
+  }
+
+  /**
+   * Puts back what {@link #writeState} wrote, in the same order.
+   *
+   * @param in the photo being restored
+   */
+  @Override
+  public void readState(StateBuffer in) {
+    wave = in.readInt();
+    phase = Phase.values()[in.readInt()];
+    breakTicksLeft = in.readInt();
+    score = in.readInt();
   }
 }
