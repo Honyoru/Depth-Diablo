@@ -38,12 +38,12 @@ DIAGRAMS = [
         "engine.World", "engine.EventBus", "engine.EventListener", "engine.GameEvent",
         "engine.AttackStarted", "engine.DamageDealt", "engine.EntityDied", "engine.ItemDropped",
         "engine.ItemPickedUp", "engine.ShopOpened", "engine.FixedTimestep", "engine.StateBuffer",
-        "engine.Rewindable", "GameConstants",
+        "engine.Rewindable", "engine.RewindGroup", "GameConstants",
     ]),
     ("02-entities", "Entities: what lives in the world", [
         "entity.Entity", "entity.Updatable", "entity.Collidable", "entity.Interactable",
         "entity.Aabb", "entity.Wall", "entity.ItemDrop", "entity.ItemDropper", "entity.LootDrops",
-        "entity.Projectile", "entity.Arrow", "entity.Fireball",
+        "entity.Projectile", "entity.Arrow", "entity.Fireball", "entity.TeleportZone",
     ]),
     ("03-characters", "Characters: players, enemies, stats and builds", [
         "entity.Character", "entity.Player", "entity.Knight", "entity.Assassin", "entity.Enemy",
@@ -68,7 +68,7 @@ DIAGRAMS = [
     ]),
     ("06-items", "Items: weapons, armor, consumables and passive items", [
         "item.Item", "item.Equipment", "item.Weapon", "item.MeleeWeapon", "item.Sword",
-        "item.Axe", "item.RangedWeapon", "item.Bow", "item.ShortBow", "item.Staff",
+        "item.Axe", "item.RangedWeapon", "item.Bow", "item.PlainBow", "item.Staff",
         "item.FireStaff", "item.Armor", "item.LeatherArmor", "item.Shield", "item.Consumable",
         "item.Potion", "item.PassiveItem", "item.FireRing", "item.StatRing",
         "item.LifeStealRing", "item.ExecutionerRing", "item.Rarity", "item.ItemEffect",
@@ -79,12 +79,12 @@ DIAGRAMS = [
         "item.ItemSpec$AxeSpec", "item.ItemSpec$LeatherArmorSpec", "item.ItemSpec$ShieldSpec",
         "item.ItemSpec$FireRingSpec", "item.ItemSpec$StatRingSpec",
         "item.ItemSpec$LifeStealRingSpec", "item.ItemSpec$ExecutionerRingSpec",
-        "item.ItemSpec$ShortBowSpec", "item.ItemSpec$FireStaffSpec",
+        "item.ItemSpec$PlainBowSpec", "item.ItemSpec$FireStaffSpec",
     ]),
-    ("08-arena-shop-input", "Arena, shop, input and randomness", [
+    ("08-arena-shop-input", "Arena, floors, shop, input and randomness", [
         "arena.ArenaCycle", "arena.WaveDirector", "arena.WavePlan", "arena.EnemySpawner",
-        "shop.Shopkeeper", "input.PlayerInput", "input.PlayerOrders", "random.RandomSource",
-        "random.SeededRandomSource",
+        "level.FloorSequence", "shop.Shopkeeper", "input.PlayerInput", "input.PlayerOrders",
+        "random.RandomSource", "random.SeededRandomSource",
     ]),
     ("09-debug", "Debug features: F1 views, F2 event laser, F5 hot reload, R rewind", [
         "debug.DebugFeature", "debug.ViewSwitcher", "debug.ViewMode", "debug.EventLaser",
@@ -99,7 +99,7 @@ DIAGRAMS = [
         "desktop.ui.PlayerView", "desktop.ui.EnemyView", "desktop.ui.ItemView",
         "desktop.ui.ProjectileView", "desktop.ui.HitPreview", "desktop.ui.HitPreview$Fan",
         "desktop.ui.HitPreview$Ray", "desktop.ui.HitPreviewView", "desktop.ui.SpriteTextures",
-        "desktop.ui.KeyboardPlayerInput",
+        "desktop.ui.TeleporterView", "desktop.ui.KeyboardPlayerInput",
     ]),
     ("11-desktop-hud", "Desktop: HUD, inventory page and shop page", [
         "desktop.ui.Hud", "desktop.ui.HudState", "desktop.ui.InventoryPage",

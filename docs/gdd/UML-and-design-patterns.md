@@ -18,7 +18,7 @@ The diagrams live in [`docs/uml`](../uml). Since 22 Nov they are generated from 
 | 5 | Combat: attacks, hitboxes, damage, status effects | [05-combat.drawio](../uml/05-combat.drawio) |
 | 6 | Items: weapons, armor, consumables, passive items | [06-items.drawio](../uml/06-items.drawio) |
 | 7 | Item data: inventory, items.json, loot | [07-item-data.drawio](../uml/07-item-data.drawio) |
-| 8 | Arena, shop, input, randomness | [08-arena-shop-input.drawio](../uml/08-arena-shop-input.drawio) |
+| 8 | Arena, floors, shop, input, randomness | [08-arena-shop-input.drawio](../uml/08-arena-shop-input.drawio) |
 | 9 | Debug features: F1, F2, F5, R | [09-debug.drawio](../uml/09-debug.drawio) |
 | 10 | Desktop: application, screens, drawing | [10-desktop-screens.drawio](../uml/10-desktop-screens.drawio) |
 | 11 | Desktop: HUD, inventory page, shop page | [11-desktop-hud.drawio](../uml/11-desktop-hud.drawio) |
