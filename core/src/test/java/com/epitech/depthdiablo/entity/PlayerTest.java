@@ -676,6 +676,58 @@ class PlayerTest {
     assertEquals(hpBefore, player.getHp());
   }
 
+  @Test
+  void should_take_over_the_inventory_of_the_previous_floor() {
+    Player previous = aKnight();
+    Potion potion = Items.potion();
+    FireRing ring = Items.fireRing();
+    previous.pickUp(potion);
+    previous.pickUp(ring);
+    Player next = aKnightOnTheNextFloor();
+
+    next.carryOver(previous);
+
+    Inventory bag = next.getInventory();
+    assertSame(previous.getInventory().getWeapon(), bag.getWeapon());
+    assertSame(previous.getInventory().getArmor(), bag.getArmor());
+    assertSame(potion, bag.hotbarSlot(0));
+    assertSame(ring, bag.passiveSlot(0));
+  }
+
+  @Test
+  void should_take_over_the_hp_of_the_previous_floor() {
+    Player previous = aKnight();
+    previous.takeDamage(4);
+    Player next = aKnightOnTheNextFloor();
+
+    next.carryOver(previous);
+
+    assertEquals(previous.getHp(), next.getHp());
+  }
+
+  @Test
+  void should_stay_where_it_stands_when_it_takes_over_the_previous_floor() {
+    Player next = aKnightOnTheNextFloor();
+
+    next.carryOver(aKnight());
+
+    assertEquals(new Vector2(50f, 50f), next.position());
+  }
+
+  @Test
+  void should_reject_a_null_previous_player() {
+    Player next = aKnightOnTheNextFloor();
+
+    assertThrows(NullPointerException.class, () -> next.carryOver(null));
+  }
+
+  /** A knight at (50, 50) in a world of its own, like the player built for the next floor. */
+  private Knight aKnightOnTheNextFloor() {
+    Aabb box = new Aabb(50f, 50f, 16f, 16f);
+    return new Knight(
+        box, stats(), Items.sword(), Items.leatherArmor(), box, 0, new PlayerOrders(), new World());
+  }
+
   private Knight aKnight() {
     Aabb box = new Aabb(0f, 0f, 16f, 16f);
     return new Knight(box, stats(), Items.sword(), Items.leatherArmor(), box, 0, input, world);
