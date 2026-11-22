@@ -54,7 +54,7 @@ public abstract class Enemy extends Character {
   }
 
   /**
-   * Returns the side every enemy fight fo (GDD 1.5).
+   * Returns the side every enemy fights for (GDD 1.5).
    *
    * @return {@link Faction#ENEMY}
    */
@@ -64,7 +64,7 @@ public abstract class Enemy extends Character {
   }
 
   /**
-   * Returns the character is enemy class if any.
+   * Returns the character this enemy chases, if any.
    *
    * @return the target or empty while it has none
    */

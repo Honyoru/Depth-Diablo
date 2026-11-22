@@ -31,7 +31,7 @@ public final class ItemFactory {
    * @throws IllegalArgumentException if the id is unknown, the class is unknown or a value is
    *     missing or invalid
    */
-  public Item create(String id) { // ** TO REFACTOR WITH A FACTORY FOR EACH TYPE */
+  public Item create(String id) {
     ItemSpec spec = ItemSpecReader.read(id, items.definition(id));
     return switch (spec) {
       case ItemSpec.PotionSpec potion ->
