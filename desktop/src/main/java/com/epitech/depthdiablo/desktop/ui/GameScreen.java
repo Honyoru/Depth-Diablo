@@ -170,6 +170,8 @@ public final class GameScreen extends ScreenAdapter {
 
   private final ProjectileView projectileView = new ProjectileView(itemTextures);
 
+  private final HitPreviewView hitPreview = new HitPreviewView();
+
   private final SpriteBatch batch;
 
   private final Player player;
@@ -275,7 +277,8 @@ public final class GameScreen extends ScreenAdapter {
     this.previousPosition.set(player.position());
     renderers.put(
         ViewMode.SPRITES,
-        new SpriteRenderer(mapRenderer, batch, playerView, enemyView, itemView, projectileView));
+        new SpriteRenderer(
+            mapRenderer, batch, playerView, enemyView, itemView, projectileView, hitPreview));
     renderers.put(ViewMode.XRAY, new XRayRenderer());
     renderers.put(ViewMode.HIGH_CONTRAST, new HighContrastRenderer());
     world.getEventBus().subscribeAll(eventLaser);
@@ -393,9 +396,20 @@ public final class GameScreen extends ScreenAdapter {
     Optional<ItemDrop> pickUpTarget = isPaused() ? Optional.empty() : player.getPickUpTarget();
     pickUpTarget.ifPresentOrElse(this::showPickUpHintAbove, hudState::hidePickUpHint);
     velocity.set(player.position()).sub(previousPosition);
+    Vector3 mouse = worldCamera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f));
+    boolean attacking = !isPaused() && Gdx.input.isButtonPressed(Input.Buttons.LEFT);
     renderers
         .get(viewSwitcher.getMode())
-        .render(new Frame(worldCamera, world, player, drawPosition, velocity, worldDelta));
+        .render(
+            new Frame(
+                worldCamera,
+                world,
+                player,
+                drawPosition,
+                velocity,
+                worldDelta,
+                new Vector2(mouse.x, mouse.y),
+                attacking));
     eventLaserOverlay.render(worldCamera);
 
     // 2. Render HUD overlay
@@ -599,6 +613,7 @@ public final class GameScreen extends ScreenAdapter {
     playerView.dispose();
     enemyView.dispose();
     itemTextures.dispose();
+    hitPreview.dispose();
     mapRenderer.dispose();
     tiledMap.dispose();
   }

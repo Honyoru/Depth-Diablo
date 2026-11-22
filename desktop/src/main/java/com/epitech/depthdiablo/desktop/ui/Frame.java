@@ -16,6 +16,8 @@ import com.epitech.depthdiablo.entity.Player;
  *     the last two ticks so the movement looks smooth
  * @param playerVelocity how far the player moved during the last tick, in pixels
  * @param delta frame time in seconds, for animations
+ * @param aimPoint the point of the world under the mouse, where the player aims
+ * @param attacking whether the attack button is held
  */
 record Frame(
     OrthographicCamera camera,
@@ -23,4 +25,6 @@ record Frame(
     Player player,
     Vector2 playerDrawPosition,
     Vector2 playerVelocity,
-    float delta) {}
+    float delta,
+    Vector2 aimPoint,
+    boolean attacking) {}

@@ -19,6 +19,7 @@ final class SpriteRenderer implements Renderer {
   private final EnemyView enemyView;
   private final ItemView itemView;
   private final ProjectileView projectileView;
+  private final HitPreviewView hitPreview;
 
   /**
    * Creates the sprite renderer. It borrows its tools: the game screen still owns and disposes
@@ -30,6 +31,7 @@ final class SpriteRenderer implements Renderer {
    * @param enemyView draws the enemies' animation
    * @param itemView draws the items on the ground
    * @param projectileView draws the projectiles in flight
+   * @param hitPreview draws where the player's weapon hurts, under the sprites
    */
   SpriteRenderer(
       OrthogonalTiledMapRenderer mapRenderer,
@@ -37,19 +39,22 @@ final class SpriteRenderer implements Renderer {
       PlayerView playerView,
       EnemyView enemyView,
       ItemView itemView,
-      ProjectileView projectileView) {
+      ProjectileView projectileView,
+      HitPreviewView hitPreview) {
     this.mapRenderer = Objects.requireNonNull(mapRenderer, "The map renderer must not be null");
     this.batch = Objects.requireNonNull(batch, "The sprite batch must not be null");
     this.playerView = Objects.requireNonNull(playerView, "The player view must not be null");
     this.enemyView = Objects.requireNonNull(enemyView, "The enemy view must not be null");
     this.itemView = Objects.requireNonNull(itemView, "itemView is null");
     this.projectileView = Objects.requireNonNull(projectileView, "projectileView is null");
+    this.hitPreview = Objects.requireNonNull(hitPreview, "hitPreview is null");
   }
 
   @Override
   public void render(Frame frame) {
     mapRenderer.setView(frame.camera());
     mapRenderer.render();
+    hitPreview.draw(frame); // on the floor, under every sprite; outside the batch
 
     batch.setProjectionMatrix(frame.camera().combined);
     batch.begin();
