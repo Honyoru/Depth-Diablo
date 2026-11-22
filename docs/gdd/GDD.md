@@ -506,23 +506,23 @@ Player footsteps added (21 Nov), one step per sound; no other environment sound 
 
 ### 4.3 Music
 
-One ambient music loop for the whole game (Q70), CC0, listed in CREDITS (Q71). The subsections below all follow from that single loop.
+Changed 22 Nov (DECISIONS §12): the menus keep the ambient loop (CC-BY-SA, CREDITS); the game has its own musics composed for the project by Renaud Beaud / JB: **Main**, **Boss** and **Victory**, each an intro played once per run then a loop. Two musics crossfade over 1.5 s.
 
 #### 4.3.1 Events
 
-No event music (boss, shop, death); the loop keeps playing.
+Arena: Main during the waves and their breaks, Boss during the boss wave, Victory from the boss's death until the next wave (shop or break). Endless: Main until it has bosses and floors; then Victory from the boss's death to the next floor. No death music: the game over goes back to the menu loop.
 
 #### 4.3.2 System Screens
 
-Same loop on menus at half the game volume (decided 21 Nov).
+The ambient loop on every menu, at half the game volume (decided 21 Nov); going back to the menus starts a new run, so the next game plays the intros again.
 
 #### 4.3.3 Level Theme
 
-Same loop on every floor; biomes only change the tileset (6.1.1), so one loop fits all; a theme per biome is optional.
+Same musics on every floor; biomes only change the tileset (6.1.1), so one set fits all; a theme per biome is optional.
 
 #### 4.3.4 Situations
 
-No dynamic combat music (Q70).
+The music follows the phase of the fight (Main, Boss, Victory), not the danger of the moment: no dynamic layering.
 
 #### 4.3.5 Cinematic Soundtrack
 

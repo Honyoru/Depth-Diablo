@@ -341,6 +341,10 @@ public final class GameScreen extends ScreenAdapter {
       orders.selectHotbarSlot(hudState.getActiveSlot());
       playerView.lookTowards(orders.moveDirection().x);
       runLogic(delta); // the world only ticks while the page is closed
+      if (arenaMode) {
+        app.getAudio()
+            .playMusic(MusicTrack.forArena(arenaCycle.getPhase(), arenaCycle.isBossWave()));
+      }
     }
 
     // HP at 0 ends the run (GDD 1.1 step 5): show the game over menu.

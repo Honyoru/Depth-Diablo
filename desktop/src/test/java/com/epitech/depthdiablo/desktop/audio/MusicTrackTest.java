@@ -3,6 +3,7 @@ package com.epitech.depthdiablo.desktop.audio;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.epitech.depthdiablo.arena.ArenaCycle;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -31,5 +32,46 @@ class MusicTrackTest {
   void should_play_the_victory_intro_then_the_victory_loop() {
     assertEquals(Optional.of("music/victory_intro.ogg"), MusicTrack.VICTORY.getIntroPath());
     assertEquals("music/victory_loop.ogg", MusicTrack.VICTORY.getLoopPath());
+  }
+
+  @Test
+  void should_play_the_main_music_during_the_normal_waves_and_breaks() {
+    assertEquals(MusicTrack.MAIN, MusicTrack.forArena(ArenaCycle.Phase.WAVE, false));
+    assertEquals(MusicTrack.MAIN, MusicTrack.forArena(ArenaCycle.Phase.BREAK, false));
+  }
+
+  @Test
+  void should_play_the_boss_music_during_the_boss_wave() {
+    assertEquals(MusicTrack.BOSS, MusicTrack.forArena(ArenaCycle.Phase.WAVE, true));
+  }
+
+  @Test
+  void should_keep_the_victory_music_until_the_next_wave_when_there_is_no_shop() {
+    assertEquals(MusicTrack.VICTORY, MusicTrack.forArena(ArenaCycle.Phase.BREAK, true));
+  }
+
+  @Test
+  void should_follow_a_whole_arena_cycle_with_no_shop() {
+    ArenaCycle cycle = new ArenaCycle(2, 1, false); // wave 1, then the boss wave
+    assertEquals(MusicTrack.MAIN, musicOf(cycle));
+
+    cycle.waveCleared();
+    assertEquals(MusicTrack.MAIN, musicOf(cycle)); // the break before the boss
+    cycle.update();
+    assertEquals(MusicTrack.BOSS, musicOf(cycle));
+
+    cycle.waveCleared();
+    assertEquals(MusicTrack.VICTORY, musicOf(cycle)); // the boss is dead
+    cycle.update();
+    assertEquals(MusicTrack.MAIN, musicOf(cycle)); // the next wave
+  }
+
+  private static MusicTrack musicOf(ArenaCycle cycle) {
+    return MusicTrack.forArena(cycle.getPhase(), cycle.isBossWave());
+  }
+
+  @Test
+  void should_play_the_victory_music_once_the_boss_is_beaten() {
+    assertEquals(MusicTrack.VICTORY, MusicTrack.forArena(ArenaCycle.Phase.SHOP, true));
   }
 }

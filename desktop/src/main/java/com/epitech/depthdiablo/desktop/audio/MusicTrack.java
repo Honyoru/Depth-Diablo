@@ -1,5 +1,7 @@
 package com.epitech.depthdiablo.desktop.audio;
 
+import com.epitech.depthdiablo.arena.ArenaCycle;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -30,6 +32,24 @@ public enum MusicTrack {
   MusicTrack(String intro, String loop) {
     this.introPath = pathOf(intro);
     this.loopPath = pathOf(loop);
+  }
+
+  /**
+   * Returns the music of an Arena moment: the boss music while the boss wave fights, the victory
+   * music from the boss's death until the next wave (the shop, or the break when there is no shop),
+   * and the main music the rest of the time.
+   *
+   * @param phase the phase of the arena cycle
+   * @param bossWave whether the current wave is the boss wave
+   * @return the music to play
+   * @throws NullPointerException if {@code phase} is {@code null}
+   */
+  public static MusicTrack forArena(ArenaCycle.Phase phase, boolean bossWave) {
+    return switch (Objects.requireNonNull(phase, "phase is null")) {
+      case WAVE -> bossWave ? BOSS : MAIN;
+      case SHOP -> VICTORY;
+      case BREAK -> bossWave ? VICTORY : MAIN; // the break after a boss beaten with no shop
+    };
   }
 
   /**
