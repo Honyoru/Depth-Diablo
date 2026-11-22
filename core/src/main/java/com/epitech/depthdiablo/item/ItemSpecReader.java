@@ -57,6 +57,18 @@ public final class ItemSpecReader {
                   json.getString("spriteId"),
                   json.getInt("price"),
                   readBurn(id, json.get("burn"))),
+          "ShortBow",
+          (id, json) ->
+              new ItemSpec.ShortBowSpec(
+                  id,
+                  json.getString("nameKey"),
+                  json.getString("spriteId"),
+                  Rarity.valueOf(json.getString("rarity")),
+                  json.getInt("price"),
+                  json.getInt("attackBonus"),
+                  json.getFloat("attackSpeed"),
+                  json.getFloat("range"),
+                  json.getFloat("projectileSpeed")),
           "Axe",
           (id, json) ->
               new ItemSpec.AxeSpec(

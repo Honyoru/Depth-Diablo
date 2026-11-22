@@ -943,6 +943,17 @@ class PlayerTest {
   }
 
   @Test
+  void should_shoot_an_arrow_when_it_attacks_with_a_bow() {
+    Player player = aKnight();
+    player.pickUp(Items.factory().create("short_bow"));
+    input.holdAttack(100f, 8f);
+
+    tick(player, 1);
+
+    assertTrue(world.getEntities().stream().anyMatch(Arrow.class::isInstance));
+  }
+
+  @Test
   void should_walk_up_to_a_wall_even_when_its_steps_do_not_fit_the_gap() {
     world.add(new Wall(new Aabb(21f, 0f, 32f, 32f)));
     Player player = aKnight();

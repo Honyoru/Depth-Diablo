@@ -82,6 +82,17 @@ public final class ItemFactory {
               axe.width(),
               axe.arcDegrees(),
               axe.swingTicks());
+      case ItemSpec.ShortBowSpec bow ->
+          new ShortBow(
+              bow.id(),
+              bow.nameKey(),
+              bow.spriteId(),
+              bow.rarity(),
+              bow.price(),
+              bow.attackBonus(),
+              bow.attackSpeed(),
+              bow.range(),
+              bow.projectileSpeed());
       case ItemSpec.ShieldSpec shield ->
           new Shield(
               shield.id(),

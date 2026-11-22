@@ -138,4 +138,17 @@ public sealed interface ItemSpec {
   /** An {@code "ExecutionerRing"} entry. */
   record ExecutionerRingSpec(String id, String nameKey, String spriteId, int price, float threshold)
       implements ItemSpec {}
+
+  /** A {@code "ShortBow"} entry. */
+  record ShortBowSpec(
+      String id,
+      String nameKey,
+      String spriteId,
+      Rarity rarity,
+      int price,
+      int attackBonus,
+      float attackSpeed,
+      float range,
+      float projectileSpeed)
+      implements ItemSpec {}
 }
