@@ -111,7 +111,7 @@ public final class PlayerOrders implements PlayerInput {
     use = true;
   }
 
-  /** The user lets go of the use key. */
+  /** The user lets go of the use key */
   public void releaseUse() {
     use = false;
   }
