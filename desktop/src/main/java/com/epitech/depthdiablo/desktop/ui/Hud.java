@@ -1,5 +1,6 @@
 package com.epitech.depthdiablo.desktop.ui;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -27,6 +28,9 @@ public final class Hud implements Disposable {
 
   /** Size of the HUD texts: the skin's font is 32 px, too big for a corner. */
   private static final float TEXT_SCALE = 0.6f;
+
+  /** Size of the BOSS title above its life bar. */
+  private static final float BOSS_TITLE_SCALE = 0.7f;
 
   private final Stage stage;
 
@@ -56,6 +60,11 @@ public final class Hud implements Disposable {
 
   /** Top centre: the Arena countdown or the shop; empty during a wave. */
   private final Label timerLabel;
+
+  /** Top centre during a boss fight: the BOSS title and its life bar. */
+  private final Table bossTable;
+
+  private final ProgressBar bossBar;
 
   /**
    * Builds the Scene2D HUD table using the provided skin and state model.
@@ -105,13 +114,24 @@ public final class Hud implements Disposable {
     progressLabel.setFontScale(TEXT_SCALE);
     this.timerLabel = new Label("", skin);
     timerLabel.setFontScale(TEXT_SCALE);
+    Label bossTitle = new Label("BOSS", skin);
+    bossTitle.setFontScale(BOSS_TITLE_SCALE);
+    bossTitle.setColor(Color.RED);
+    this.bossBar = new ProgressBar(0f, 100f, 1f, false, skin, "default-horizontal");
+    this.bossTable = new Table();
+    bossTable.add(bossTitle).row();
+    bossTable.add(bossBar).width(320f).height(20f);
+    bossTable.setVisible(false);
+    Table topCentre = new Table();
+    topCentre.add(timerLabel).row();
+    topCentre.add(bossTable);
 
     Table root = new Table();
     root.setFillParent(true);
 
     // Top row: Health bar (top-left) and Coin counter (top-right)
     root.add(healthBar).width(180f).height(24f).top().left().pad(12f);
-    root.add(timerLabel).expandX().top().padTop(14f);
+    root.add(topCentre).expandX().top().padTop(14f);
     root.add(coinCounter).top().right().pad(12f);
     root.row();
 
@@ -139,6 +159,8 @@ public final class Hud implements Disposable {
    */
   public void render(float delta) {
     healthBar.setValue(state.getHealthPercentage());
+    bossTable.setVisible(state.isBossShown());
+    bossBar.setValue(state.getBossHealthPercentage());
     coinCounter.setText(String.valueOf(state.getCoins()));
     progressLabel.setText(state.getProgressText());
     timerLabel.setText(state.getTimerText());

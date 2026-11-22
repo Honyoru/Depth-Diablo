@@ -1,7 +1,9 @@
 package com.epitech.depthdiablo.desktop.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.epitech.depthdiablo.GameConstants;
 import com.epitech.depthdiablo.arena.ArenaCycle;
@@ -122,5 +124,35 @@ class HudStateTest {
   @Test
   void should_throw_when_the_floor_is_below_1() {
     assertThrows(IllegalArgumentException.class, () -> new HudState().syncFloor(0));
+  }
+
+  @Test
+  void should_hide_the_boss_bar_when_created() {
+    assertFalse(new HudState().isBossShown());
+  }
+
+  @Test
+  void should_show_the_boss_life_as_a_percentage() {
+    HudState state = new HudState();
+
+    state.syncBoss(30, 120);
+
+    assertTrue(state.isBossShown());
+    assertEquals(25f, state.getBossHealthPercentage(), 0.001f);
+  }
+
+  @Test
+  void should_hide_the_boss_bar_once_hidden() {
+    HudState state = new HudState();
+    state.syncBoss(30, 120);
+
+    state.hideBoss();
+
+    assertFalse(state.isBossShown());
+  }
+
+  @Test
+  void should_throw_when_the_boss_max_hp_is_0() {
+    assertThrows(IllegalArgumentException.class, () -> new HudState().syncBoss(0, 0));
   }
 }

@@ -34,6 +34,10 @@ public final class HudState {
 
   private String timerText = "";
 
+  private boolean bossShown;
+
+  private float bossHealthPercentage;
+
   /** Creates a HUD model with free hotbar slots. */
   public HudState() {
     Arrays.fill(hotbarSpriteIds, FREE_SLOT_SPRITE);
@@ -70,6 +74,24 @@ public final class HudState {
    */
   public String getTimerText() {
     return timerText;
+  }
+
+  /**
+   * Tells whether the boss bar shows: a boss is alive in the world.
+   *
+   * @return true while a boss fights
+   */
+  public boolean isBossShown() {
+    return bossShown;
+  }
+
+  /**
+   * Returns the boss's life, for the bar at the top.
+   *
+   * @return from 0 to 100; 0 while no boss fights
+   */
+  public float getBossHealthPercentage() {
+    return bossHealthPercentage;
   }
 
   /** Returns current coin count. */
@@ -182,6 +204,28 @@ public final class HudState {
     }
     progressText = "Floor " + floor;
     timerText = "";
+  }
+
+  /**
+   * Shows the boss bar with the boss's life.
+   *
+   * @param hp the boss's HP; 0 or more
+   * @param maxHp its maximum HP; above 0
+   * @throws IllegalArgumentException if {@code hp} is negative or {@code maxHp} is 0 or less
+   */
+  public void syncBoss(int hp, int maxHp) {
+    if (hp < 0 || maxHp <= 0) {
+      throw new IllegalArgumentException(
+          "Boss HP must be 0 or more out of more than 0, was " + hp + " / " + maxHp);
+    }
+    bossShown = true;
+    bossHealthPercentage = 100f * Math.min(hp, maxHp) / maxHp;
+  }
+
+  /** Hides the boss bar: no boss fights. */
+  public void hideBoss() {
+    bossShown = false;
+    bossHealthPercentage = 0f;
   }
 
   /** Whole seconds left, rounded up: 59 ticks still show 1 s, never 0 s. */

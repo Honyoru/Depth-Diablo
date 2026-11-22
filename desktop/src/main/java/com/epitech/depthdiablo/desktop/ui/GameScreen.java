@@ -129,6 +129,9 @@ public final class GameScreen extends ScreenAdapter {
 
   private final boolean arenaMode;
 
+  /** Arena mode: the boss of the current boss wave, until a new one spawns. */
+  private Optional<Enemy> currentBoss = Optional.empty();
+
   /** Below 1 the camera shows less of the world, so everything looks bigger. */
   private static final float CAMERA_ZOOM = 0.8f;
 
@@ -364,6 +367,10 @@ public final class GameScreen extends ScreenAdapter {
     } else {
       hudState.syncFloor(ENDLESS_FLOOR);
     }
+    currentBoss
+        .filter(king -> !king.isDead() && !king.isRemoved())
+        .ifPresentOrElse(
+            king -> hudState.syncBoss(king.getHp(), king.getMaxHp()), hudState::hideBoss);
 
     Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -685,6 +692,9 @@ public final class GameScreen extends ScreenAdapter {
       enemy.watch(player); // endless: only engages within detection range
     }
     world.add(enemy);
+    if (boss) {
+      currentBoss = Optional.of(enemy);
+    }
   }
 
   /** The enemies of the world that are not dead: 0 means the wave is cleared. */
