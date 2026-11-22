@@ -42,6 +42,7 @@ import com.epitech.depthdiablo.entity.Aabb;
 import com.epitech.depthdiablo.entity.CharacterFactory;
 import com.epitech.depthdiablo.entity.Enemy;
 import com.epitech.depthdiablo.entity.EnemyFactory;
+import com.epitech.depthdiablo.entity.EnemyState;
 import com.epitech.depthdiablo.entity.Entity;
 import com.epitech.depthdiablo.entity.ItemDrop;
 import com.epitech.depthdiablo.entity.ItemDropper;
@@ -54,6 +55,7 @@ import com.epitech.depthdiablo.input.PlayerOrders;
 import com.epitech.depthdiablo.item.Item;
 import com.epitech.depthdiablo.item.ItemFactory;
 import com.epitech.depthdiablo.item.LootTable;
+import com.epitech.depthdiablo.level.FloorPlan;
 import com.epitech.depthdiablo.level.FloorSequence;
 import com.epitech.depthdiablo.random.SeededRandomSource;
 import com.epitech.depthdiablo.shop.Shopkeeper;
@@ -322,8 +324,11 @@ public final class GameScreen extends ScreenAdapter {
       this.waveDirector = null;
       this.shopkeeper = null;
       this.rewind = new Rewind(world, Rewind.CAPACITY);
-      for (int i = 0; i < spawns.enemies().size(); i++) {
-        spawnEnemy("rat", false); // one rat per enemy tile, in turn
+      for (String id : FloorPlan.enemiesOf(floor, spawns.enemies().size())) {
+        spawnEnemy(id, false); // the floor's enemies, on the enemy tiles in turn
+      }
+      if (!spawns.bosses().isEmpty()) {
+        spawnEnemy(FloorPlan.BOSS_ID, true); // the floor's king, on the stele
       }
       this.teleportZone = findTeleportBox().map(box -> new TeleportZone(box, world)).orElse(null);
       if (teleportZone != null) {
@@ -423,7 +428,7 @@ public final class GameScreen extends ScreenAdapter {
 
     // HP at 0 ends the run (GDD 1.1 step 5): show the game over menu.
     if (player.isDead()) {
-      int score = arenaMode ? arenaCycle.getScore() : 0; // Endless has no depth score yet
+      int score = arenaMode ? arenaCycle.getScore() : floor; // Endless: the floor reached
       app.showGameOver(score);
       return;
     }
@@ -443,6 +448,7 @@ public final class GameScreen extends ScreenAdapter {
     }
     currentBoss
         .filter(king -> !king.isDead() && !king.isRemoved())
+        .filter(king -> arenaMode || king.getState() != EnemyState.IDLE) // Endless: once engaged
         .ifPresentOrElse(
             king -> hudState.syncBoss(king.getHp(), king.getMaxHp()), hudState::hideBoss);
 
@@ -690,7 +696,7 @@ public final class GameScreen extends ScreenAdapter {
     return new CharacterFactory(
         new DataRegistry("characters", () -> readData("characters.json")),
         new PlayerFactory(items, orders, world),
-        new EnemyFactory(world));
+        new EnemyFactory(world, arenaMode ? 1f : FloorPlan.statMultiplier(floor)));
   }
 
   private static String readData(String file) {

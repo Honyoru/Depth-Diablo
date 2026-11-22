@@ -96,10 +96,7 @@ public final class MenuScreen extends ScreenAdapter {
   private void buildGameOver() {
     rootTable.add(new Label("GAME OVER", skin)).padBottom(30f).row();
 
-    rootTable
-        .add(new Label("Waves defeated: " + flowState.getLastScore(), skin))
-        .padBottom(24f)
-        .row();
+    rootTable.add(new Label(flowState.scoreLine(), skin)).padBottom(24f).row();
 
     TextButton rerunBtn = button("Rerun");
     rerunBtn.addListener(

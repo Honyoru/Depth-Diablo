@@ -123,6 +123,16 @@ public final class MenuFlowState {
   }
 
   /**
+   * Returns the score line of the game over screen, worded for the mode of the run.
+   *
+   * @return "Waves defeated: N" after an Arena run, "Floor reached: N" after an Endless run
+   */
+  public String scoreLine() {
+    String label = selectedMode == GameMode.ENDLESS ? "Floor reached: " : "Waves defeated: ";
+    return label + lastScore;
+  }
+
+  /**
    * Returns the current menu screen step.
    *
    * @return the step the menus show
@@ -200,7 +210,7 @@ public final class MenuFlowState {
   /**
    * Ends the run: HP reached 0 (GDD 1.1 step 5). Opens the game over step with the run's score.
    *
-   * @param score waves defeated in Arena mode, depth reached in a dungeon run; 0 or more
+   * @param score waves defeated in Arena mode, floor reached in Endless mode; 0 or more
    * @throws IllegalArgumentException if {@code score} is negative
    */
   public void showGameOver(int score) {
