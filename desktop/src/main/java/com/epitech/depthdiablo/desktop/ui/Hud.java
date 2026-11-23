@@ -48,7 +48,7 @@ public final class Hud implements Disposable {
           new String[] {"1 2 3", "Select a consumable"},
           new String[] {"A", "Use it"},
           new String[] {"I", "Inventory (pause)"},
-          new String[] {"Esc", "Back to the menu"},
+          // new String[] {"Esc", "Back to the menu"},
           new String[] {"R (hold)", "Rewind"},
           new String[] {"F1 / F2 / F5", "Debug views / event laser / reload data"},
           new String[] {"H", "Show or hide this help"});

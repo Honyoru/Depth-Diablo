@@ -388,10 +388,10 @@ public final class GameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-      app.showMenu();
-      return; // this screen is disposed now
-    }
+    // if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+    // app.showMenu();
+    // return; // this screen is disposed now
+    // }
     handleQuickSlotHotkeys();
     if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
       viewSwitcher.cycle();
